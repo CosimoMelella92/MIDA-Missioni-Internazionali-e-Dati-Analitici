@@ -1,0 +1,126 @@
+2025-06-09 00:19:59,559 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:19:59,560 - __main__ - INFO - Avvio estrazione dati Camera
+2025-06-09 00:19:59,569 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 00:19:59,569 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0145.pdf
+2025-06-09 00:19:59,570 - CameraScraper - INFO - PDF già presente: data\raw\DI0145.pdf
+2025-06-09 00:20:24,570 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0147.pdf
+2025-06-09 00:20:24,575 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0147.pdf
+2025-06-09 00:20:25,950 - CameraScraper - INFO - PDF scaricato con successo: data\raw\DI0147.pdf
+2025-06-09 00:20:28,317 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0148.pdf
+2025-06-09 00:20:28,319 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0148.pdf
+2025-06-09 00:20:29,675 - CameraScraper - INFO - PDF scaricato con successo: data\raw\DI0148.pdf
+2025-06-09 00:20:37,541 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:37,542 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:39,022 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:40,024 - CameraScraper - INFO - Tentativo 2 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:41,179 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:43,181 - CameraScraper - INFO - Tentativo 3 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:44,697 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:20:44,701 - CameraScraper - ERROR - Impossibile scaricare il PDF dopo 3 tentativi
+2025-06-09 00:20:44,722 - CameraScraper - INFO - Dati grezzi salvati in: data\raw\camera_pdf_raw_20250609.json
+2025-06-09 00:20:44,762 - CameraScraper - INFO - Dati processati salvati in: data\processed\camera_pdf_processed_20250609.csv
+2025-06-09 00:20:44,763 - __main__ - INFO - Estrazione dati Camera completata: 3 missioni trovate
+2025-06-09 00:20:44,764 - __main__ - INFO - Avvio estrazione dati Senato
+2025-06-09 00:20:44,765 - __main__ - ERROR - Errore durante l'estrazione dati Senato: WebScraper.__init__() got an unexpected keyword argument 'source_name'
+2025-06-09 00:20:44,765 - __main__ - INFO - Avvio estrazione dati Difesa
+2025-06-09 00:20:44,766 - __main__ - ERROR - Errore durante l'estrazione dati Difesa: Errore nel caricamento della configurazione: name 'yaml' is not defined
+2025-06-09 00:20:44,767 - __main__ - INFO - Avvio estrazione dati Esteri
+2025-06-09 00:20:44,768 - __main__ - ERROR - Errore durante l'estrazione dati Esteri: Errore nel caricamento della configurazione: name 'yaml' is not defined
+2025-06-09 00:20:44,769 - __main__ - INFO - Avvio estrazione dati EEAS
+2025-06-09 00:20:44,769 - __main__ - ERROR - Errore durante l'estrazione dati EEAS: WebScraper.__init__() got an unexpected keyword argument 'source_name'
+2025-06-09 00:20:44,770 - __main__ - INFO - Avvio estrazione dati NATO
+2025-06-09 00:20:44,770 - __main__ - ERROR - Errore durante l'estrazione dati NATO: WebScraper.__init__() got an unexpected keyword argument 'source_name'
+2025-06-09 00:20:44,771 - __main__ - INFO - Avvio estrazione dati ONU
+2025-06-09 00:20:44,771 - __main__ - ERROR - Errore durante l'estrazione dati ONU: WebScraper.__init__() got an unexpected keyword argument 'source_name'
+2025-06-09 00:20:44,772 - __main__ - INFO - Unione dei dati da tutte le fonti
+2025-06-09 00:20:44,777 - __main__ - INFO - Unione completata: 3 missioni totali
+2025-06-09 00:20:44,793 - __main__ - INFO - Dataset salvato in CSV: data\final\missioni_internazionali_20250609.csv
+2025-06-09 00:20:45,797 - __main__ - INFO - Dataset salvato in Excel: data\final\missioni_internazionali_20250609.xlsx
+2025-06-09 00:20:45,798 - __main__ - INFO - Processo completato con successo
+2025-06-09 00:26:59,327 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:26:59,328 - __main__ - INFO - Avvio estrazione dati Camera
+2025-06-09 00:26:59,335 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 00:26:59,336 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0145.pdf
+2025-06-09 00:26:59,337 - CameraScraper - INFO - PDF già presente: data\raw\DI0145.pdf
+2025-06-09 00:27:12,050 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0147.pdf
+2025-06-09 00:27:12,051 - CameraScraper - INFO - PDF già presente: data\raw\DI0147.pdf
+2025-06-09 00:27:13,319 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0148.pdf
+2025-06-09 00:27:13,319 - CameraScraper - INFO - PDF già presente: data\raw\DI0148.pdf
+2025-06-09 00:27:17,516 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:17,517 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:18,516 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:19,517 - CameraScraper - INFO - Tentativo 2 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:20,613 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:22,615 - CameraScraper - INFO - Tentativo 3 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:23,600 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:27:23,601 - CameraScraper - ERROR - Impossibile scaricare il PDF dopo 3 tentativi
+2025-06-09 00:27:23,607 - CameraScraper - INFO - Dati grezzi salvati in: data\raw\camera_pdf_raw_20250609.json
+2025-06-09 00:27:23,634 - CameraScraper - INFO - Dati processati salvati in: data\processed\camera_pdf_processed_20250609.csv
+2025-06-09 00:27:23,634 - __main__ - INFO - Estrazione dati Camera completata: 3 missioni trovate
+2025-06-09 00:27:23,635 - __main__ - INFO - Avvio estrazione dati Senato
+2025-06-09 00:27:23,642 - scripts.senato_scraper - INFO - Inizio estrazione dati dal Senato
+2025-06-09 00:27:23,643 - scripts.senato_scraper - INFO - Estrazione dati da: https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/missioni-internazionali
+2025-06-09 00:27:25,098 - scripts.senato_scraper - ERROR - Errore nell'accesso alla sezione missioni-internazionali: 404 Client Error: Not Found for url: https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/missioni-internazionali
+2025-06-09 00:27:25,100 - scripts.senato_scraper - INFO - Estrazione dati da: https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/documenti-istituzionali
+2025-06-09 00:27:25,523 - scripts.senato_scraper - ERROR - Errore nell'accesso alla sezione documenti-istituzionali: 404 Client Error: Not Found for url: https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/documenti-istituzionali
+2025-06-09 00:27:25,525 - scripts.senato_scraper - ERROR - Nessun dato estratto dal Senato
+2025-06-09 00:27:25,527 - __main__ - INFO - Estrazione dati Senato completata: 0 missioni trovate
+2025-06-09 00:27:25,531 - __main__ - INFO - Avvio estrazione dati Difesa
+2025-06-09 00:27:25,550 - DifesaScraper - INFO - Inizio estrazione dati dal Ministero della Difesa
+2025-06-09 00:27:25,552 - DifesaScraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/operazioni-in-corso
+2025-06-09 00:27:26,984 - DifesaScraper - ERROR - Errore nell'accesso alla sezione operazioni-in-corso: 404 Client Error: Not Found for url: https://www.difesa.it/OperazioniMilitari/operazioni-in-corso
+2025-06-09 00:27:26,985 - DifesaScraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/missioni-completate
+2025-06-09 00:27:27,266 - DifesaScraper - ERROR - Errore nell'accesso alla sezione missioni-completate: 404 Client Error: Not Found for url: https://www.difesa.it/OperazioniMilitari/missioni-completate
+2025-06-09 00:27:27,267 - DifesaScraper - ERROR - Nessun dato estratto dal Ministero della Difesa
+2025-06-09 00:27:27,268 - __main__ - INFO - Estrazione dati Difesa completata: 0 missioni trovate
+2025-06-09 00:27:27,270 - __main__ - INFO - Avvio estrazione dati Esteri
+2025-06-09 00:27:27,279 - EsteriScraper - INFO - Inizio estrazione dati dal Ministero degli Esteri
+2025-06-09 00:27:27,279 - EsteriScraper - INFO - Estrazione dati da: https://www.esteri.it/it/politica_estera_e_cooperazione_internazionale/missioni-pace
+2025-06-09 00:27:58,210 - EsteriScraper - ERROR - Errore nell'accesso alla sezione missioni-pace: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=30)
+2025-06-09 00:27:58,214 - EsteriScraper - INFO - Estrazione dati da: https://www.esteri.it/it/politica_estera_e_cooperazione_internazionale/cooperazione-internazionale
+2025-06-09 00:28:28,883 - EsteriScraper - ERROR - Errore nell'accesso alla sezione cooperazione-internazionale: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=30)
+2025-06-09 00:28:28,885 - EsteriScraper - ERROR - Nessun dato estratto dal Ministero degli Esteri
+2025-06-09 00:28:28,887 - __main__ - INFO - Estrazione dati Esteri completata: 0 missioni trovate
+2025-06-09 00:28:28,888 - __main__ - INFO - Avvio estrazione dati EEAS
+2025-06-09 00:28:28,905 - scripts.eeas_scraper - INFO - Inizio estrazione dati EEAS
+2025-06-09 00:28:28,906 - scripts.eeas_scraper - INFO - Estrazione da missioni_csdp
+2025-06-09 00:28:28,907 - scripts.eeas_scraper - ERROR - Errore durante l'estrazione dati EEAS: 'EEASScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,908 - __main__ - ERROR - Errore durante l'estrazione dati EEAS: 'EEASScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,909 - __main__ - INFO - Avvio estrazione dati NATO
+2025-06-09 00:28:28,918 - scripts.nato_scraper - INFO - Inizio estrazione dati NATO
+2025-06-09 00:28:28,918 - scripts.nato_scraper - INFO - Estrazione da missioni_attive
+2025-06-09 00:28:28,919 - scripts.nato_scraper - ERROR - Errore durante l'estrazione dati NATO: 'NATOScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,919 - __main__ - ERROR - Errore durante l'estrazione dati NATO: 'NATOScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,920 - __main__ - INFO - Avvio estrazione dati ONU
+2025-06-09 00:28:28,925 - scripts.un_scraper - INFO - Inizio estrazione dati ONU
+2025-06-09 00:28:28,925 - scripts.un_scraper - INFO - Estrazione da missioni_attive
+2025-06-09 00:28:28,926 - scripts.un_scraper - ERROR - Errore durante l'estrazione dati ONU: 'UNScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,926 - __main__ - ERROR - Errore durante l'estrazione dati ONU: 'UNScraper' object has no attribute '_make_request'
+2025-06-09 00:28:28,927 - __main__ - INFO - Unione dei dati da tutte le fonti
+2025-06-09 00:28:28,929 - __main__ - INFO - Unione completata: 3 missioni totali
+2025-06-09 00:28:28,933 - __main__ - INFO - Dataset salvato in CSV: data\final\missioni_internazionali_20250609.csv
+2025-06-09 00:28:29,466 - __main__ - INFO - Dataset salvato in Excel: data\final\missioni_internazionali_20250609.xlsx
+2025-06-09 00:28:29,467 - __main__ - INFO - Processo completato con successo
+2025-06-09 00:30:22,040 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:30:22,041 - __main__ - INFO - Avvio estrazione dati Camera
+2025-06-09 00:30:22,046 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 00:30:22,046 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0145.pdf
+2025-06-09 00:30:22,047 - CameraScraper - INFO - PDF già presente: data\raw\DI0145.pdf
+2025-06-09 00:30:36,693 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0147.pdf
+2025-06-09 00:30:36,695 - CameraScraper - INFO - PDF già presente: data\raw\DI0147.pdf
+2025-06-09 00:30:38,358 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0148.pdf
+2025-06-09 00:30:38,359 - CameraScraper - INFO - PDF già presente: data\raw\DI0148.pdf
+2025-06-09 00:30:42,610 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:42,611 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:43,762 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:44,763 - CameraScraper - INFO - Tentativo 2 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:45,697 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:47,699 - CameraScraper - INFO - Tentativo 3 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:48,973 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0149.pdf
+2025-06-09 00:30:48,974 - CameraScraper - ERROR - Impossibile scaricare il PDF dopo 3 tentativi
+2025-06-09 00:30:48,980 - CameraScraper - INFO - Dati grezzi salvati in: data\raw\camera_pdf_raw_20250609.json
+2025-06-09 00:30:48,998 - CameraScraper - INFO - Dati processati salvati in: data\processed\camera_pdf_processed_20250609.csv
+2025-06-09 00:30:48,998 - __main__ - INFO - Estrazione dati Camera completata: 3 missioni trovate
+2025-06-09 00:30:48,999 - __main__ - INFO - Avvio estrazione dati Senato
+2025-06-09 00:30:49,008 - scripts.senato_scraper - INFO - Inizio estrazione dati dal Senato
+2025-06-09 00:30:49,009 - scripts.senato_scraper - INFO - Estrazione dati da: https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/missioni-internazionali

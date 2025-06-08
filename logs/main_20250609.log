@@ -1,0 +1,34 @@
+2025-06-09 00:00:47,968 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:00:47,968 - __main__ - INFO - Estrazione dati dalla Camera dei Deputati
+2025-06-09 00:00:47,973 - CameraScraper - INFO - Inizio estrazione dati dalla Camera dei Deputati
+2025-06-09 00:00:49,073 - CameraScraper - ERROR - Errore nell'estrazione da https://www.camera.it/leg19/1264/relazioni-parlamentari: 404 Client Error: Not Found for url: https://www.camera.it/leg19/1264/relazioni-parlamentari
+2025-06-09 00:00:49,157 - CameraScraper - ERROR - Errore nell'estrazione da https://www.camera.it/leg19/1264/documenti-analitici: 404 Client Error: Not Found for url: https://www.camera.it/leg19/1264/documenti-analitici
+2025-06-09 00:00:49,167 - CameraScraper - INFO - Dati grezzi salvati in: data\raw\camera_raw_20250609.json
+2025-06-09 00:00:49,168 - CameraScraper - ERROR - Colonne obbligatorie mancanti: {'costo_totale', 'data_fine', 'personale_totale', 'data_inizio', 'fonte', 'paese', 'nome_missione', 'ultimo_aggiornamento'}
+2025-06-09 00:00:49,168 - CameraScraper - ERROR - Validazione dati fallita
+2025-06-09 00:00:49,169 - __main__ - INFO - Unione dei dati da tutte le fonti
+2025-06-09 00:00:49,170 - __main__ - WARNING - Nessun dato estratto da nessuna fonte
+2025-06-09 00:03:44,046 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:03:44,046 - __main__ - INFO - Estrazione dati dalla Camera dei Deputati
+2025-06-09 00:03:44,052 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 00:03:44,052 - CameraScraper - INFO - Scarico PDF da https://documenti.camera.it/_dati/leg18/lavori/documentiparlamentari/IndiceETesti/026/005/INTERO.pdf
+2025-06-09 00:05:36,593 - __main__ - INFO - Avvio processo di estrazione dati
+2025-06-09 00:05:36,593 - __main__ - INFO - Estrazione dati dalla Camera dei Deputati
+2025-06-09 00:05:36,599 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 00:05:36,600 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0145.pdf
+2025-06-09 00:05:36,600 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0145.pdf
+2025-06-09 00:05:38,441 - CameraScraper - INFO - PDF scaricato con successo: data\raw\DI0145.pdf
+2025-06-09 00:05:53,023 - CameraScraper - INFO - Tentativo di download PDF da: https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:53,023 - CameraScraper - INFO - Tentativo 1 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:53,900 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:54,901 - CameraScraper - INFO - Tentativo 2 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:56,027 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:58,029 - CameraScraper - INFO - Tentativo 3 di download da https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:58,948 - CameraScraper - ERROR - Errore nella richiesta HTTP: 404 Client Error: Not Found for url: https://documenti.camera.it/leg19/dossier/pdf/DI0146.pdf
+2025-06-09 00:05:58,948 - CameraScraper - ERROR - Impossibile scaricare il PDF dopo 3 tentativi
+2025-06-09 00:05:58,955 - CameraScraper - INFO - Dati grezzi salvati in: data\raw\camera_pdf_raw_20250609.json
+2025-06-09 00:05:58,994 - CameraScraper - INFO - Dati processati salvati in: data\processed\camera_pdf_processed_20250609.csv
+2025-06-09 00:05:58,995 - __main__ - INFO - Unione dei dati da tutte le fonti
+2025-06-09 00:05:59,000 - root - INFO - Dataset finale salvato in: data\final\missioni_internazionali_20250609.csv
+2025-06-09 00:06:02,435 - root - INFO - Dataset finale salvato in: data\final\missioni_internazionali_20250609.xlsx
+2025-06-09 00:06:02,435 - __main__ - INFO - Processo completato con successo

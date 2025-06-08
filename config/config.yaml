@@ -1,0 +1,124 @@
+# Configurazione generale
+logging:
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: 'logs/scraper.log'
+
+# Configurazione fonti dati
+fonti_dati:
+  camera:
+    url_base: "https://www.camera.it"
+    sezioni:
+      missioni_attive: "/leg18/1260"
+      missioni_passate: "/leg18/1261"
+    pdf_urls:
+      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3024&sede=&tipo=DOCUMENTI"
+      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3025&sede=&tipo=DOCUMENTI"
+      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3026&sede=&tipo=DOCUMENTI"
+
+  senato:
+    url_base: "https://www.senato.it"
+    sezioni:
+      missioni_attive: "/leg/18/BGT/Schede/Attivitacamera/0-00000.htm"
+      missioni_passate: "/leg/18/BGT/Schede/Attivitacamera/0-00001.htm"
+
+  difesa:
+    url_base: "https://www.difesa.it"
+    sezioni:
+      missioni_attive: "/OperazioniMilitari/Pagine/MissioniAttive.aspx"
+      missioni_passate: "/OperazioniMilitari/Pagine/MissioniPassate.aspx"
+
+  esteri:
+    url_base: "https://www.esteri.it"
+    sezioni:
+      missioni_attive: "/mae/it/politica_estera/missioni_internazionali"
+      missioni_passate: "/mae/it/politica_estera/missioni_internazionali/storico"
+
+  eeas:
+    url_base: "https://www.eeas.europa.eu"
+    sezioni:
+      missioni_csdp: "/eeas/csdp-missions-and-operations_en"
+      missioni_civili: "/eeas/civilian-missions-and-operations_en"
+      missioni_militari: "/eeas/military-missions-and-operations_en"
+
+  nato:
+    url_base: "https://www.nato.int"
+    sezioni:
+      missioni_attive: "/cps/en/natohq/topics_52060.htm"
+      missioni_passate: "/cps/en/natohq/topics_52060.htm?selectedLocale=en"
+
+  un:
+    url_base: "https://peacekeeping.un.org"
+    sezioni:
+      missioni_attive: "/en/current-peacekeeping-operations"
+      missioni_passate: "/en/past-peacekeeping-operations"
+
+# Configurazione validazione dati
+validazione:
+  campi_obbligatori:
+    - nome_missione
+    - paese
+    - data_inizio
+    - tipo_missione
+  formati_data:
+    - "%d/%m/%Y"
+    - "%Y-%m-%d"
+  formati_costo:
+    - "€{amount}"
+    - "{amount}€"
+    - "{amount} EUR"
+
+# Configurazione classificazione missioni
+classificazione:
+  tipi_missione:
+    - UE_CSDP_CIVILE
+    - UE_CSDP_MILITARE
+    - NATO_PEACEKEEPING
+    - NATO_TRAINING
+    - NATO_SECURITY
+    - ONU_PEACEKEEPING
+    - ONU_OBSERVATION
+    - BILATERALE_ITA
+    - MULTILATERALE
+    - IBRIDA
+
+# Configurazione output
+output:
+  directory_dati:
+    raw: "data/raw"
+    processed: "data/processed"
+    final: "data/final"
+  formati:
+    - csv
+    - xlsx
+  encoding: "utf-8"
+  separatore_csv: ";"
+
+parametri_scraping:
+  timeout: 30
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  delay_min: 2
+  delay_max: 5
+
+struttura_dati:
+  colonne_obbligatorie:
+    - "nome_missione"
+    - "paese"
+    - "data_inizio"
+    - "data_fine"
+    - "personale_totale"
+    - "costo_totale"
+    - "fonte"
+    - "ultimo_aggiornamento"
+
+  colonne_opzionali:
+    - "tipo_missione"
+    - "mandato"
+    - "note"
+    - "link_documento"
+
+percorsi:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  final_data: "data/final"
+  logs: "logs" 
