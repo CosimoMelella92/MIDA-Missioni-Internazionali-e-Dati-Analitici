@@ -1,6 +1,65 @@
 # MIDA - Missioni Internazionali e Dati Analitici
 
-Sistema per il monitoraggio e l'analisi delle missioni internazionali.
+## 📊 Panoramica del Progetto
+
+Questo progetto automatizza la raccolta, l'analisi e la classificazione dei dati relativi alle missioni internazionali italiane da diverse fonti istituzionali.
+
+### 🎯 Obiettivi
+
+1. **Raccolta Dati**
+   - Estrarre automaticamente dati da fonti ufficiali
+   - Standardizzare i dati in un formato unificato
+   - Mantenere uno storico delle missioni
+
+2. **Classificazione**
+   - Categorizzare le missioni per tipo (UE, NATO, ONU, etc.)
+   - Identificare missioni ibride/multilaterali
+   - Tracciare evoluzione temporale delle missioni
+
+3. **Analisi**
+   - Generare report automatici
+   - Visualizzare trend e pattern
+   - Supportare decisioni strategiche
+
+### 📈 Schema di Classificazione
+
+#### 1. 🇪🇺 Missioni UE (CSDP/PESD)
+- **Civili (CP) CSDP**
+  - EUPOL, EUBAM, EULEX
+  - Focus: Formazione polizia, stato di diritto
+- **Militari (MP) CSDP**
+  - EUTM Mali, EUNAVFOR MED
+  - Focus: Training eserciti, anti-pirateria
+
+#### 2. 🌐 Missioni NATO
+- **Peacekeeping & Deterrence**
+  - KFOR Kosovo, NATO Air Policing
+- **Training & Support**
+  - NATO Iraq Mission, Resolute Support
+- **Security Operations**
+  - Enhanced Forward Presence, Sea Guardian
+
+#### 3. 🕊️ Missioni ONU
+- **Peacekeeping tradizionale**
+  - UNIFIL (Libano)
+- **Osservazione/monitoraggio**
+  - MINURSO, UNSMIS
+
+#### 4. 🇮🇹 Missioni bilaterali/nazionali
+- **Bilateral ITA-led**
+  - MISIN Niger, Libia
+- **Supporto umanitario/sanitario**
+  - Missione in Mozambico
+- **Antiterrorismo & sicurezza marittima**
+  - Golfo di Guinea
+
+#### 5. ⚙️ Missioni multi-framework/ibride
+- **UE + NATO**
+  - Bosnia (ALTHEA + NATO HQ)
+- **ONU + ITA**
+  - UNIFIL + comando sett. ovest ITA
+- **NATO + USA-led**
+  - Iraq (post-ISAF)
 
 ## Struttura del Progetto
 
