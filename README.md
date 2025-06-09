@@ -205,12 +205,7 @@ I log sono salvati in:
 ## 👥 Autore
 
 - **Cosimo Melella**
-  - GitHub: [@cosimomelella](https://github.com/cosimomelella)
-  - Email: [cosimo.melella@gmail.com](mailto:cosimo.melella@gmail.com)
 
-## 📞 Supporto
-
-Per segnalazioni bug o richieste feature, apri una issue su GitHub.
 
 ## Licenza
 
