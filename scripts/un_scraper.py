@@ -64,8 +64,11 @@ class UNScraper(WebScraper):
         try:
             dati_completi = []
             
-            for section_name, url in self.sections.items():
-                self.logger.info(f"Estrazione da {section_name}")
+            for section in self.sections:
+                self.logger.info(f"Estrazione da {section}")
+                
+                # Costruisci l'URL della sezione
+                url = f"{self.url_base}/{section}"
                 
                 # Effettua la richiesta HTTP
                 response = self._make_request(url)
@@ -80,7 +83,7 @@ class UNScraper(WebScraper):
                 
                 for missione in missioni:
                     try:
-                        dati = self._estrai_dati_missione(missione, section_name)
+                        dati = self._estrai_dati_missione(missione, section)
                         if dati:
                             dati_completi.append(dati)
                     except Exception as e:

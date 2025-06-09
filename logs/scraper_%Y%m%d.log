@@ -46,3 +46,78 @@
 2025-06-09 18:07:51,699 - un_scraper - ERROR - Errore durante l'estrazione dati ONU: 'list' object has no attribute 'items'
 2025-06-09 18:07:51,699 - __main__ - ERROR - Errore durante l'estrazione dati un: 'list' object has no attribute 'items'
 2025-06-09 18:07:51,700 - __main__ - WARNING - Nessun dato valido estratto
+2025-06-09 18:08:12,862 - __main__ - INFO - Avvio estrazione dati camera
+2025-06-09 18:08:12,863 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 18:08:12,863 - CameraScraper - ERROR - Nessun dato estratto dai PDF
+2025-06-09 18:08:12,864 - __main__ - WARNING - Nessun dato estratto da camera
+2025-06-09 18:08:12,864 - __main__ - INFO - Avvio estrazione dati difesa
+2025-06-09 18:08:12,865 - difesa_scraper - INFO - Inizio estrazione dati dal Ministero della Difesa
+2025-06-09 18:08:12,865 - difesa_scraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/operazioni-militari
+2025-06-09 18:08:13,512 - difesa_scraper - ERROR - Errore nell'accesso alla sezione operazioni-militari: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-06-09 18:08:13,513 - difesa_scraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/missioni-internazionali
+2025-06-09 18:08:14,308 - difesa_scraper - ERROR - Errore nell'accesso alla sezione missioni-internazionali: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-06-09 18:08:14,309 - difesa_scraper - ERROR - Nessun dato estratto dal Ministero della Difesa
+2025-06-09 18:08:14,314 - __main__ - WARNING - Nessun dato estratto da difesa
+2025-06-09 18:08:14,317 - __main__ - INFO - Avvio estrazione dati esteri
+2025-06-09 18:08:14,318 - esteri_scraper - INFO - Inizio estrazione dati dal Ministero degli Esteri
+2025-06-09 18:08:14,320 - esteri_scraper - INFO - Estrazione dati da: https://www.esteri.it/mae/it/politica_estera/politica-estera
+2025-06-09 18:09:14,910 - esteri_scraper - ERROR - Errore nell'accesso alla sezione politica-estera: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=60)
+2025-06-09 18:09:14,912 - esteri_scraper - INFO - Estrazione dati da: https://www.esteri.it/mae/it/politica_estera/cooperazione-internazionale
+2025-06-09 18:10:15,449 - esteri_scraper - ERROR - Errore nell'accesso alla sezione cooperazione-internazionale: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=60)
+2025-06-09 18:10:15,450 - esteri_scraper - ERROR - Nessun dato estratto dal Ministero degli Esteri
+2025-06-09 18:10:15,451 - __main__ - WARNING - Nessun dato estratto da esteri
+2025-06-09 18:10:15,452 - __main__ - INFO - Avvio estrazione dati eeas
+2025-06-09 18:10:15,452 - eeas_scraper - INFO - Inizio estrazione dati EEAS
+2025-06-09 18:10:15,453 - eeas_scraper - ERROR - Errore durante l'estrazione dati EEAS: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,454 - __main__ - ERROR - Errore durante l'estrazione dati eeas: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,454 - __main__ - INFO - Avvio estrazione dati nato
+2025-06-09 18:10:15,455 - nato_scraper - INFO - Inizio estrazione dati NATO
+2025-06-09 18:10:15,455 - nato_scraper - ERROR - Errore durante l'estrazione dati NATO: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,456 - __main__ - ERROR - Errore durante l'estrazione dati nato: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,457 - __main__ - INFO - Avvio estrazione dati un
+2025-06-09 18:10:15,459 - un_scraper - INFO - Inizio estrazione dati ONU
+2025-06-09 18:10:15,459 - un_scraper - ERROR - Errore durante l'estrazione dati ONU: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,459 - __main__ - ERROR - Errore durante l'estrazione dati un: 'list' object has no attribute 'items'
+2025-06-09 18:10:15,460 - __main__ - WARNING - Nessun dato valido estratto
+2025-06-09 18:12:56,187 - __main__ - INFO - Avvio estrazione dati camera
+2025-06-09 18:12:56,188 - CameraScraper - INFO - Inizio estrazione dati PDF Camera dei Deputati
+2025-06-09 18:12:56,188 - CameraScraper - ERROR - Nessun dato estratto dai PDF
+2025-06-09 18:12:56,189 - __main__ - WARNING - Nessun dato estratto da camera
+2025-06-09 18:12:56,189 - __main__ - INFO - Avvio estrazione dati difesa
+2025-06-09 18:12:56,190 - difesa_scraper - INFO - Inizio estrazione dati dal Ministero della Difesa
+2025-06-09 18:12:56,190 - difesa_scraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/operazioni-militari
+2025-06-09 18:12:56,751 - difesa_scraper - ERROR - Errore nell'accesso alla sezione operazioni-militari: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-06-09 18:12:56,751 - difesa_scraper - INFO - Estrazione dati da: https://www.difesa.it/OperazioniMilitari/missioni-internazionali
+2025-06-09 18:12:57,339 - difesa_scraper - ERROR - Errore nell'accesso alla sezione missioni-internazionali: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-06-09 18:12:57,339 - difesa_scraper - ERROR - Nessun dato estratto dal Ministero della Difesa
+2025-06-09 18:12:57,340 - __main__ - WARNING - Nessun dato estratto da difesa
+2025-06-09 18:12:57,341 - __main__ - INFO - Avvio estrazione dati esteri
+2025-06-09 18:12:57,341 - esteri_scraper - INFO - Inizio estrazione dati dal Ministero degli Esteri
+2025-06-09 18:12:57,341 - esteri_scraper - INFO - Estrazione dati da: https://www.esteri.it/mae/it/politica_estera/politica-estera
+2025-06-09 18:13:58,011 - esteri_scraper - ERROR - Errore nell'accesso alla sezione politica-estera: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=60)
+2025-06-09 18:13:58,013 - esteri_scraper - INFO - Estrazione dati da: https://www.esteri.it/mae/it/politica_estera/cooperazione-internazionale
+2025-06-09 18:14:58,563 - esteri_scraper - ERROR - Errore nell'accesso alla sezione cooperazione-internazionale: HTTPSConnectionPool(host='www.esteri.it', port=443): Read timed out. (read timeout=60)
+2025-06-09 18:14:58,564 - esteri_scraper - ERROR - Nessun dato estratto dal Ministero degli Esteri
+2025-06-09 18:14:58,565 - __main__ - WARNING - Nessun dato estratto da esteri
+2025-06-09 18:14:58,566 - __main__ - INFO - Avvio estrazione dati eeas
+2025-06-09 18:14:58,567 - eeas_scraper - INFO - Inizio estrazione dati EEAS
+2025-06-09 18:14:58,567 - eeas_scraper - INFO - Estrazione da missioni
+2025-06-09 18:15:01,446 - eeas_scraper - WARNING - Tentativo 1 fallito: 404 Client Error: Not Found for url: https://www.eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:07,482 - eeas_scraper - WARNING - Tentativo 2 fallito: 404 Client Error: Not Found for url: https://www.eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:13,561 - eeas_scraper - ERROR - Errore durante l'estrazione dati EEAS: 404 Client Error: Not Found for url: https://www.eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en/missioni
+2025-06-09 18:15:13,562 - __main__ - ERROR - Errore durante l'estrazione dati eeas: 404 Client Error: Not Found for url: https://www.eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en/missioni
+2025-06-09 18:15:13,565 - __main__ - INFO - Avvio estrazione dati nato
+2025-06-09 18:15:13,566 - nato_scraper - INFO - Inizio estrazione dati NATO
+2025-06-09 18:15:13,566 - nato_scraper - INFO - Estrazione da missioni
+2025-06-09 18:15:14,443 - nato_scraper - WARNING - Tentativo 1 fallito: 403 Client Error: Forbidden for url: https://www.nato.int/cps/en/natohq/topics_52060.htm/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:19,929 - nato_scraper - WARNING - Tentativo 2 fallito: 403 Client Error: Forbidden for url: https://www.nato.int/cps/en/natohq/topics_52060.htm/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:25,420 - nato_scraper - ERROR - Errore durante l'estrazione dati NATO: 403 Client Error: Forbidden for url: https://www.nato.int/cps/en/natohq/topics_52060.htm/missioni
+2025-06-09 18:15:25,421 - __main__ - ERROR - Errore durante l'estrazione dati nato: 403 Client Error: Forbidden for url: https://www.nato.int/cps/en/natohq/topics_52060.htm/missioni
+2025-06-09 18:15:25,424 - __main__ - INFO - Avvio estrazione dati un
+2025-06-09 18:15:25,424 - un_scraper - INFO - Inizio estrazione dati ONU
+2025-06-09 18:15:25,425 - un_scraper - INFO - Estrazione da missioni
+2025-06-09 18:15:27,697 - un_scraper - WARNING - Tentativo 1 fallito: 404 Client Error: Not Found for url: https://peacekeeping.un.org/en/missions/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:34,383 - un_scraper - WARNING - Tentativo 2 fallito: 404 Client Error: Not Found for url: https://peacekeeping.un.org/en/missions/missioni. Riprovo tra 5 secondi...
+2025-06-09 18:15:41,293 - un_scraper - ERROR - Errore durante l'estrazione dati ONU: 404 Client Error: Not Found for url: https://peacekeeping.un.org/en/missions/missioni
+2025-06-09 18:15:41,295 - __main__ - ERROR - Errore durante l'estrazione dati un: 404 Client Error: Not Found for url: https://peacekeeping.un.org/en/missions/missioni
+2025-06-09 18:15:41,298 - __main__ - WARNING - Nessun dato valido estratto

@@ -6,46 +6,59 @@ percorsi:
   logs: "logs"
   reports: "reports"
   config: "config"
-  raw_data: data/raw
+  raw_data: "data/raw"
+  processed_data: "data/processed"
 
 # Parametri per lo scraping
 parametri_scraping:
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-  timeout: 60
+  timeout: 30
   retry_attempts: 3
   retry_delay: 5
-  request_delay: 5
+  delay_min: 1
+  delay_max: 3
 
 # Fonti dati
 fonti_dati:
   camera_deputati:
-    url_base: "https://www.camera.it/leg18/1236"
-    url_missioni: "https://www.camera.it/leg18/1236?tab=2&leg=18"
+    url_base: "https://www.camera.it"
+    document_urls:
+      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/01/23/OCD177-3028.pdf"
+      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/02/15/OCD177-3029.docx"
+      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/03/01/OCD177-3030.xlsx"
+    sections:
+      - "missioni-internazionali"
+      - "operazioni-militari"
   senato:
-    base_url: "https://www.senato.it/leg/18/BGT/Schede/Ddliter/"
-    url_missioni: "https://www.senato.it/leg/18/BGT/Schede/Attivitainternazionali/00000001.htm"
-    sections: ["missioni", "attivita-internazionali"]
-    sezioni: ["missioni", "attivita-internazionali"]
+    url_base: "https://www.senato.it"
+    sections:
+      - "missioni-internazionali"
+      - "operazioni-militari"
   difesa:
-    base_url: "https://www.difesa.it/OperazioniMilitari"
-    url_missioni: "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
-    sections: ["operazioni-militari", "missioni-internazionali"]
+    url_base: "https://www.difesa.it"
+    sections:
+      - "missioni-internazionali"
+      - "operazioni-militari"
   esteri:
-    base_url: "https://www.esteri.it/mae/it/politica_estera"
-    url_missioni: "https://www.esteri.it/mae/it/politica_estera/cooperazione_internazionale/missioni_internazionali"
-    sections: ["politica-estera", "cooperazione-internazionale"]
+    url_base: "https://www.esteri.it"
+    sections:
+      - "missioni-internazionali"
+      - "operazioni-militari"
   eeas:
-    base_url: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
-    url_missioni: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
-    sections: ["missioni", "operazioni"]
+    url_base: "https://eeas.europa.eu"
+    sections:
+      - "missions"
+      - "operations"
   nato:
-    base_url: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
-    url_missioni: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
-    sections: ["missioni", "operazioni"]
+    url_base: "https://www.nato.int"
+    sections:
+      - "missions"
+      - "operations"
   un:
-    base_url: "https://peacekeeping.un.org/en/missions"
-    url_missioni: "https://peacekeeping.un.org/en/missions"
-    sections: ["missioni", "operazioni"]
+    url_base: "https://peacekeeping.un.org"
+    sections:
+      - "missions"
+      - "operations"
 
 # Configurazione logging
 logging:
@@ -79,4 +92,19 @@ dashboard:
 report:
   template: "scripts/reports/templates/report_template.html"
   output_dir: "reports"
-  retention_days: 30 
+  retention_days: 30
+
+# Struttura dati
+struttura_dati:
+  colonne_obbligatorie:
+    - nome_missione
+    - paese
+    - data_inizio
+    - data_fine
+    - personale_totale
+    - costo_totale
+    - tipo_missione
+    - mandato
+    - fonte
+    - ultimo_aggiornamento
+    - link_documento 

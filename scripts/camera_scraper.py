@@ -1,10 +1,8 @@
 import requests
-import pdfplumber
-import os
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
-from base_scraper import BaseScraper
+from document_scraper import DocumentScraper
 from pathlib import Path
 import re
 import time
@@ -12,15 +10,12 @@ from typing import Dict, List
 import logging
 import json
 
-class CameraScraper(BaseScraper):
+class CameraScraper(DocumentScraper):
     def __init__(self):
         super().__init__()
         self.fonte = "camera_deputati"
         self.url_base = self.config['fonti_dati']['camera_deputati']['url_base']
-        self.pdf_urls = self.config['fonti_dati']['camera_deputati'].get('url_pdf', [])
-        self.raw_data_dir = Path(self.config['percorsi']['raw_data'])
-        self.max_retries = 3
-        self.timeout = 30
+        self.document_urls = self.config['fonti_dati']['camera_deputati'].get('document_urls', [])
         
         # Pattern per l'estrazione dei dati
         self.patterns = {
@@ -35,40 +30,46 @@ class CameraScraper(BaseScraper):
         }
 
     def estrai_dati(self) -> pd.DataFrame:
-        self.logger.info("Inizio estrazione dati PDF Camera dei Deputati")
+        self.logger.info("Inizio estrazione dati documenti Camera dei Deputati")
         dati = []
-        for url in self.pdf_urls:
+        
+        for url in self.document_urls:
             try:
-                self.logger.info(f"Tentativo di download PDF da: {url}")
-                local_pdf = self._scarica_pdf(url)
-                if local_pdf:
-                    estratti = self._estrai_dati_da_pdf(local_pdf)
-                    dati.extend(estratti)
+                self.logger.info(f"Tentativo di download documento da: {url}")
+                local_path = self._scarica_documento(url)
+                if local_path:
+                    testo = self._estrai_testo_da_documento(local_path)
+                    if testo:
+                        dati_estratti = self._estrai_dati_da_testo(testo, self.patterns)
+                        dati_estratti['fonte'] = self.fonte
+                        dati_estratti['ultimo_aggiornamento'] = datetime.now().strftime('%Y-%m-%d')
+                        dati_estratti['link_documento'] = url
+                        dati.append(dati_estratti)
             except Exception as e:
-                self.logger.error(f"Errore nell'elaborazione del PDF {url}: {str(e)}")
+                self.logger.error(f"Errore nell'elaborazione del documento {url}: {str(e)}")
                 continue
                 
         if not dati:
-            self.logger.error("Nessun dato estratto dai PDF")
+            self.logger.error("Nessun dato estratto dai documenti")
             return pd.DataFrame()
             
         df = pd.DataFrame(dati)
-        self._salva_dati_raw(dati, f"camera_pdf_raw")
+        self._salva_dati_raw(dati, f"camera_documenti_raw")
         df = self.pulisci_dati(df)
         if self.valida_dati(df):
-            self._salva_dati_processati(df, "camera_pdf_processed")
+            self._salva_dati_processati(df, "camera_documenti_processed")
             return df
         else:
             self.logger.error("Validazione dati fallita")
             return pd.DataFrame()
 
-    def _scarica_pdf(self, url: str) -> str:
-        """Scarica il PDF e restituisce il path locale"""
+    def _scarica_documento(self, url: str) -> str:
+        """Scarica il documento e restituisce il path locale"""
         nome_file = url.split('/')[-1]
         local_path = self.raw_data_dir / nome_file
         
         if local_path.exists():
-            self.logger.info(f"PDF già presente: {local_path}")
+            self.logger.info(f"Documento già presente: {local_path}")
             return str(local_path)
             
         for tentativo in range(self.max_retries):
@@ -80,7 +81,7 @@ class CameraScraper(BaseScraper):
                 with open(local_path, 'wb') as f:
                     f.write(response.content)
                     
-                self.logger.info(f"PDF scaricato con successo: {local_path}")
+                self.logger.info(f"Documento scaricato con successo: {local_path}")
                 return str(local_path)
                 
             except requests.Timeout:
@@ -99,44 +100,40 @@ class CameraScraper(BaseScraper):
                 self.logger.error(f"Errore imprevisto: {str(e)}")
                 return None
                 
-        self.logger.error(f"Impossibile scaricare il PDF dopo {self.max_retries} tentativi")
+        self.logger.error(f"Impossibile scaricare il documento dopo {self.max_retries} tentativi")
         return None
 
-    def _estrai_dati_da_pdf(self, pdf_path: str) -> list:
-        """Estrai dati strutturati dal PDF"""
-        dati = []
+    def _estrai_testo_da_documento(self, doc_path: str) -> str:
+        """Estrai testo dal documento"""
         try:
-            with pdfplumber.open(pdf_path) as pdf:
-                testo_completo = ""
-                for page in pdf.pages:
-                    testo_completo += page.extract_text() + "\n"
-                
-                # Estrai dati usando i pattern
-                missione = {}
-                for campo, pattern in self.patterns.items():
-                    match = re.search(pattern, testo_completo, re.IGNORECASE)
-                    if match:
-                        missione[campo] = match.group(1).strip()
-                    else:
-                        missione[campo] = ""
-                
-                # Aggiungi campi obbligatori mancanti
-                missione.update({
-                    'fonte': self.fonte,
-                    'ultimo_aggiornamento': datetime.now().strftime('%Y-%m-%d'),
-                    'note': testo_completo[:500],  # salva un estratto del testo per debug
-                    'link_documento': pdf_path
-                })
-                
-                # Pulisci e standardizza i dati
-                missione = self._pulisci_dati_missione(missione)
-                dati.append(missione)
-                
+            with open(doc_path, 'r') as f:
+                return f.read()
         except Exception as e:
-            self.logger.error(f"Errore nell'estrazione del testo dal PDF {pdf_path}: {str(e)}")
-            
-        return dati
+            self.logger.error(f"Errore nell'estrazione del testo dal documento {doc_path}: {str(e)}")
+            return None
+
+    def _estrai_dati_da_testo(self, testo: str, patterns: dict) -> dict:
+        """Estrai dati strutturati dal testo"""
+        missione = {}
+        for campo, pattern in patterns.items():
+            match = re.search(pattern, testo, re.IGNORECASE)
+            if match:
+                missione[campo] = match.group(1).strip()
+            else:
+                missione[campo] = ""
         
+        # Aggiungi campi obbligatori mancanti
+        missione.update({
+            'fonte': self.fonte,
+            'ultimo_aggiornamento': datetime.now().strftime('%Y-%m-%d'),
+            'note': testo[:500],  # salva un estratto del testo per debug
+            'link_documento': doc_path
+        })
+        
+        # Pulisci e standardizza i dati
+        missione = self._pulisci_dati_missione(missione)
+        return missione
+
     def _pulisci_dati_missione(self, missione: dict) -> dict:
         """Pulisce e standardizza i dati estratti"""
         # Rimuovi spazi extra
