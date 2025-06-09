@@ -4,228 +4,169 @@ import re
 from datetime import datetime
 from typing import Dict, List
 import logging
-from web_scraper import WebScraper
+from .document_scraper import DocumentScraper
 import json
 import requests
 import yaml
-from base_scraper import BaseScraper
-import time
+import os
 
-class UNScraper(WebScraper):
-    """Scraper per estrarre dati dal sito ONU sulle missioni internazionali."""
+class UnScraper(DocumentScraper):
+    """Scraper per estrarre dati dal sito delle Nazioni Unite sulle missioni internazionali."""
     
     def __init__(self):
-        """Inizializza lo scraper ONU."""
-        with open('config/config.yaml', 'r', encoding='utf-8') as f:
+        super().__init__()
+        self.fonte = "ONU"
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', 'config.yaml')
+        with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
+        self.url_base = config['fonti_dati']['un']['url_base']
+        self.document_urls = config['fonti_dati']['un']['document_urls']
+        self.sections = config['fonti_dati']['un']['sections']
         
-        super().__init__(
-            source_name="un",
-            base_url=config['fonti_dati']['un']['base_url'],
-            sections=config['fonti_dati']['un']['sections']
-        )
-        self.logger = logging.getLogger(__name__)
-        self.fonte = "un"
-        self.url_base = config['fonti_dati']['un']['base_url']
-        self.sezioni = config['fonti_dati']['un']['sections']
-        
-    def _make_request(self, url, method='GET', params=None, data=None, timeout=None):
-        """Esegue una richiesta HTTP con gestione degli errori e retry."""
-        if timeout is None:
-            with open('config/config.yaml', 'r', encoding='utf-8') as f:
-                config = yaml.safe_load(f)
-                timeout = config['parametri_scraping']['timeout']
-        
-        max_retries = config['parametri_scraping']['retry_attempts']
-        retry_delay = config['parametri_scraping']['retry_delay']
-        
-        for attempt in range(max_retries):
-            try:
-                response = requests.request(
-                    method=method,
-                    url=url,
-                    params=params,
-                    data=data,
-                    timeout=timeout,
-                    headers={'User-Agent': config['parametri_scraping']['user_agent']}
-                )
-                response.raise_for_status()
-                return response
-            except requests.exceptions.RequestException as e:
-                if attempt == max_retries - 1:
-                    raise
-                self.logger.warning(f"Tentativo {attempt + 1} fallito: {str(e)}. Riprovo tra {retry_delay} secondi...")
-                time.sleep(retry_delay)
-    
-    def estrai_dati(self) -> pd.DataFrame:
-        """Estrae i dati dalle pagine ONU"""
-        self.logger.info("Inizio estrazione dati ONU")
-        
+        # Definizione dei pattern regex per l'estrazione dei dati
+        self.patterns = {
+            'nome_missione': r'Missione:\s*(.*?)(?:\n|$)',
+            'paese': r'Paese:\s*(.*?)(?:\n|$)',
+            'data_inizio': r'Data inizio:\s*(\d{2}/\d{2}/\d{4})',
+            'data_fine': r'Data fine:\s*(\d{2}/\d{2}/\d{4})',
+            'personale_totale': r'Personale totale:\s*(\d+)',
+            'costo_totale': r'Costo totale:\s*([\d.,]+)\s*€',
+            'tipo_missione': r'Tipo missione:\s*(.*?)(?:\n|$)',
+            'mandato': r'Mandato:\s*(.*?)(?:\n|$)'
+        }
+
+    def estrai_dati(self):
+        """Estrae i dati dalle missioni ONU"""
         try:
-            dati_completi = []
+            logging.info(f"Inizio estrazione dati {self.fonte}")
+            dati = []
             
+            # Estrazione dati dai documenti
+            for url in self.document_urls:
+                try:
+                    logging.info(f"Estrazione da {url}")
+                    testo = self._scarica_documento(url)
+                    if testo:
+                        dati_documento = self._estrai_dati_da_testo(testo)
+                        if dati_documento:
+                            dati.extend(dati_documento)
+                except Exception as e:
+                    logging.error(f"Errore nell'estrazione dal documento {url}: {str(e)}")
+            
+            # Estrazione dati dalle pagine web
             for section in self.sections:
-                self.logger.info(f"Estrazione da {section}")
-                
-                # Costruisci l'URL della sezione
-                url = f"{self.url_base}/{section}"
-                
-                # Effettua la richiesta HTTP
-                response = self._make_request(url)
-                if not response:
-                    continue
-                
-                # Parsing della pagina
-                soup = BeautifulSoup(response.text, 'html.parser')
-                
-                # Trova tutte le missioni nella sezione
-                missioni = self._trova_missioni(soup)
-                
-                for missione in missioni:
-                    try:
-                        dati = self._estrai_dati_missione(missione, section)
-                        if dati:
-                            dati_completi.append(dati)
-                    except Exception as e:
-                        self.logger.error(f"Errore nell'estrazione dati missione: {str(e)}")
-                        continue
+                try:
+                    url = f"{self.url_base}/{section}"
+                    logging.info(f"Estrazione da {section}")
+                    soup = self._scarica_pagina(url)
+                    if soup:
+                        missioni = self._trova_missioni(soup)
+                        for missione in missioni:
+                            dati_missione = self._estrai_dati_missione(missione)
+                            if dati_missione:
+                                dati.append(dati_missione)
+                except Exception as e:
+                    logging.error(f"Errore nell'estrazione dalla sezione {section}: {str(e)}")
             
-            # Crea il DataFrame
-            df = pd.DataFrame(dati_completi)
-            
-            # Validazione e pulizia
-            df = self._valida_dati(df)
-            
-            # Salva i dati
-            self._salva_dati(df)
-            
-            return df
+            if not dati:
+                logging.error(f"Nessun dato estratto da {self.fonte}")
+                return None
+                
+            return self._pulisci_dati(dati)
             
         except Exception as e:
-            self.logger.error(f"Errore durante l'estrazione dati ONU: {str(e)}")
+            logging.error(f"Errore durante l'estrazione dati {self.fonte}: {str(e)}")
             raise
-    
-    def _trova_missioni(self, soup: BeautifulSoup) -> List[BeautifulSoup]:
+
+    def _trova_missioni(self, soup):
         """Trova tutte le missioni nella pagina"""
-        # Le missioni sono in div con classe 'mission-card'
-        return soup.find_all('div', class_='mission-card')
-    
-    def _estrai_dati_missione(self, missione: BeautifulSoup, section_name: str) -> Dict:
-        """Estrae i dati dettagliati di una missione"""
+        return soup.find_all('div', class_='mission')
+        
+    def _estrai_dati_missione(self, missione):
+        """Estrae i dati da una singola missione"""
         try:
-            # Estrai il nome della missione
-            nome = missione.find('h3').text.strip() if missione.find('h3') else None
-            
-            # Estrai il paese/area
-            paese = missione.find('div', class_='location').text.strip() if missione.find('div', class_='location') else None
-            
-            # Estrai le date
-            date_text = missione.find('div', class_='dates').text.strip() if missione.find('div', class_='dates') else None
-            data_inizio, data_fine = self._estrai_date(date_text) if date_text else (None, None)
-            
-            # Estrai il personale
-            personale_text = missione.find('div', class_='personnel').text.strip() if missione.find('div', class_='personnel') else None
-            personale_totale = self._estrai_numero(personale_text) if personale_text else None
-            
-            # Estrai il costo
-            costo_text = missione.find('div', class_='budget').text.strip() if missione.find('div', class_='budget') else None
-            costo_totale = self._estrai_costo(costo_text) if costo_text else None
-            
-            # Estrai il tipo di missione
-            tipo_missione = self._determina_tipo_missione(section_name)
-            
-            # Estrai il mandato
-            mandato = missione.find('div', class_='mandate').text.strip() if missione.find('div', class_='mandate') else None
-            
-            # Estrai le note
-            note = missione.find('div', class_='description').text.strip() if missione.find('div', class_='description') else None
-            
-            # Estrai il link al documento
-            link = missione.find('a')['href'] if missione.find('a') else None
-            if link and not link.startswith('http'):
-                link = self.base_url + link
-            
-            return {
-                'nome_missione': nome,
-                'paese': paese,
-                'data_inizio': data_inizio,
-                'data_fine': data_fine,
-                'personale_totale': personale_totale,
-                'costo_totale': costo_totale,
-                'tipo_missione': tipo_missione,
-                'mandato': mandato,
-                'note': note,
-                'link_documento': link,
-                'fonte': 'ONU',
-                'data_estrazione': datetime.now().strftime('%Y-%m-%d')
+            dati = {
+                'nome_missione': self._estrai_testo(missione, 'h2'),
+                'paese': self._estrai_testo(missione, 'span', class_='country'),
+                'data_inizio': self._estrai_testo(missione, 'span', class_='start-date'),
+                'data_fine': self._estrai_testo(missione, 'span', class_='end-date'),
+                'personale_totale': self._estrai_testo(missione, 'span', class_='personnel'),
+                'costo_totale': self._estrai_testo(missione, 'span', class_='cost'),
+                'tipo_missione': self._estrai_testo(missione, 'span', class_='type'),
+                'mandato': self._estrai_testo(missione, 'div', class_='mandate'),
+                'fonte': self.fonte,
+                'ultimo_aggiornamento': self._estrai_testo(missione, 'span', class_='last-update'),
+                'link_documento': self._estrai_link(missione)
             }
             
-        except Exception as e:
-            self.logger.error(f"Errore nell'estrazione dati missione: {str(e)}")
-            return None
-    
-    def _estrai_date(self, text: str) -> tuple:
-        """Estrae le date da una stringa"""
-        try:
-            # Pattern per date nel formato ONU
-            pattern = r'(\d{1,2}\s+[A-Za-z]+\s+\d{4})\s*-\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4}|present)'
-            match = re.search(pattern, text)
+            # Rimuovi i valori None
+            return {k: v for k, v in dati.items() if v is not None}
             
+        except Exception as e:
+            logging.error(f"Errore nell'estrazione dati missione: {str(e)}")
+            return None
+
+    def _estrai_dati_da_testo(self, testo, patterns):
+        """Estrae i dati dal testo utilizzando i pattern"""
+        dati = []
+        for pattern in patterns:
+            match = re.search(pattern, testo)
             if match:
-                data_inizio = datetime.strptime(match.group(1), '%d %B %Y').strftime('%Y-%m-%d')
-                data_fine = 'present' if match.group(2) == 'present' else datetime.strptime(match.group(2), '%d %B %Y').strftime('%Y-%m-%d')
-                return data_inizio, data_fine
-            return None, None
-            
-        except Exception as e:
-            self.logger.error(f"Errore nell'estrazione date: {str(e)}")
-            return None, None
-    
-    def _estrai_numero(self, text: str) -> int:
-        """Estrae un numero da una stringa"""
-        try:
-            # Rimuovi spazi e caratteri non numerici
-            numero = re.sub(r'[^\d]', '', text)
-            return int(numero) if numero else None
-        except:
-            return None
-    
-    def _estrai_costo(self, text: str) -> float:
-        """Estrae un costo da una stringa"""
-        try:
-            # Pattern per costi in dollari
-            pattern = r'\$\s*([\d,.]+)'
-            match = re.search(pattern, text)
-            
-            if match:
-                # Rimuovi punti e sostituisci virgola con punto
-                costo = match.group(1).replace('.', '').replace(',', '.')
-                return float(costo)
-            return None
-            
-        except Exception as e:
-            self.logger.error(f"Errore nell'estrazione costo: {str(e)}")
-            return None
-    
-    def _determina_tipo_missione(self, section_name: str) -> str:
-        """Determina il tipo di missione in base alla sezione"""
-        if 'attive' in section_name:
-            return 'Attiva'
-        elif 'passate' in section_name:
-            return 'Conclusa'
-        return 'Sconosciuta'
-    
-    def _valida_dati(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Valida e pulisce i dati"""
-        # Rimuovi righe con dati mancanti critici
-        df = df.dropna(subset=['nome_missione', 'paese'])
-        
-        # Converti date in formato datetime
-        for col in ['data_inizio', 'data_fine']:
-            df[col] = pd.to_datetime(df[col], errors='coerce')
-        
-        # Assicurati che i numeri siano nel formato corretto
-        df['personale_totale'] = pd.to_numeric(df['personale_totale'], errors='coerce')
-        df['costo_totale'] = pd.to_numeric(df['costo_totale'], errors='coerce')
-        
-        return df 
+                dati.append({pattern: match.group(1)})
+        return dati
+
+    def _estrai_testo(self, soup, tag, class_=None):
+        """Estrae il testo di un elemento HTML"""
+        element = soup.find(tag, class_=class_)
+        return element.text.strip() if element else None
+
+    def _estrai_link(self, soup):
+        """Estrae il link di un elemento HTML"""
+        link = soup.find('a', href=True)
+        if link:
+            href = link['href']
+            if not href.startswith('http'):
+                href = f"{self.url_base}/{href}"
+            return href
+        return None
+
+    def _pulisci_dati(self, dati):
+        """Pulisce i dati estratti"""
+        # Implementa la logica di pulizia dei dati
+        return dati
+
+    def _salva_dati_raw(self, dati, nome_file):
+        """Salva i dati estratti in un file raw"""
+        # Implementa la logica di salvataggio dei dati in un file raw
+
+    def _salva_dati_processati(self, df, nome_file):
+        """Salva i dati processati in un file processato"""
+        # Implementa la logica di salvataggio dei dati processati in un file processato
+
+    def valida_dati(self, df):
+        """Valida i dati estratti"""
+        # Implementa la logica di validazione dei dati
+        return True
+
+    def _scarica_documento(self, url):
+        """Scarica un documento dal sito"""
+        # Implementa la logica di scarica di un documento dal sito
+        return None
+
+    def _scarica_pagina(self, url):
+        """Scarica una pagina web"""
+        # Implementa la logica di scarica di una pagina web
+        return None
+
+    def _make_request(self, url):
+        """Effettua una richiesta HTTP al sito"""
+        # Implementa la logica di effettuazione di una richiesta HTTP al sito
+        return None
+
+    def _estrai_dati_da_testo(self, testo):
+        """Estrae i dati dal testo utilizzando i pattern"""
+        return self._estrai_dati_da_testo(testo, self.patterns)
+
+    def _estrai_dati_missione(self, missione):
+        """Estrae i dati dettagliati di una missione"""
+        return self._estrai_dati_missione(missione) 

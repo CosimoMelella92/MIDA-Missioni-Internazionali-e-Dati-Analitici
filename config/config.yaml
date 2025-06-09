@@ -12,7 +12,7 @@ percorsi:
 # Parametri per lo scraping
 parametri_scraping:
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-  timeout: 30
+  timeout: 60
   retry_attempts: 3
   retry_delay: 5
   delay_min: 1
@@ -23,42 +23,60 @@ fonti_dati:
   camera_deputati:
     url_base: "https://www.camera.it"
     document_urls:
-      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/01/23/OCD177-3028.pdf"
-      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/02/15/OCD177-3029.docx"
-      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/03/01/OCD177-3030.xlsx"
+      - "https://www.camera.it/leg19/1134?shadow_primapagina=6553"
+      - "https://www.camera.it/leg19/1134?shadow_primapagina=6554"
+      - "https://www.camera.it/leg19/1134?shadow_primapagina=6555"
     sections:
       - "missioni-internazionali"
-      - "operazioni-militari"
+      - "documentazione"
   senato:
     url_base: "https://www.senato.it"
+    document_urls:
+      - "https://www.senato.it/leg/19/BGT/Schede/Dossier/Testi/00000001.htm"
+      - "https://www.senato.it/leg/19/BGT/Schede/Dossier/Testi/00000002.htm"
     sections:
       - "missioni-internazionali"
-      - "operazioni-militari"
+      - "documentazione"
   difesa:
     url_base: "https://www.difesa.it"
+    document_urls:
+      - "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
+      - "https://www.difesa.it/OperazioniMilitari/Documentazione/Pagine/default.aspx"
     sections:
-      - "missioni-internazionali"
       - "operazioni-militari"
+      - "documentazione"
   esteri:
     url_base: "https://www.esteri.it"
+    document_urls:
+      - "https://www.esteri.it/mae/it/politica_estera/missioni_internazionali"
+      - "https://www.esteri.it/mae/it/politica_estera/missioni_internazionali/documentazione"
     sections:
       - "missioni-internazionali"
-      - "operazioni-militari"
+      - "documentazione"
   eeas:
-    url_base: "https://eeas.europa.eu"
+    url_base: "https://www.eeas.europa.eu"
+    document_urls:
+      - "https://www.eeas.europa.eu/eeas/missions-and-operations_en"
+      - "https://www.eeas.europa.eu/eeas/civilian-missions-and-operations_en"
     sections:
-      - "missions"
-      - "operations"
+      - "missions-and-operations"
+      - "civilian-missions-and-operations"
   nato:
     url_base: "https://www.nato.int"
+    document_urls:
+      - "https://www.nato.int/cps/en/natohq/topics_52060.htm"
+      - "https://www.nato.int/cps/en/natohq/topics_52061.htm"
     sections:
-      - "missions"
-      - "operations"
+      - "operations-and-missions"
+      - "current-operations"
   un:
     url_base: "https://peacekeeping.un.org"
+    document_urls:
+      - "https://peacekeeping.un.org/en/missions"
+      - "https://peacekeeping.un.org/en/operations"
     sections:
-      - "missions"
-      - "operations"
+      - "current-missions"
+      - "past-missions"
 
 # Configurazione logging
 logging:
