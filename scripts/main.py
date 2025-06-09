@@ -198,17 +198,13 @@ def main():
         # Setup logging
         setup_logging()
         
-        # Inizializza validatore
+        # Inizializza validator
         validator = DataValidator()
         
-        # Crea directory necessarie
-        for dir_path in ['data/raw', 'data/processed', 'data/final', 'logs']:
-            Path(dir_path).mkdir(parents=True, exist_ok=True)
-        
-        # Inizializza scrapers
+        # Dizionario degli scraper
         scrapers = {
             'camera': CameraScraper(),
-            'senato': SenatoScraper(),
+            # 'senato': SenatoScraper(),  # Temporaneamente disabilitato
             'difesa': DifesaScraper(),
             'esteri': EsteriScraper(),
             'eeas': EEASScraper(),

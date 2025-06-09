@@ -6,6 +6,7 @@ percorsi:
   logs: "logs"
   reports: "reports"
   config: "config"
+  raw_data: data/raw
 
 # Parametri per lo scraping
 parametri_scraping:
@@ -21,23 +22,30 @@ fonti_dati:
     url_base: "https://www.camera.it/leg18/1236"
     url_missioni: "https://www.camera.it/leg18/1236?tab=2&leg=18"
   senato:
-    url_base: "https://www.senato.it/leg/18/BGT/Schede/Attivitainternazionali"
+    base_url: "https://www.senato.it/leg/18/BGT/Schede/Ddliter/"
     url_missioni: "https://www.senato.it/leg/18/BGT/Schede/Attivitainternazionali/00000001.htm"
+    sections: ["missioni", "attivita-internazionali"]
+    sezioni: ["missioni", "attivita-internazionali"]
   difesa:
-    url_base: "https://www.difesa.it/OperazioniMilitari"
+    base_url: "https://www.difesa.it/OperazioniMilitari"
     url_missioni: "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
+    sections: ["operazioni-militari", "missioni-internazionali"]
   esteri:
-    url_base: "https://www.esteri.it/mae/it/politica_estera"
+    base_url: "https://www.esteri.it/mae/it/politica_estera"
     url_missioni: "https://www.esteri.it/mae/it/politica_estera/cooperazione_internazionale/missioni_internazionali"
+    sections: ["politica-estera", "cooperazione-internazionale"]
   eeas:
-    url_base: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
+    base_url: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
     url_missioni: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
+    sections: ["missioni", "operazioni"]
   nato:
-    url_base: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
+    base_url: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
     url_missioni: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
+    sections: ["missioni", "operazioni"]
   un:
-    url_base: "https://peacekeeping.un.org/en/missions"
+    base_url: "https://peacekeeping.un.org/en/missions"
     url_missioni: "https://peacekeeping.un.org/en/missions"
+    sections: ["missioni", "operazioni"]
 
 # Configurazione logging
 logging:

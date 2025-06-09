@@ -4,11 +4,12 @@ import re
 from datetime import datetime
 from typing import Dict, List
 import logging
-from scripts.web_scraper import WebScraper
+from web_scraper import WebScraper
 import json
 import requests
 import yaml
 from base_scraper import BaseScraper
+import time
 
 class EEASScraper(WebScraper):
     """Scraper per estrarre dati dal sito EEAS sulle missioni internazionali dell'UE."""
@@ -20,11 +21,42 @@ class EEASScraper(WebScraper):
         
         super().__init__(
             source_name="eeas",
-            base_url=config['eeas']['base_url'],
-            sections=config['eeas']['sections']
+            base_url=config['fonti_dati']['eeas']['base_url'],
+            sections=config['fonti_dati']['eeas']['sections']
         )
         self.logger = logging.getLogger(__name__)
+        self.fonte = "eeas"
+        self.url_base = config['fonti_dati']['eeas']['base_url']
+        self.sezioni = config['fonti_dati']['eeas']['sections']
         
+    def _make_request(self, url, method='GET', params=None, data=None, timeout=None):
+        """Esegue una richiesta HTTP con gestione degli errori e retry."""
+        if timeout is None:
+            with open('config/config.yaml', 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+                timeout = config['parametri_scraping']['timeout']
+        
+        max_retries = config['parametri_scraping']['retry_attempts']
+        retry_delay = config['parametri_scraping']['retry_delay']
+        
+        for attempt in range(max_retries):
+            try:
+                response = requests.request(
+                    method=method,
+                    url=url,
+                    params=params,
+                    data=data,
+                    timeout=timeout,
+                    headers={'User-Agent': config['parametri_scraping']['user_agent']}
+                )
+                response.raise_for_status()
+                return response
+            except requests.exceptions.RequestException as e:
+                if attempt == max_retries - 1:
+                    raise
+                self.logger.warning(f"Tentativo {attempt + 1} fallito: {str(e)}. Riprovo tra {retry_delay} secondi...")
+                time.sleep(retry_delay)
+    
     def estrai_dati(self) -> pd.DataFrame:
         """Estrae i dati dalle pagine EEAS"""
         self.logger.info("Inizio estrazione dati EEAS")

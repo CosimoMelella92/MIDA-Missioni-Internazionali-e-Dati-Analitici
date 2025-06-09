@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from typing import Dict, List
 import logging
-from scripts.web_scraper import WebScraper
+from web_scraper import WebScraper
 import json
 import requests
 import yaml
@@ -14,19 +14,19 @@ class DifesaScraper(WebScraper):
     """Scraper per estrarre dati dal sito del Ministero della Difesa sulle missioni internazionali."""
     
     def __init__(self):
-        """Inizializza lo scraper del Ministero della Difesa."""
+        """Inizializza lo scraper della Difesa."""
         with open('config/config.yaml', 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
         
         super().__init__(
             source_name="difesa",
-            base_url=config['difesa']['base_url'],
-            sections=config['difesa']['sections']
+            base_url=config['fonti_dati']['difesa']['base_url'],
+            sections=config['fonti_dati']['difesa']['sections']
         )
         self.logger = logging.getLogger(__name__)
         self.fonte = "difesa"
-        self.url_base = self.config['fonti_dati']['difesa']['url_base']
-        self.sezioni = self.config['fonti_dati']['difesa']['sezioni']
+        self.url_base = config['fonti_dati']['difesa']['base_url']
+        self.sezioni = config['fonti_dati']['difesa']['sections']
 
     def estrai_dati(self) -> pd.DataFrame:
         """Estrae dati dalle pagine del Ministero della Difesa"""

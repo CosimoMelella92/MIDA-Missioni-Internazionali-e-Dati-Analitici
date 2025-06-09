@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from typing import Dict, List
 import logging
-from scripts.web_scraper import WebScraper
+from web_scraper import WebScraper
 import json
 import requests
 import yaml
@@ -20,13 +20,13 @@ class EsteriScraper(WebScraper):
         
         super().__init__(
             source_name="esteri",
-            base_url=config['esteri']['base_url'],
-            sections=config['esteri']['sections']
+            base_url=config['fonti_dati']['esteri']['base_url'],
+            sections=config['fonti_dati']['esteri']['sections']
         )
         self.logger = logging.getLogger(__name__)
         self.fonte = "esteri"
-        self.url_base = self.config['fonti_dati']['esteri']['url_base']
-        self.sezioni = self.config['fonti_dati']['esteri']['sezioni']
+        self.url_base = config['fonti_dati']['esteri']['base_url']
+        self.sezioni = config['fonti_dati']['esteri']['sections']
 
     def estrai_dati(self) -> pd.DataFrame:
         """Estrae dati dalle pagine del Ministero degli Esteri"""

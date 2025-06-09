@@ -11,8 +11,11 @@ import json
 import yaml
 
 class WebScraper:
-    def __init__(self, config_path: str = "config/config.yaml"):
+    def __init__(self, source_name: str, base_url: str, sections: list = None, config_path: str = "config/config.yaml"):
         """Inizializza lo scraper web con la configurazione"""
+        self.source_name = source_name
+        self.base_url = base_url
+        self.sections = sections or []
         self.config = self._carica_configurazione(config_path)
         self.setup_logging()
         self.session = self._setup_session()

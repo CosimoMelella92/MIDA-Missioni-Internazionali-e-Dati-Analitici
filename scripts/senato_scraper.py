@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from typing import Dict, List
 import logging
-from scripts.web_scraper import WebScraper
+from web_scraper import WebScraper
 import json
 import requests
 import yaml
@@ -20,13 +20,13 @@ class SenatoScraper(WebScraper):
         
         super().__init__(
             source_name="senato",
-            base_url=config['senato']['base_url'],
-            sections=config['senato']['sections']
+            base_url=config['fonti_dati']['senato']['base_url'],
+            sections=config['fonti_dati']['senato']['sections']
         )
         self.logger = logging.getLogger(__name__)
         self.fonte = "senato"
-        self.url_base = self.config['fonti_dati']['senato']['url_base']
-        self.sezioni = self.config['fonti_dati']['senato']['sezioni']
+        self.url_base = config['fonti_dati']['senato']['base_url']
+        self.sezioni = config['fonti_dati']['senato']['sections']
 
     def estrai_dati(self) -> pd.DataFrame:
         """Estrae dati dalle pagine del Senato"""
