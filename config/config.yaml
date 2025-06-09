@@ -9,74 +9,158 @@ percorsi:
   raw_data: "data/raw"
   processed_data: "data/processed"
 
-# Parametri per lo scraping
-parametri_scraping:
-  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+# Configurazione generale
+configurazione:
   timeout: 60
-  retry_attempts: 3
-  retry_delay: 5
-  delay_min: 1
-  delay_max: 3
+  max_retries: 3
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
 # Fonti dati
 fonti_dati:
-  camera_deputati:
+  camera:
     url_base: "https://www.camera.it"
     document_urls:
-      - "https://www.camera.it/leg19/1134?shadow_primapagina=6553"
-      - "https://www.camera.it/leg19/1134?shadow_primapagina=6554"
-      - "https://www.camera.it/leg19/1134?shadow_primapagina=6555"
+      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/03/23/OCD177-3020.pdf"
     sections:
       - "missioni-internazionali"
-      - "documentazione"
+      - "operazioni-militari"
+    patterns:
+      nome_missione: "Missione\s*:\s*([^\n]+)"
+      paese: "Paese\s*:\s*([^\n]+)"
+      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
+      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
+      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
+      mandato: "Mandato\s*:\s*([^\n]+)"
   senato:
     url_base: "https://www.senato.it"
     document_urls:
-      - "https://www.senato.it/leg/19/BGT/Schede/Dossier/Testi/00000001.htm"
-      - "https://www.senato.it/leg/19/BGT/Schede/Dossier/Testi/00000002.htm"
+      - "https://www.senato.it/leg/18/BGT/Schede/Dossier/Testi/IFR.htm"
     sections:
       - "missioni-internazionali"
-      - "documentazione"
+      - "operazioni-militari"
   difesa:
     url_base: "https://www.difesa.it"
     document_urls:
-      - "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
-      - "https://www.difesa.it/OperazioniMilitari/Documentazione/Pagine/default.aspx"
+      - "https://www.difesa.it/OperazioniMilitari/operazioni-militari"
+      - "https://www.difesa.it/OperazioniMilitari/missioni-internazionali"
     sections:
       - "operazioni-militari"
-      - "documentazione"
+      - "missioni-internazionali"
+    patterns:
+      nome_missione: "Missione\s*:\s*([^\n]+)"
+      paese: "Paese\s*:\s*([^\n]+)"
+      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
+      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
+      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
+      mandato: "Mandato\s*:\s*([^\n]+)"
   esteri:
     url_base: "https://www.esteri.it"
     document_urls:
-      - "https://www.esteri.it/mae/it/politica_estera/missioni_internazionali"
-      - "https://www.esteri.it/mae/it/politica_estera/missioni_internazionali/documentazione"
+      - "https://www.esteri.it/mae/it/politica_estera/politica-estera"
+      - "https://www.esteri.it/mae/it/politica_estera/cooperazione-internazionale"
     sections:
-      - "missioni-internazionali"
-      - "documentazione"
+      - "politica-estera"
+      - "cooperazione-internazionale"
+    patterns:
+      nome_missione: "Missione\s*:\s*([^\n]+)"
+      paese: "Paese\s*:\s*([^\n]+)"
+      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
+      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
+      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
+      mandato: "Mandato\s*:\s*([^\n]+)"
   eeas:
     url_base: "https://www.eeas.europa.eu"
     document_urls:
       - "https://www.eeas.europa.eu/eeas/missions-and-operations_en"
-      - "https://www.eeas.europa.eu/eeas/civilian-missions-and-operations_en"
+      - "https://www.eeas.europa.eu/eeas/missions-and-operations_fr"
     sections:
       - "missions-and-operations"
-      - "civilian-missions-and-operations"
+    languages:
+      - "en"
+      - "fr"
+    patterns:
+      en:
+        nome_missione: "Mission\s*:\s*([^\n]+)"
+        paese: "Country\s*:\s*([^\n]+)"
+        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
+        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Mission\s*Type\s*:\s*([^\n]+)"
+        mandato: "Mandate\s*:\s*([^\n]+)"
+      fr:
+        nome_missione: "Mission\s*:\s*([^\n]+)"
+        paese: "Pays\s*:\s*([^\n]+)"
+        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
+        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Type\s*de\s*mission\s*:\s*([^\n]+)"
+        mandato: "Mandat\s*:\s*([^\n]+)"
   nato:
     url_base: "https://www.nato.int"
     document_urls:
       - "https://www.nato.int/cps/en/natohq/topics_52060.htm"
-      - "https://www.nato.int/cps/en/natohq/topics_52061.htm"
+      - "https://www.nato.int/cps/fr/natohq/topics_52060.htm"
     sections:
-      - "operations-and-missions"
-      - "current-operations"
+      - "operations"
+    languages:
+      - "en"
+      - "fr"
+    patterns:
+      en:
+        nome_missione: "Operation\s*:\s*([^\n]+)"
+        paese: "Country\s*:\s*([^\n]+)"
+        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
+        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Operation\s*Type\s*:\s*([^\n]+)"
+        mandato: "Mandate\s*:\s*([^\n]+)"
+      fr:
+        nome_missione: "Opération\s*:\s*([^\n]+)"
+        paese: "Pays\s*:\s*([^\n]+)"
+        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
+        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Type\s*d'opération\s*:\s*([^\n]+)"
+        mandato: "Mandat\s*:\s*([^\n]+)"
   un:
     url_base: "https://peacekeeping.un.org"
     document_urls:
-      - "https://peacekeeping.un.org/en/missions"
-      - "https://peacekeeping.un.org/en/operations"
+      - "https://peacekeeping.un.org/en/where-we-operate"
+      - "https://peacekeeping.un.org/fr/where-we-operate"
     sections:
-      - "current-missions"
-      - "past-missions"
+      - "peacekeeping-operations"
+    languages:
+      - "en"
+      - "fr"
+    patterns:
+      en:
+        nome_missione: "Mission\s*:\s*([^\n]+)"
+        paese: "Country\s*:\s*([^\n]+)"
+        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
+        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Mission\s*Type\s*:\s*([^\n]+)"
+        mandato: "Mandate\s*:\s*([^\n]+)"
+      fr:
+        nome_missione: "Mission\s*:\s*([^\n]+)"
+        paese: "Pays\s*:\s*([^\n]+)"
+        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
+        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
+        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
+        tipo_missione: "Type\s*de\s*mission\s*:\s*([^\n]+)"
+        mandato: "Mandat\s*:\s*([^\n]+)"
 
 # Configurazione logging
 logging:

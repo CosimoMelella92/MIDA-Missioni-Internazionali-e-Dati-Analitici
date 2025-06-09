@@ -9,6 +9,7 @@ import json
 import requests
 import yaml
 import os
+from urllib.parse import urljoin
 
 class NatoScraper(DocumentScraper):
     """Scraper per estrarre dati dal sito della NATO sulle missioni internazionali."""
@@ -21,68 +22,88 @@ class NatoScraper(DocumentScraper):
         with open('config/config.yaml', 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
             
-        self.url_base = config['fonti_dati']['nato']['url_base']
-        self.document_urls = config['fonti_dati']['nato']['document_urls']
-        self.sections = config['fonti_dati']['nato']['sections']
+        # Estrai le configurazioni specifiche per NATO
+        nato_config = config['fonti_dati']['nato']
+        self.url_base = nato_config['url_base']
+        self.document_urls = nato_config['document_urls']
+        self.sections = nato_config['sections']
+        self.languages = nato_config['languages']
         
-        # Pattern regex per l'estrazione dei dati
+        # Pattern regex per l'estrazione dei dati in inglese e francese
         self.patterns = {
-            'nome_missione': r'Operation:\s*(.*?)(?:\n|$)',
-            'paese': r'Country:\s*(.*?)(?:\n|$)',
-            'data_inizio': r'Start Date:\s*(\d{1,2}/\d{1,2}/\d{4})',
-            'data_fine': r'End Date:\s*(\d{1,2}/\d{1,2}/\d{4})',
-            'personale_totale': r'Total Personnel:\s*(\d+)',
-            'costo_totale': r'Total Cost:\s*€\s*([\d,.]+)',
-            'tipo_missione': r'Operation Type:\s*(.*?)(?:\n|$)',
-            'mandato': r'Mandate:\s*(.*?)(?:\n|$)'
+            'en': {
+                'nome_missione': r'Operation\s*:\s*([^\n]+)',
+                'paese': r'Location\s*:\s*([^\n]+)',
+                'data_inizio': r'Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
+                'data_fine': r'End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
+                'personale_totale': r'Total\s*Personnel\s*:\s*(\d+)',
+                'costo_totale': r'Total\s*Cost\s*:\s*€\s*([\d,.]+)',
+                'tipo_missione': r'Operation\s*Type\s*:\s*([^\n]+)',
+                'mandato': r'Mandate\s*:\s*([^\n]+)'
+            },
+            'fr': {
+                'nome_missione': r'Opération\s*:\s*([^\n]+)',
+                'paese': r'Lieu\s*:\s*([^\n]+)',
+                'data_inizio': r'Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
+                'data_fine': r'Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
+                'personale_totale': r'Personnel\s*total\s*:\s*(\d+)',
+                'costo_totale': r'Coût\s*total\s*:\s*€\s*([\d,.]+)',
+                'tipo_missione': r'Type\s*d\'opération\s*:\s*([^\n]+)',
+                'mandato': r'Mandat\s*:\s*([^\n]+)'
+            }
         }
         
         self.logger = logging.getLogger(__name__)
         
     def estrai_dati(self) -> List[Dict]:
         """
-        Estrae i dati dalle pagine web e dai documenti NATO
+        Estrae i dati dalle fonti NATO in inglese e francese
         """
         self.logger.info("Inizio estrazione dati NATO")
         dati = []
         
         try:
-            # Estrai dati dai documenti
-            for url in self.document_urls:
-                self.logger.info(f"Estrazione da documento: {url}")
-                try:
-                    doc_data = self._scarica_documento(url)
-                    if doc_data:
-                        dati.extend(self._estrai_dati_da_testo(doc_data))
-                except Exception as e:
-                    self.logger.error(f"Errore nell'estrazione dal documento {url}: {str(e)}")
+            # Estrai dati dai documenti per ogni lingua
+            for lang in self.languages:
+                for url in self.document_urls:
+                    if f"/{lang}/" in url:
+                        try:
+                            testo = self._scarica_documento(url)
+                            if testo:
+                                dati_documento = self._estrai_dati_da_testo(testo, self.patterns[lang])
+                                for dato in dati_documento:
+                                    dato['lingua'] = lang
+                                dati.extend(dati_documento)
+                        except Exception as e:
+                            self.logger.error(f"Errore nell'estrazione dati dal documento {url}: {str(e)}")
+                    
+            # Estrai dati dalle pagine web per ogni lingua
+            for lang in self.languages:
+                for section in self.sections:
+                    try:
+                        url = urljoin(self.url_base, f"nato/{lang}/{section}")
+                        html_content = self._scarica_pagina(url)
+                        if html_content:
+                            dati_pagina = self._estrai_dati_da_html(html_content, lang)
+                            dati.extend(dati_pagina)
+                    except Exception as e:
+                        self.logger.error(f"Errore nell'estrazione dati dalla sezione {section} ({lang}): {str(e)}")
+                    
+            # Valida e pulisci i dati
+            dati_validi = []
+            for dato in dati:
+                if self.valida_dati(dato):
+                    dato_pulito = self.pulisci_dati(dato)
+                    dato_pulito['fonte'] = self.fonte
+                    dati_validi.append(dato_pulito)
+                    
+            return dati_validi
             
-            # Estrai dati dalle pagine web
-            for section in self.sections:
-                self.logger.info(f"Estrazione da {section}")
-                try:
-                    page_data = self._scarica_pagina(f"{self.url_base}/{section}")
-                    if page_data:
-                        dati.extend(self._estrai_dati_da_html(page_data))
-                except Exception as e:
-                    self.logger.error(f"Errore nell'estrazione dalla sezione {section}: {str(e)}")
-            
-            # Pulisci e valida i dati
-            dati = [self.pulisci_dati(d) for d in dati]
-            dati = [d for d in dati if self.valida_dati(d)]
-            
-            if not dati:
-                self.logger.warning("Nessun dato estratto da NATO")
-            else:
-                self.logger.info(f"Estratti {len(dati)} record da NATO")
-                
         except Exception as e:
             self.logger.error(f"Errore durante l'estrazione dati NATO: {str(e)}")
             raise
-            
-        return dati
         
-    def _estrai_dati_da_html(self, html_content: str) -> List[Dict]:
+    def _estrai_dati_da_html(self, html_content: str, lang: str) -> List[Dict]:
         """
         Estrae i dati da una pagina HTML
         """
@@ -94,7 +115,7 @@ class NatoScraper(DocumentScraper):
         
         for missione in missioni:
             try:
-                dati_missione = self._estrai_dati_missione(missione)
+                dati_missione = self._estrai_dati_missione(missione, lang)
                 if dati_missione:
                     dati.append(dati_missione)
             except Exception as e:
@@ -106,9 +127,9 @@ class NatoScraper(DocumentScraper):
         """
         Trova tutte le missioni in una pagina
         """
-        return soup.find_all('div', class_='operation')
+        return soup.find_all('div', class_='mission')
         
-    def _estrai_dati_missione(self, missione) -> Dict:
+    def _estrai_dati_missione(self, missione, lang: str) -> Dict:
         """
         Estrae i dati da una singola missione
         """
@@ -122,6 +143,7 @@ class NatoScraper(DocumentScraper):
             'tipo_missione': None,
             'mandato': None,
             'fonte': self.fonte,
+            'lingua': lang,
             'ultimo_aggiornamento': None,
             'link_documento': None
         }
@@ -132,7 +154,7 @@ class NatoScraper(DocumentScraper):
             dati['nome_missione'] = nome_elem.text.strip()
             
         # Estrai il paese
-        paese_elem = missione.find('div', class_='country')
+        paese_elem = missione.find('div', class_='location')
         if paese_elem:
             dati['paese'] = paese_elem.text.strip()
             

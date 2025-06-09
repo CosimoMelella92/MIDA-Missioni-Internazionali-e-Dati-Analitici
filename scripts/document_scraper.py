@@ -15,6 +15,9 @@ import json
 import os
 import yaml
 from urllib.parse import urljoin
+import random
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 class DocumentScraper(BaseScraper):
     """Classe base per l'estrazione di dati da documenti in vari formati."""
@@ -25,8 +28,20 @@ class DocumentScraper(BaseScraper):
         self.max_retries = self.config['parametri_scraping'].get('retry_attempts', 3)
         self.timeout = self.config['parametri_scraping'].get('timeout', 30)
         self.session = requests.Session()
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
         self.session.headers.update({
-            'User-Agent': self.config['parametri_scraping']['user_agent']
+            'User-Agent': self.config['parametri_scraping']['user_agent'],
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
         })
         
     def _carica_config(self) -> Dict:
@@ -36,62 +51,39 @@ class DocumentScraper(BaseScraper):
             return yaml.safe_load(f)
             
     def _make_request(self, url: str, method: str = 'GET', **kwargs) -> Optional[requests.Response]:
-        """Effettua una richiesta HTTP con retry e gestione errori"""
-        max_retries = self.config['parametri_scraping']['retry_attempts']
-        retry_delay = self.config['parametri_scraping']['retry_delay']
-        timeout = self.config['parametri_scraping']['timeout']
-        
-        for attempt in range(max_retries):
+        """Effettua una richiesta HTTP con gestione degli errori e retry"""
+        for attempt in range(self.max_retries):
             try:
+                # Aggiungi un delay casuale tra le richieste
+                time.sleep(random.uniform(1, 3))
+                
                 response = self.session.request(
                     method,
                     url,
-                    timeout=timeout,
+                    timeout=self.timeout,
                     **kwargs
                 )
                 response.raise_for_status()
                 return response
-                
-            except requests.exceptions.Timeout:
-                if attempt < max_retries - 1:
-                    logging.warning(f"Timeout nella richiesta a {url}. Tentativo {attempt + 1}/{max_retries}")
-                    time.sleep(retry_delay)
+            except requests.exceptions.RequestException as e:
+                self.logger.error(f"Tentativo {attempt + 1} fallito per {url}: {str(e)}")
+                if attempt < self.max_retries - 1:
+                    # Aumenta il delay esponenzialmente
+                    time.sleep(self.config['parametri_scraping']['retry_delay'] * (2 ** attempt))
                 else:
-                    logging.error(f"Timeout dopo {max_retries} tentativi per {url}")
-                    return None
+                    raise
                     
-            except requests.exceptions.ConnectionError as e:
-                if attempt < max_retries - 1:
-                    logging.warning(f"Errore di connessione a {url}. Tentativo {attempt + 1}/{max_retries}")
-                    time.sleep(retry_delay)
-                else:
-                    logging.error(f"Errore di connessione dopo {max_retries} tentativi per {url}: {str(e)}")
-                    return None
-                    
-            except requests.exceptions.HTTPError as e:
-                if e.response.status_code in [403, 404]:
-                    logging.error(f"Errore HTTP {e.response.status_code} per {url}")
-                    return None
-                elif attempt < max_retries - 1:
-                    logging.warning(f"Errore HTTP {e.response.status_code} per {url}. Tentativo {attempt + 1}/{max_retries}")
-                    time.sleep(retry_delay)
-                else:
-                    logging.error(f"Errore HTTP dopo {max_retries} tentativi per {url}: {str(e)}")
-                    return None
-                    
-            except Exception as e:
-                logging.error(f"Errore imprevisto nella richiesta a {url}: {str(e)}")
-                return None
-                
-        return None
-        
     def _scarica_documento(self, url: str) -> Optional[str]:
         """Scarica un documento e ne estrae il testo"""
-        response = self._make_request(url)
-        if not response:
-            return None
-            
         try:
+            # Assicurati che l'URL sia assoluto
+            if not url.startswith(('http://', 'https://')):
+                url = urljoin(self.config['fonti_dati']['url_base'], url)
+                
+            response = self._make_request(url)
+            if not response:
+                return None
+            
             content_type = response.headers.get('content-type', '').lower()
             
             if 'application/pdf' in content_type:
@@ -104,7 +96,7 @@ class DocumentScraper(BaseScraper):
                 return response.text
                 
         except Exception as e:
-            logging.error(f"Errore nell'estrazione del testo dal documento {url}: {str(e)}")
+            self.logger.error(f"Errore nel download del documento {url}: {str(e)}")
             return None
             
     def _scarica_pagina(self, url: str) -> Optional[BeautifulSoup]:
