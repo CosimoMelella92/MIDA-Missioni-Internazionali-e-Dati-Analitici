@@ -1,0 +1,42 @@
+# Configurazione MIDA
+
+# Percorsi delle directory
+percorsi:
+  data: "data"
+  logs: "logs"
+  reports: "reports"
+  config: "config"
+
+# Configurazione logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/scraper_%Y%m%d.log"
+
+# Configurazione proxy (opzionale)
+proxy:
+  enabled: false
+  http: "http://proxy.example.com:8080"
+  https: "https://proxy.example.com:8080"
+
+# Configurazione email per le notifiche
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  username: "your-email@gmail.com"
+  password: "your-app-password"
+  from: "your-email@gmail.com"
+  to: "recipient@example.com"
+
+# Configurazione dashboard
+dashboard:
+  title: "MIDA - Dashboard Missioni Internazionali"
+  description: "Monitoraggio e analisi delle missioni internazionali italiane"
+  theme: "light"
+  port: 8501
+
+# Configurazione report
+report:
+  template: "scripts/reports/templates/report_template.html"
+  output_dir: "reports"
+  retention_days: 30 

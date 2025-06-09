@@ -6,7 +6,7 @@ import random
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 class BaseScraper:
     def __init__(self, config_path: str = "config/config.yaml"):
@@ -104,4 +104,59 @@ class BaseScraper:
 
     def estrai_dati(self) -> pd.DataFrame:
         """Metodo da implementare nelle classi figlie"""
-        raise NotImplementedError("Le classi figlie devono implementare questo metodo") 
+        raise NotImplementedError("Le classi figlie devono implementare questo metodo")
+
+    def _make_request(self, url: str, method: str = 'GET', params: Optional[Dict] = None, 
+                     data: Optional[Dict] = None, timeout: int = 30) -> Optional[requests.Response]:
+        """Esegue una richiesta HTTP con gestione degli errori e retry."""
+        max_attempts = self.config['parametri_scraping']['retry_attempts']
+        retry_delay = self.config['parametri_scraping']['retry_delay']
+        
+        for attempt in range(max_attempts):
+            try:
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    params=params,
+                    data=data,
+                    timeout=timeout
+                )
+                response.raise_for_status()
+                return response
+                
+            except requests.exceptions.RequestException as e:
+                self.logger.error(f"Errore nella richiesta HTTP: {str(e)}")
+                if attempt < max_attempts - 1:
+                    time.sleep(retry_delay)
+                    continue
+                return None
+
+    def _save_raw_data(self, data: Any, filename: str):
+        """Salva i dati grezzi in formato JSON."""
+        try:
+            output_dir = Path(self.config['percorsi']['data']) / 'raw'
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            output_path = output_dir / filename
+            with open(output_path, 'w', encoding='utf-8') as f:
+                import json
+                json.dump(data, f, ensure_ascii=False, indent=2)
+                
+            self.logger.info(f"Dati grezzi salvati in: {output_path}")
+            
+        except Exception as e:
+            self.logger.error(f"Errore nel salvataggio dei dati grezzi: {str(e)}")
+
+    def _save_processed_data(self, df, filename: str):
+        """Salva i dati processati in formato CSV."""
+        try:
+            output_dir = Path(self.config['percorsi']['data']) / 'processed'
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            output_path = output_dir / filename
+            df.to_csv(output_path, index=False, encoding='utf-8')
+            
+            self.logger.info(f"Dati processati salvati in: {output_path}")
+            
+        except Exception as e:
+            self.logger.error(f"Errore nel salvataggio dei dati processati: {str(e)}") 

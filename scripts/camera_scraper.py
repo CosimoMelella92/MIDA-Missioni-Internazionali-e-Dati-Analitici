@@ -4,7 +4,7 @@ import os
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
-from scripts.base_scraper import BaseScraper
+from base_scraper import BaseScraper
 from pathlib import Path
 import re
 import time

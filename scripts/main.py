@@ -3,14 +3,21 @@ import yaml
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
-from scripts.camera_scraper import CameraScraper
-from scripts.senato_scraper import SenatoScraper
-from scripts.difesa_scraper import DifesaScraper
-from scripts.esteri_scraper import EsteriScraper
-from scripts.eeas_scraper import EEASScraper
-from scripts.nato_scraper import NATOScraper
-from scripts.un_scraper import UNScraper
-from scripts.data_validator import DataValidator
+import sys
+import os
+
+# Aggiungi la directory scripts al PYTHONPATH
+scripts_dir = Path(__file__).parent
+sys.path.append(str(scripts_dir))
+
+from camera_scraper import CameraScraper
+from senato_scraper import SenatoScraper
+from difesa_scraper import DifesaScraper
+from esteri_scraper import EsteriScraper
+from eeas_scraper import EEASScraper
+from nato_scraper import NATOScraper
+from un_scraper import UNScraper
+from data_validator import DataValidator
 
 def setup_logging():
     """Configura il sistema di logging."""

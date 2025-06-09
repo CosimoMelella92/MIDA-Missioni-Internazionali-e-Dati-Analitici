@@ -8,6 +8,7 @@ from scripts.web_scraper import WebScraper
 import json
 import requests
 import yaml
+from base_scraper import BaseScraper
 
 class SenatoScraper(WebScraper):
     """Scraper per le missioni del Senato"""

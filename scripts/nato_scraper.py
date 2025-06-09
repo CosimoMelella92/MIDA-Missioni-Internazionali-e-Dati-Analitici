@@ -8,6 +8,7 @@ from scripts.web_scraper import WebScraper
 import json
 import requests
 import yaml
+from base_scraper import BaseScraper
 
 class NATOScraper(WebScraper):
     """Scraper per estrarre dati dal sito NATO sulle missioni internazionali."""

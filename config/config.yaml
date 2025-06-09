@@ -1,229 +1,74 @@
-# Configurazione generale
-logging:
-  level: INFO
-  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-  file: 'logs/scraper.log'
+# Configurazione MIDA
 
-# Configurazione fonti dati
-fonti_dati:
-  camera:
-    url_base: "https://www.camera.it"
-    sezioni:
-      missioni_attive: "/leg18/1260"
-      missioni_passate: "/leg18/1261"
-    pdf_urls:
-      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3024&sede=&tipo=DOCUMENTI"
-      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3025&sede=&tipo=DOCUMENTI"
-      - "https://www.camera.it/leg18/1260?tab=2&leg=18&idDocumento=3026&sede=&tipo=DOCUMENTI"
-
-  senato:
-    url_base: "https://www.senato.it"
-    sezioni:
-      missioni_attive: "/leg/18/BGT/Schede/Attivitacamera/0-00000.htm"
-      missioni_passate: "/leg/18/BGT/Schede/Attivitacamera/0-00001.htm"
-
-  difesa:
-    url_base: "https://www.difesa.it"
-    sezioni:
-      missioni_attive: "/OperazioniMilitari/Pagine/MissioniAttive.aspx"
-      missioni_passate: "/OperazioniMilitari/Pagine/MissioniPassate.aspx"
-
-  esteri:
-    url_base: "https://www.esteri.it"
-    sezioni:
-      missioni_attive: "/mae/it/politica_estera/missioni_internazionali"
-      missioni_passate: "/mae/it/politica_estera/missioni_internazionali/storico"
-
-  eeas:
-    url_base: "https://www.eeas.europa.eu"
-    sezioni:
-      missioni_csdp: "/eeas/csdp-missions-and-operations_en"
-      missioni_civili: "/eeas/civilian-missions-and-operations_en"
-      missioni_militari: "/eeas/military-missions-and-operations_en"
-
-  nato:
-    url_base: "https://www.nato.int"
-    sezioni:
-      missioni_attive: "/cps/en/natohq/topics_52060.htm"
-      missioni_passate: "/cps/en/natohq/topics_52060.htm?selectedLocale=en"
-
-  un:
-    url_base: "https://peacekeeping.un.org"
-    sezioni:
-      missioni_attive: "/en/current-peacekeeping-operations"
-      missioni_passate: "/en/past-peacekeeping-operations"
-
-# Configurazione validazione dati
-validazione:
-  campi_obbligatori:
-    - nome_missione
-    - paese
-    - data_inizio
-    - tipo_missione
-    - fonte
-    - ultimo_aggiornamento
-  campi_opzionali:
-    - data_fine
-    - personale_totale
-    - costo_totale
-    - mandato
-    - note
-    - link_documento
-  formati_data:
-    - "%d/%m/%Y"
-    - "%Y-%m-%d"
-    - "%d-%m-%Y"
-  formati_costo:
-    - "€{amount}"
-    - "{amount}€"
-    - "{amount} EUR"
-    - "{amount} euro"
-  validazione_paese:
-    min_lunghezza: 2
-    max_lunghezza: 50
-    caratteri_validi: "[A-Za-zÀ-ÿ\s\-']"
-  validazione_personale:
-    min_valore: 0
-    max_valore: 100000
-
-# Configurazione classificazione missioni
-classificazione:
-  tipi_missione:
-    - UE_CSDP_MILITARE
-    - UE_CSDP_CIVILE
-    - UE_CSDP_ALTRO
-    - NATO_PEACEKEEPING
-    - NATO_TRAINING
-    - NATO_SECURITY
-    - ONU_PEACEKEEPING
-    - ONU_OBSERVATION
-    - BILATERALE_ITA
-    - UMANITARIA_ITA
-    - SICUREZZA_ITA
-    - ALTRO_ITA
-    - MULTILATERALE_IBRIDA
-    - ALTRO
-  regole_classificazione:
-    UE:
-      keywords:
-        - "eeas"
-        - "csdp"
-        - "pesd"
-        - "eu"
-      sottotipi:
-        MILITARE:
-          - "milit"
-          - "eutm"
-          - "navfor"
-          - "eunavfor"
-        CIVILE:
-          - "civ"
-          - "eupol"
-          - "eubam"
-          - "eulex"
-    NATO:
-      keywords:
-        - "nato"
-        - "kfor"
-        - "isaf"
-        - "resolute support"
-      sottotipi:
-        TRAINING:
-          - "training"
-          - "train"
-        SECURITY:
-          - "security"
-    ONU:
-      keywords:
-        - "onu"
-        - "un"
-        - "peacekeeping"
-        - "unifil"
-        - "minurso"
-        - "unsmis"
-      sottotipi:
-        OBSERVATION:
-          - "observation"
-          - "observer"
-    ITA:
-      keywords:
-        - "camera"
-        - "senato"
-        - "difesa"
-        - "esteri"
-      sottotipi:
-        BILATERALE:
-          - "bilateral"
-          - "bilaterale"
-          - "misin"
-          - "libia"
-          - "niger"
-        UMANITARIA:
-          - "umanit"
-          - "sanitar"
-          - "ospedale"
-          - "mozambico"
-        SICUREZZA:
-          - "antiterrorismo"
-          - "marittima"
-          - "golfo"
-
-# Configurazione output
-output:
-  directory_dati:
-    raw: "data/raw"
-    processed: "data/processed"
-    final: "data/final"
-  formati:
-    - csv
-    - xlsx
-  encoding: "utf-8"
-  separatore_csv: ";"
-  timestamp_format: "%Y%m%d_%H%M%S"
-
-# Configurazione scraping
-parametri_scraping:
-  timeout: 30
-  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-  delay_min: 2
-  delay_max: 5
-  max_retries: 3
-  retry_delay: 5
-
-# Configurazione struttura dati
-struttura_dati:
-  colonne_obbligatorie:
-    - "nome_missione"
-    - "paese"
-    - "data_inizio"
-    - "tipo_missione"
-    - "fonte"
-    - "ultimo_aggiornamento"
-  colonne_opzionali:
-    - "data_fine"
-    - "personale_totale"
-    - "costo_totale"
-    - "mandato"
-    - "note"
-    - "link_documento"
-  tipi_dati:
-    nome_missione: "string"
-    paese: "string"
-    data_inizio: "date"
-    data_fine: "date"
-    tipo_missione: "string"
-    personale_totale: "integer"
-    costo_totale: "float"
-    fonte: "string"
-    ultimo_aggiornamento: "datetime"
-    mandato: "string"
-    note: "string"
-    link_documento: "string"
-
-# Configurazione percorsi
+# Percorsi delle directory
 percorsi:
-  raw_data: "data/raw"
-  processed_data: "data/processed"
-  final_data: "data/final"
+  data: "data"
   logs: "logs"
-  config: "config" 
+  reports: "reports"
+  config: "config"
+
+# Parametri per lo scraping
+parametri_scraping:
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  timeout: 60
+  retry_attempts: 3
+  retry_delay: 5
+  request_delay: 5
+
+# Fonti dati
+fonti_dati:
+  camera_deputati:
+    url_base: "https://www.camera.it/leg18/1236"
+    url_missioni: "https://www.camera.it/leg18/1236?tab=2&leg=18"
+  senato:
+    url_base: "https://www.senato.it/leg/18/BGT/Schede/Attivitainternazionali"
+    url_missioni: "https://www.senato.it/leg/18/BGT/Schede/Attivitainternazionali/00000001.htm"
+  difesa:
+    url_base: "https://www.difesa.it/OperazioniMilitari"
+    url_missioni: "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
+  esteri:
+    url_base: "https://www.esteri.it/mae/it/politica_estera"
+    url_missioni: "https://www.esteri.it/mae/it/politica_estera/cooperazione_internazionale/missioni_internazionali"
+  eeas:
+    url_base: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
+    url_missioni: "https://eeas.europa.eu/headquarters/headquarters-homepage/area/geo_en"
+  nato:
+    url_base: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
+    url_missioni: "https://www.nato.int/cps/en/natohq/topics_52060.htm"
+  un:
+    url_base: "https://peacekeeping.un.org/en/missions"
+    url_missioni: "https://peacekeeping.un.org/en/missions"
+
+# Configurazione logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/scraper_%Y%m%d.log"
+
+# Configurazione proxy (opzionale)
+proxy:
+  enabled: false
+  http: "http://proxy.example.com:8080"
+  https: "https://proxy.example.com:8080"
+
+# Configurazione email per le notifiche
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  username: "your-email@gmail.com"
+  password: "your-app-password"
+  from: "your-email@gmail.com"
+  to: "recipient@example.com"
+
+# Configurazione dashboard
+dashboard:
+  title: "MIDA - Dashboard Missioni Internazionali"
+  description: "Monitoraggio e analisi delle missioni internazionali italiane"
+  theme: "light"
+  port: 8501
+
+# Configurazione report
+report:
+  template: "scripts/reports/templates/report_template.html"
+  output_dir: "reports"
+  retention_days: 30 

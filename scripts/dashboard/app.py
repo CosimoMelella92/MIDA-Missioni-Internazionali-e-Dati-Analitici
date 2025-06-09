@@ -8,29 +8,37 @@ from pathlib import Path
 import yaml
 
 # Configurazione
-with open('config/config.yaml', 'r', encoding='utf-8') as f:
+config_path = Path(__file__).parent.parent.parent / 'config' / 'config.yaml'
+with open(config_path, 'r', encoding='utf-8') as f:
     config = yaml.safe_load(f)
 
 # Funzioni di utilità
 def carica_dati():
     """Carica i dati più recenti dal file CSV"""
-    data_dir = Path(config['percorsi']['final_data'])
-    files = list(data_dir.glob('missioni_internazionali_*.csv'))
-    if not files:
+    try:
+        data_path = Path(__file__).parent.parent.parent / 'data' / 'processed' / 'missioni.csv'
+        df = pd.read_csv(data_path)
+        # Converti le colonne delle date in datetime
+        df['data_inizio'] = pd.to_datetime(df['data_inizio']).dt.date
+        # Gestisci le date di fine vuote
+        df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce').dt.date
+        # Converti le colonne numeriche
+        df['personale'] = pd.to_numeric(df['personale'], errors='coerce')
+        df['costo'] = pd.to_numeric(df['costo'], errors='coerce')
+        return df
+    except Exception as e:
+        st.error(f"Errore nel caricamento dei dati: {str(e)}")
         return pd.DataFrame()
-    
-    latest_file = max(files, key=os.path.getctime)
-    return pd.read_csv(latest_file)
 
 def filtra_dati(df, date_range, tipi_missione, paesi):
     """Filtra i dati in base ai parametri selezionati"""
     mask = pd.Series(True, index=df.index)
     
-    if date_range:
+    if date_range and len(date_range) == 2:
         mask &= (df['data_inizio'] >= date_range[0]) & (df['data_inizio'] <= date_range[1])
     
     if tipi_missione:
-        mask &= df['tipo_missione'].isin(tipi_missione)
+        mask &= df['tipo'].isin(tipi_missione)
     
     if paesi:
         mask &= df['paese'].isin(paesi)
@@ -63,7 +71,7 @@ date_range = st.sidebar.date_input(
 # Filtro tipi missione
 tipi_missione = st.sidebar.multiselect(
     "Tipo Missione",
-    options=sorted(df['tipo_missione'].unique()),
+    options=sorted(df['tipo'].unique()),
     default=[]
 )
 
@@ -84,17 +92,19 @@ with col1:
     st.subheader("Distribuzione Missioni per Tipo")
     fig_tipo = px.pie(
         df_filtrato,
-        names='tipo_missione',
+        names='tipo',
         title='Distribuzione per Tipo Missione'
     )
     st.plotly_chart(fig_tipo)
 
 with col2:
     st.subheader("Distribuzione Missioni per Paese")
+    df_paesi = df_filtrato['paese'].value_counts().reset_index()
+    df_paesi.columns = ['paese', 'count']  # Rinomina le colonne
     fig_paese = px.bar(
-        df_filtrato['paese'].value_counts().reset_index(),
-        x='index',
-        y='paese',
+        df_paesi,
+        x='paese',
+        y='count',
         title='Numero di Missioni per Paese'
     )
     st.plotly_chart(fig_paese)
@@ -106,8 +116,8 @@ fig_timeline = px.timeline(
     df_timeline,
     x_start='data_inizio',
     x_end='data_fine',
-    y='nome_missione',
-    color='tipo_missione',
+    y='nome',
+    color='tipo',
     title='Timeline delle Missioni'
 )
 st.plotly_chart(fig_timeline)
@@ -131,26 +141,25 @@ with col2:
 with col3:
     st.metric(
         "Totale Personale",
-        df_filtrato['personale_totale'].sum()
+        f"{df_filtrato['personale'].sum():,.0f}"
     )
 
 with col4:
     st.metric(
         "Costo Totale (€)",
-        f"{df_filtrato['costo_totale'].sum():,.2f}"
+        f"{df_filtrato['costo'].sum():,.2f}"
     )
 
 # Tabella dettagliata
 st.subheader("Dettaglio Missioni")
 st.dataframe(
     df_filtrato[[
-        'nome_missione',
+        'nome',
         'paese',
         'data_inizio',
         'data_fine',
-        'tipo_missione',
-        'personale_totale',
-        'costo_totale',
-        'fonte'
+        'tipo',
+        'personale',
+        'costo'
     ]].sort_values('data_inizio', ascending=False)
 ) 
