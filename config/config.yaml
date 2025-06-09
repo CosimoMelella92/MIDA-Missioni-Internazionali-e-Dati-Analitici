@@ -60,27 +60,113 @@ validazione:
     - paese
     - data_inizio
     - tipo_missione
+    - fonte
+    - ultimo_aggiornamento
+  campi_opzionali:
+    - data_fine
+    - personale_totale
+    - costo_totale
+    - mandato
+    - note
+    - link_documento
   formati_data:
     - "%d/%m/%Y"
     - "%Y-%m-%d"
+    - "%d-%m-%Y"
   formati_costo:
     - "€{amount}"
     - "{amount}€"
     - "{amount} EUR"
+    - "{amount} euro"
+  validazione_paese:
+    min_lunghezza: 2
+    max_lunghezza: 50
+    caratteri_validi: "[A-Za-zÀ-ÿ\s\-']"
+  validazione_personale:
+    min_valore: 0
+    max_valore: 100000
 
 # Configurazione classificazione missioni
 classificazione:
   tipi_missione:
-    - UE_CSDP_CIVILE
     - UE_CSDP_MILITARE
+    - UE_CSDP_CIVILE
+    - UE_CSDP_ALTRO
     - NATO_PEACEKEEPING
     - NATO_TRAINING
     - NATO_SECURITY
     - ONU_PEACEKEEPING
     - ONU_OBSERVATION
     - BILATERALE_ITA
-    - MULTILATERALE
-    - IBRIDA
+    - UMANITARIA_ITA
+    - SICUREZZA_ITA
+    - ALTRO_ITA
+    - MULTILATERALE_IBRIDA
+    - ALTRO
+  regole_classificazione:
+    UE:
+      keywords:
+        - "eeas"
+        - "csdp"
+        - "pesd"
+        - "eu"
+      sottotipi:
+        MILITARE:
+          - "milit"
+          - "eutm"
+          - "navfor"
+          - "eunavfor"
+        CIVILE:
+          - "civ"
+          - "eupol"
+          - "eubam"
+          - "eulex"
+    NATO:
+      keywords:
+        - "nato"
+        - "kfor"
+        - "isaf"
+        - "resolute support"
+      sottotipi:
+        TRAINING:
+          - "training"
+          - "train"
+        SECURITY:
+          - "security"
+    ONU:
+      keywords:
+        - "onu"
+        - "un"
+        - "peacekeeping"
+        - "unifil"
+        - "minurso"
+        - "unsmis"
+      sottotipi:
+        OBSERVATION:
+          - "observation"
+          - "observer"
+    ITA:
+      keywords:
+        - "camera"
+        - "senato"
+        - "difesa"
+        - "esteri"
+      sottotipi:
+        BILATERALE:
+          - "bilateral"
+          - "bilaterale"
+          - "misin"
+          - "libia"
+          - "niger"
+        UMANITARIA:
+          - "umanit"
+          - "sanitar"
+          - "ospedale"
+          - "mozambico"
+        SICUREZZA:
+          - "antiterrorismo"
+          - "marittima"
+          - "golfo"
 
 # Configurazione output
 output:
@@ -93,32 +179,51 @@ output:
     - xlsx
   encoding: "utf-8"
   separatore_csv: ";"
+  timestamp_format: "%Y%m%d_%H%M%S"
 
+# Configurazione scraping
 parametri_scraping:
   timeout: 30
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
   delay_min: 2
   delay_max: 5
+  max_retries: 3
+  retry_delay: 5
 
+# Configurazione struttura dati
 struttura_dati:
   colonne_obbligatorie:
     - "nome_missione"
     - "paese"
     - "data_inizio"
+    - "tipo_missione"
+    - "fonte"
+    - "ultimo_aggiornamento"
+  colonne_opzionali:
     - "data_fine"
     - "personale_totale"
     - "costo_totale"
-    - "fonte"
-    - "ultimo_aggiornamento"
-
-  colonne_opzionali:
-    - "tipo_missione"
     - "mandato"
     - "note"
     - "link_documento"
+  tipi_dati:
+    nome_missione: "string"
+    paese: "string"
+    data_inizio: "date"
+    data_fine: "date"
+    tipo_missione: "string"
+    personale_totale: "integer"
+    costo_totale: "float"
+    fonte: "string"
+    ultimo_aggiornamento: "datetime"
+    mandato: "string"
+    note: "string"
+    link_documento: "string"
 
+# Configurazione percorsi
 percorsi:
   raw_data: "data/raw"
   processed_data: "data/processed"
   final_data: "data/final"
-  logs: "logs" 
+  logs: "logs"
+  config: "config" 

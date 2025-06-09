@@ -1,0 +1,44 @@
+# Configurazione Scheduler
+
+# Configurazione email per le notifiche
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  username: "your-email@gmail.com"
+  password: "your-app-password"
+  from: "your-email@gmail.com"
+  to: "recipient@example.com"
+
+# Configurazione backup
+backup:
+  retention_days: 7  # Numero di giorni per cui mantenere i backup
+  directories:
+    - data
+    - logs
+    - reports
+    - config
+
+# Configurazione pulizia
+cleanup:
+  log_retention_days: 30  # Numero di giorni per cui mantenere i log
+  backup_retention_days: 7  # Numero di giorni per cui mantenere i backup
+
+# Configurazione scheduling
+scheduling:
+  scraping:
+    time: "02:00"  # Ora di esecuzione dello scraping
+    days: "every"  # Ogni giorno
+  backup:
+    time: "03:00"  # Ora di esecuzione del backup
+    days: "sunday"  # Ogni domenica
+  cleanup:
+    time: "04:00"  # Ora di esecuzione della pulizia
+    days: "monday"  # Ogni lunedì
+
+# Configurazione percorsi
+percorsi:
+  logs: "logs"
+  backups: "backups"
+  reports: "reports"
+  data: "data"
+  config: "config" 
