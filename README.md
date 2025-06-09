@@ -202,6 +202,16 @@ I log sono salvati in:
 4. Push al branch
 5. Crea una Pull Request
 
+## 👥 Autore
+
+- **Cosimo Melella**
+  - GitHub: [@cosimomelella](https://github.com/cosimomelella)
+  - Email: [cosimo.melella@gmail.com](mailto:cosimo.melella@gmail.com)
+
+## 📞 Supporto
+
+Per segnalazioni bug o richieste feature, apri una issue su GitHub.
+
 ## Licenza
 
 Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggiori dettagli. 
