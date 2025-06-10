@@ -1,84 +1,155 @@
 # MIDA - Missioni Internazionali e Dati Analitici
 
-Sistema per l'analisi e l'elaborazione dei dati relativi alle missioni internazionali dell'Unione Europea.
+## 👨‍💻 Autore
+**Cosimo Melella**
 
-## Struttura del Progetto
+## 📊 Panoramica
+MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni.
 
+## 🏗️ Struttura del Progetto
 ```
-.
+MIDA/
 ├── config/
-│   └── config.yaml         # Configurazione del sistema
+│   └── config.yaml           # Configurazione del sistema
 ├── data/
-│   ├── raw/               # Dati grezzi
-│   ├── processed/         # Dati elaborati
-│   └── documents/         # Documenti PDF/Word
+│   ├── raw/                  # Dati grezzi
+│   │   ├── Excel/           # File Excel originali
+│   │   └── PDF/             # Documenti PDF originali
+│   ├── documents/           # Documenti PDF processati
+│   └── processed/           # Dati elaborati
 ├── src/
-│   ├── data_processor.py  # Gestione dati Excel
-│   ├── document_processor.py  # Elaborazione documenti
-│   └── main.py           # Script principale
-├── requirements.txt       # Dipendenze Python
-└── README.md             # Documentazione
+│   ├── main.py              # Script principale
+│   ├── document_processor.py # Elaborazione documenti
+│   ├── data_processor.py    # Elaborazione dati
+│   └── dashboard.py         # Dashboard Streamlit
+└── requirements.txt         # Dipendenze Python
 ```
 
-## Installazione
-
-1. Clona il repository:
-```bash
-git clone [URL_REPOSITORY]
-cd MIDA-Missioni-Internazionali-e-Dati-Analitici
+## 🔄 Flusso dei Dati
+```mermaid
+graph LR
+    A[Documenti PDF] --> B[Document Processor]
+    C[File Excel] --> D[Data Processor]
+    B --> E[Data Enrichment]
+    D --> E
+    E --> F[Dashboard]
 ```
 
-2. Crea un ambiente virtuale:
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
+## 📁 Struttura dei Dati
 
-3. Installa le dipendenze:
-```bash
-pip install -r requirements.txt
-```
+### File Excel Principale
+Il file Excel contiene le seguenti colonne:
+- **Nome Missione**: Identificativo univoco della missione
+- **Data Inizio**: Data di inizio della missione
+- **Data Fine**: Data di fine della missione
+- **Tipo Missione**: Categoria della missione
+- **Personale Totale**: Numero di persone coinvolte
+- **Costo Totale**: Budget complessivo
+- **Mandato**: Obiettivi e finalità
+- **Stato**: Stato attuale della missione
+- **Note**: Informazioni aggiuntive
 
-## Utilizzo
+### Documenti PDF
+I documenti PDF vengono elaborati per estrarre:
+- Testo completo
+- Date rilevanti
+- Informazioni sul personale
+- Dettagli finanziari
+- Riferimenti normativi
 
-1. Configura il file `config/config.yaml` con i percorsi corretti:
-```yaml
-configurazione:
-  excel_path: "data/raw/Matrice dati 1AGG.xlsx"
-  documenti: "data/documents"
-  processed_data: "data/processed"
-```
+## 📈 Dashboard
+La dashboard offre diverse visualizzazioni dei dati:
 
-2. Esegui lo script principale:
-```bash
-python src/main.py
-```
+### 1. Panoramica Missioni
+![Panoramica Missioni](docs/images/panoramica%20missioni.png)
+- Numero totale di missioni
+- Distribuzione per tipo di missione (grafico a torta)
+- Numero di missioni per paese (grafico a barre)
 
-## Funzionalità
+### 2. Dettagli Missioni
+![Dettagli Missioni](docs/images/dettagli%20missioni.png)
+- Timeline delle missioni
+- Costi per missione (grafico a barre)
+- Tabella dettagliata con tutte le informazioni
 
-- Lettura e pulizia del file Excel principale
-- Estrazione dati da documenti PDF e Word
-- Arricchimento dei dati con informazioni aggiuntive
-- Salvataggio dei dati elaborati
+### 3. Filtri
+- Selezione per paese
+- Selezione per tipo di missione
 
-## Struttura dei Dati
+## 🚀 Installazione e Utilizzo
 
-Il file Excel principale contiene:
-- Informazioni anagrafiche delle missioni
-- Dati temporali (date di inizio/fine)
-- Informazioni sulla partecipazione
-- Indicatori di engagement
-- Note e riferimenti
+1. **Installazione**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Contribuire
+2. **Configurazione**:
+   ```yaml
+   # config/config.yaml
+   configurazione:
+     excel_path: "data/raw/Excel/Matrice dati 1AGG.xlsx"
+     documenti: "data/documents"
+     processed_data: "data/processed"
+   ```
 
+3. **Elaborazione Dati**:
+   ```bash
+   python src/main.py
+   ```
+
+4. **Avvio Dashboard**:
+   ```bash
+   python -m streamlit run src/dashboard.py
+   ```
+
+## 🛠️ Tecnologie Utilizzate
+- **Python**: Linguaggio principale
+- **Pandas**: Manipolazione dati
+- **PyMuPDF**: Estrazione testo da PDF
+- **Streamlit**: Dashboard interattiva
+- **Plotly**: Visualizzazioni grafiche
+
+## 📝 Note
+- I dati vengono salvati in formato Excel arricchito in `data/processed/`
+- La dashboard è accessibile all'indirizzo http://localhost:8501
+- I documenti PDF devono essere nella cartella `data/documents/`
+
+## 🔜 Sviluppi Futuri
+- [ ] Aggiunta di più tipi di visualizzazioni
+- [ ] Implementazione di analisi predittive
+- [ ] Integrazione con altre fonti dati
+- [ ] Miglioramento dell'estrazione dati dai PDF
+
+## 🐛 Risoluzione Problemi
+
+### Problemi Comuni
+1. **Porta 8501 già in uso**:
+   ```bash
+   # Windows
+   netstat -ano | findstr :8501
+   taskkill /PID <PID> /F
+   
+   # Linux/Mac
+   lsof -i :8501
+   kill -9 <PID>
+   ```
+
+2. **Errori di Installazione**:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt --no-cache-dir
+   ```
+
+3. **Problemi con i PDF**:
+   - Verificare che i PDF non siano protetti da password
+   - Assicurarsi che i PDF siano in formato testo (non scansione)
+
+## 🤝 Contribuire
 1. Fork del repository
-2. Crea un branch per la tua feature
-3. Commit delle modifiche
-4. Push al branch
-5. Crea una Pull Request
+2. Creazione branch per feature (`git checkout -b feature/nome-feature`)
+3. Commit delle modifiche (`git commit -am 'Aggiunta feature'`)
+4. Push del branch (`git push origin feature/nome-feature`)
+5. Creazione Pull Request
 
-## Licenza
-
-[Inserire tipo di licenza] 
+## 📄 Licenza
+Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggiori dettagli. 
