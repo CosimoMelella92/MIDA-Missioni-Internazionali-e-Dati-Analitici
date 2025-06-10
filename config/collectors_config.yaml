@@ -19,24 +19,24 @@ api_collector:
 # Web Scraping Configuration
 web_scraper:
   urls:
-    - "https://example.com/missions"
-    - "https://example.com/countries"
+    - "https://peacekeeping.un.org/en/current-peacekeeping-operations"
+    - "https://peacekeeping.un.org/en/past-peacekeeping-operations"
   selectors:
     mission_list:
-      css: "div.mission-item"
+      css: "div.views-row"
       fields:
         title:
           type: "text"
-          css: "h2.title"
+          css: "h2.field-content"
         description:
           type: "text"
-          css: "p.description"
+          css: "div.field-content"
         date:
           type: "text"
-          css: "span.date"
+          css: "span.date-display-single"
         link:
           type: "attribute"
-          css: "a.more"
+          css: "a"
           attr: "href"
   delay: 2
   required_columns:
@@ -47,8 +47,8 @@ web_scraper:
 # RSS Feed Configuration
 rss_collector:
   feeds:
-    - "https://example.com/feed.xml"
-    - "https://example.com/news/feed"
+    - "https://peacekeeping.un.org/en/feed"
+    - "https://news.un.org/en/feed"
   delay: 1
   required_columns:
     - "title"
@@ -59,10 +59,15 @@ rss_collector:
 ocr_collector:
   input_path: "data/documents"
   output_path: "data/processed/ocr"
+  poppler_path: "C:/Program Files/poppler-24.02.0/Library/bin"  # Percorso di installazione di Poppler
+  tesseract_cmd: "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Percorso di Tesseract OCR
+  languages: ["ita", "eng"]  # Lingue per il riconoscimento del testo
   required_columns:
     - "filename"
     - "text"
     - "processed_date"
+    - "page_number"
+    - "confidence"
 
 # Social Media Configuration
 social_media_collector:
@@ -74,9 +79,9 @@ social_media_collector:
     access_token: "YOUR_ACCESS_TOKEN"
     access_token_secret: "YOUR_ACCESS_TOKEN_SECRET"
   search_terms:
-    - "international mission"
-    - "peacekeeping"
-    - "humanitarian aid"
+    - "peacekeeping mission"
+    - "UN mission"
+    - "international peace"
   max_results: 100
   required_columns:
     - "text"
@@ -88,13 +93,16 @@ database_collector:
   databases:
     un_missions:
       type: "csv"
-      url: "https://example.com/un-missions.csv"
+      url: "https://peacekeeping.un.org/sites/default/files/peacekeeping-mission-data.csv"
+      encoding: "utf-8"
     world_bank:
       type: "excel"
-      url: "https://example.com/world-bank-data.xlsx"
+      url: "https://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD?downloadformat=excel"
+      sheet_name: "Data"
     oecd:
-      type: "zip"
-      url: "https://example.com/oecd-data.zip"
+      type: "csv"
+      url: "https://stats.oecd.org/SDMX-JSON/data/AID_CRS/1.20001.1.1000.D/all?startTime=2020&endTime=2024"
+      encoding: "utf-8"
   output_path: "data/processed/databases"
   required_columns:
     - "id"
