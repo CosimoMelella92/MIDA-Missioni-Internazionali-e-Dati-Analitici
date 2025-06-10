@@ -4,6 +4,9 @@ from typing import Dict, Any, List
 import logging
 from datetime import datetime
 import os
+import requests
+from urllib.parse import urlparse
+import json
 
 from .api_collector import APICollector
 from .web_scraper import WebScraper
@@ -24,7 +27,7 @@ class CollectorManager:
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from YAML file"""
         try:
-            with open(self.config_path, 'r') as f:
+            with open(self.config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f)
         except Exception as e:
             self.logger.error(f"Error loading config: {str(e)}")
@@ -34,9 +37,9 @@ class CollectorManager:
         """Initialize all collectors"""
         collectors = {}
         
-        # API Collector
-        if 'api_collector' in self.config:
-            collectors['api'] = APICollector(self.config['api_collector'])
+        # OCR Collector
+        if 'ocr_collector' in self.config:
+            collectors['ocr'] = OCRCollector(self.config['ocr_collector'])
             
         # Web Scraper
         if 'web_scraper' in self.config:
@@ -46,19 +49,32 @@ class CollectorManager:
         if 'rss_collector' in self.config:
             collectors['rss'] = RSSCollector(self.config['rss_collector'])
             
-        # OCR Collector
-        if 'ocr_collector' in self.config:
-            collectors['ocr'] = OCRCollector(self.config['ocr_collector'])
+        # Database Collector
+        if 'database_collector' in self.config:
+            collectors['database'] = DatabaseCollector(self.config['database_collector'])
             
         # Social Media Collector
         if 'social_media_collector' in self.config:
             collectors['social'] = SocialMediaCollector(self.config['social_media_collector'])
             
-        # Database Collector
-        if 'database_collector' in self.config:
-            collectors['database'] = DatabaseCollector(self.config['database_collector'])
-            
         return collectors
+    
+    def _download_file(self, url: str, output_path: str) -> bool:
+        """Download a file from URL"""
+        try:
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            with open(output_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+            return True
+        except Exception as e:
+            self.logger.error(f"Error downloading {url}: {str(e)}")
+            return False
     
     def collect_all(self) -> Dict[str, pd.DataFrame]:
         """Collect data from all sources"""
@@ -93,12 +109,21 @@ class CollectorManager:
         
         for name, data in results.items():
             if not data.empty:
-                output_file = os.path.join(
+                # Save as CSV
+                csv_file = os.path.join(
                     output_dir,
                     f"{name}_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
                 )
-                data.to_csv(output_file, index=False)
-                self.logger.info(f"Saved data from {name} to {output_file}")
+                data.to_csv(csv_file, index=False, encoding='utf-8')
+                self.logger.info(f"Saved data from {name} to {csv_file}")
+                
+                # Save as JSON for web visualization
+                json_file = os.path.join(
+                    output_dir,
+                    f"{name}_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                )
+                data.to_json(json_file, orient='records', date_format='iso')
+                self.logger.info(f"Saved JSON data from {name} to {json_file}")
                 
     def merge_results(self, results: Dict[str, pd.DataFrame]) -> pd.DataFrame:
         """Merge data from all sources"""
@@ -110,4 +135,12 @@ class CollectorManager:
                 data['source'] = name
                 all_data.append(data)
                 
-        return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame() 
+        return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+    
+    def validate_data(self, data: pd.DataFrame, required_columns: List[str]) -> bool:
+        """Validate data has required columns"""
+        missing_columns = [col for col in required_columns if col not in data.columns]
+        if missing_columns:
+            self.logger.error(f"Missing required columns: {missing_columns}")
+            return False
+        return True 

@@ -73,27 +73,37 @@ ocr_collector:
 social_media_collector:
   platform: "twitter"
   api_keys:
-    bearer_token: "YOUR_BEARER_TOKEN"
-    api_key: "YOUR_API_KEY"
-    api_secret: "YOUR_API_SECRET"
-    access_token: "YOUR_ACCESS_TOKEN"
-    access_token_secret: "YOUR_ACCESS_TOKEN_SECRET"
+    bearer_token: "YOUR_BEARER_TOKEN_HERE"
+    api_key: "YOUR_API_KEY_HERE"
+    api_secret: "YOUR_API_SECRET_HERE"
+    access_token: "YOUR_ACCESS_TOKEN_HERE"
+    access_token_secret: "YOUR_ACCESS_TOKEN_SECRET_HERE"
   search_terms:
     - "peacekeeping mission"
     - "UN mission"
     - "international peace"
-  max_results: 100
+    - "peace operations"
+    - "peacekeeping force"
+    - "UN peacekeepers"
+    - "peace mission"
+    - "international security"
+  max_results: 1000
   required_columns:
     - "text"
     - "created_at"
     - "id"
+    - "user_id"
+    - "retweet_count"
+    - "favorite_count"
+    - "hashtags"
+    - "mentions"
 
 # Database Configuration
 database_collector:
   databases:
     un_missions:
       type: "csv"
-      url: "https://peacekeeping.un.org/sites/default/files/peacekeeping-mission-data.csv"
+      url: "https://data.humdata.org/dataset/peacekeeping-missions/resource/8c9c4c9a-4c9a-4c9a-4c9a-4c9a4c9a4c9a/download/peacekeeping-missions.csv"
       encoding: "utf-8"
     world_bank:
       type: "excel"
@@ -103,6 +113,13 @@ database_collector:
       type: "csv"
       url: "https://stats.oecd.org/SDMX-JSON/data/AID_CRS/1.20001.1.1000.D/all?startTime=2020&endTime=2024"
       encoding: "utf-8"
+    un_data:
+      type: "json"
+      url: "https://data.un.org/ws/rest/data/DF_UNData_UNFCC"
+    peacekeeping:
+      type: "zip"
+      url: "https://peacekeeping.un.org/sites/default/files/peacekeeping-mission-data.zip"
+      file_type: "csv"
   output_path: "data/processed/databases"
   required_columns:
     - "id"

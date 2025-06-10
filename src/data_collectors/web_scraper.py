@@ -1,89 +1,145 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from typing import Dict, Any, List
-from .base_collector import BaseCollector
-import logging
-from datetime import datetime
 import time
 import random
+import logging
+from typing import Dict, Any, List
+import concurrent.futures
+from urllib.parse import urljoin
+import re
+from fake_useragent import UserAgent
+import cloudscraper
 
-class WebScraper(BaseCollector):
-    """Collector for web scraping"""
+class WebScraper:
+    """Web scraper for collecting data from multiple sources"""
     
     def __init__(self, config: Dict[str, Any]):
-        super().__init__(config)
-        self.urls = config.get('urls', [])
-        self.selectors = config.get('selectors', {})
-        self.delay = config.get('delay', 1)
+        self.config = config
+        self.logger = logging.getLogger(__name__)
+        self.ua = UserAgent()
+        self.scraper = cloudscraper.create_scraper(
+            browser={
+                'browser': 'chrome',
+                'platform': 'windows',
+                'mobile': False
+            }
+        )
         
-    def collect(self) -> pd.DataFrame:
-        """Collect data from configured websites"""
-        all_data = []
+    def _get_headers(self) -> Dict[str, str]:
+        """Generate random headers"""
+        return {
+            'User-Agent': self.ua.random,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Cache-Control': 'max-age=0',
+        }
         
-        for url in self.urls:
+    def _make_request(self, url: str, retries: int = 3) -> requests.Response:
+        """Make HTTP request with retries and random delays"""
+        for i in range(retries):
             try:
-                # Add random delay to avoid being blocked
-                time.sleep(self.delay + random.random())
+                # Random delay between requests
+                time.sleep(random.uniform(1, 3))
                 
-                response = requests.get(url, headers=self._get_headers())
+                # Make request with rotating headers
+                response = self.scraper.get(
+                    url,
+                    headers=self._get_headers(),
+                    timeout=30
+                )
                 response.raise_for_status()
-                
-                soup = BeautifulSoup(response.text, 'html.parser')
-                data = self._extract_data(soup)
-                all_data.extend(data)
+                return response
                 
             except Exception as e:
-                self.logger.error(f"Error scraping {url}: {str(e)}")
+                self.logger.warning(f"Attempt {i+1} failed for {url}: {str(e)}")
+                if i == retries - 1:
+                    raise
+                time.sleep(random.uniform(2, 5))
                 
-        return pd.DataFrame(all_data) if all_data else pd.DataFrame()
-    
-    def validate(self, data: pd.DataFrame) -> bool:
-        """Validate scraped data"""
-        if data.empty:
-            return False
-            
-        required_columns = self.config.get('required_columns', [])
-        return all(col in data.columns for col in required_columns)
-    
-    def _get_headers(self) -> Dict[str, str]:
-        """Get headers for web request"""
-        return {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-    
-    def _extract_data(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
-        """Extract data from BeautifulSoup object"""
-        data = []
+    def _extract_links(self, soup: BeautifulSoup, base_url: str) -> List[str]:
+        """Extract all relevant links from page"""
+        links = []
+        for a in soup.find_all('a', href=True):
+            href = a['href']
+            # Convert relative URLs to absolute
+            full_url = urljoin(base_url, href)
+            # Filter out non-HTML links and external domains
+            if re.match(r'^https?://', full_url) and not re.match(r'\.(pdf|doc|docx|xls|xlsx|zip|rar)$', full_url):
+                links.append(full_url)
+        return list(set(links))
         
-        for selector_name, selector_config in self.selectors.items():
-            elements = soup.select(selector_config['css'])
+    def _scrape_page(self, url: str) -> List[Dict[str, Any]]:
+        """Scrape a single page"""
+        try:
+            response = self._make_request(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
             
-            for element in elements:
-                item_data = {}
-                for field, field_config in selector_config['fields'].items():
+            # Extract data based on selectors
+            data = []
+            for element in soup.select(self.config['selectors']['mission_list']['css']):
+                item = {}
+                for field, field_config in self.config['selectors']['mission_list']['fields'].items():
                     try:
                         if field_config['type'] == 'text':
-                            item_data[field] = element.select_one(field_config['css']).text.strip()
+                            value = element.select_one(field_config['css']).get_text(strip=True)
                         elif field_config['type'] == 'attribute':
-                            item_data[field] = element.select_one(field_config['css'])[field_config['attr']]
-                        elif field_config['type'] == 'list':
-                            item_data[field] = [item.text.strip() for item in element.select(field_config['css'])]
+                            value = element.select_one(field_config['css'])[field_config['attr']]
+                        item[field] = value
                     except Exception as e:
-                        self.logger.warning(f"Error extracting {field}: {str(e)}")
-                        item_data[field] = None
-                        
-                data.append(item_data)
-                
-        return data
-    
-    def process(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Process scraped data"""
-        # Add collection timestamp
-        data['collection_date'] = datetime.now()
-        
-        # Clean text data
-        for col in data.select_dtypes(include=['object']).columns:
-            data[col] = data[col].str.strip() if data[col].dtype == 'object' else data[col]
+                        self.logger.warning(f"Error extracting {field} from {url}: {str(e)}")
+                        item[field] = None
+                if item:
+                    data.append(item)
+                    
+            # Extract and follow links
+            links = self._extract_links(soup, url)
+            for link in links[:5]:  # Limit to first 5 links to avoid infinite crawling
+                try:
+                    sub_data = self._scrape_page(link)
+                    data.extend(sub_data)
+                except Exception as e:
+                    self.logger.warning(f"Error scraping {link}: {str(e)}")
+                    
+            return data
             
-        return data 
+        except Exception as e:
+            self.logger.error(f"Error scraping {url}: {str(e)}")
+            return []
+            
+    def run(self) -> pd.DataFrame:
+        """Run the scraper on all configured URLs"""
+        all_data = []
+        
+        # Use ThreadPoolExecutor for parallel scraping
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_url = {
+                executor.submit(self._scrape_page, url): url 
+                for url in self.config['urls']
+            }
+            
+            for future in concurrent.futures.as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    data = future.result()
+                    all_data.extend(data)
+                except Exception as e:
+                    self.logger.error(f"Error processing {url}: {str(e)}")
+                    
+        # Convert to DataFrame
+        df = pd.DataFrame(all_data)
+        
+        # Validate required columns
+        missing_columns = [
+            col for col in self.config['required_columns'] 
+            if col not in df.columns
+        ]
+        if missing_columns:
+            self.logger.error(f"Missing required columns: {missing_columns}")
+            return pd.DataFrame()
+            
+        return df 

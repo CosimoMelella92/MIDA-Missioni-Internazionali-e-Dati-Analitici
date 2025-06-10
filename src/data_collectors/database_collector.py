@@ -1,135 +1,155 @@
 import pandas as pd
-from typing import Dict, Any, List
-from .base_collector import BaseCollector
-import logging
-from datetime import datetime
 import requests
-import io
+import logging
+from typing import Dict, Any, List
+import concurrent.futures
+import time
+import random
+from io import BytesIO
 import zipfile
+import json
+from datetime import datetime
 import os
 
-class DatabaseCollector(BaseCollector):
-    """Collector for public databases"""
+class DatabaseCollector:
+    """Collector for database files"""
     
     def __init__(self, config: Dict[str, Any]):
-        super().__init__(config)
-        self.databases = config.get('databases', {})
-        self.output_path = config.get('output_path')
+        self.config = config
+        self.logger = logging.getLogger(__name__)
+        self.output_path = config.get('output_path', 'data/processed/databases')
+        os.makedirs(self.output_path, exist_ok=True)
         
-    def collect(self) -> pd.DataFrame:
-        """Collect data from configured databases"""
-        all_data = []
-        
-        for db_name, db_config in self.databases.items():
+    def _download_file(self, url: str, retries: int = 3) -> bytes:
+        """Download file with retries and random delays"""
+        for i in range(retries):
             try:
-                data = self._collect_database(db_name, db_config)
-                if not data.empty:
-                    all_data.append(data)
-                    
-            except Exception as e:
-                self.logger.error(f"Error collecting data from {db_name}: {str(e)}")
+                # Random delay between requests
+                time.sleep(random.uniform(1, 3))
                 
-        return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
-    
-    def validate(self, data: pd.DataFrame) -> bool:
-        """Validate database data"""
-        if data.empty:
-            return False
-            
-        required_columns = self.config.get('required_columns', [])
-        return all(col in data.columns for col in required_columns)
-    
-    def _collect_database(self, db_name: str, db_config: Dict[str, Any]) -> pd.DataFrame:
-        """Collect data from a specific database"""
-        db_type = db_config.get('type', 'csv')
-        
-        if db_type == 'csv':
-            return self._collect_csv(db_config)
-        elif db_type == 'excel':
-            return self._collect_excel(db_config)
-        elif db_type == 'zip':
-            return self._collect_zip(db_config)
-        else:
-            self.logger.error(f"Unsupported database type: {db_type}")
-            return pd.DataFrame()
-    
-    def _collect_csv(self, db_config: Dict[str, Any]) -> pd.DataFrame:
-        """Collect data from CSV source"""
-        url = db_config.get('url')
-        if not url:
-            return pd.DataFrame()
-            
+                response = requests.get(url, stream=True)
+                response.raise_for_status()
+                return response.content
+                
+            except Exception as e:
+                self.logger.warning(f"Attempt {i+1} failed for {url}: {str(e)}")
+                if i == retries - 1:
+                    raise
+                time.sleep(random.uniform(2, 5))
+                
+    def _process_csv(self, content: bytes, encoding: str = 'utf-8') -> pd.DataFrame:
+        """Process CSV content"""
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-            
-            # Try different encodings
-            for encoding in ['utf-8', 'latin1', 'cp1252']:
-                try:
-                    return pd.read_csv(io.StringIO(response.text), encoding=encoding)
-                except UnicodeDecodeError:
-                    continue
-                    
-            return pd.DataFrame()
-            
+            return pd.read_csv(BytesIO(content), encoding=encoding)
         except Exception as e:
             self.logger.error(f"Error reading CSV: {str(e)}")
             return pd.DataFrame()
-    
-    def _collect_excel(self, db_config: Dict[str, Any]) -> pd.DataFrame:
-        """Collect data from Excel source"""
-        url = db_config.get('url')
-        if not url:
-            return pd.DataFrame()
             
+    def _process_excel(self, content: bytes, sheet_name: str = None) -> pd.DataFrame:
+        """Process Excel content"""
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-            
-            return pd.read_excel(io.BytesIO(response.content))
-            
+            return pd.read_excel(BytesIO(content), sheet_name=sheet_name)
         except Exception as e:
             self.logger.error(f"Error reading Excel: {str(e)}")
             return pd.DataFrame()
-    
-    def _collect_zip(self, db_config: Dict[str, Any]) -> pd.DataFrame:
-        """Collect data from ZIP source"""
-        url = db_config.get('url')
-        if not url:
-            return pd.DataFrame()
             
+    def _process_json(self, content: bytes) -> pd.DataFrame:
+        """Process JSON content"""
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-            
-            with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
-                # Find the first CSV or Excel file
-                for file_name in zip_file.namelist():
-                    if file_name.endswith('.csv'):
-                        return pd.read_csv(zip_file.open(file_name))
-                    elif file_name.endswith(('.xlsx', '.xls')):
-                        return pd.read_excel(zip_file.open(file_name))
-                        
+            data = json.loads(content)
+            return pd.DataFrame(data)
+        except Exception as e:
+            self.logger.error(f"Error reading JSON: {str(e)}")
             return pd.DataFrame()
             
+    def _process_zip(self, content: bytes, file_type: str) -> pd.DataFrame:
+        """Process ZIP content"""
+        try:
+            with zipfile.ZipFile(BytesIO(content)) as z:
+                # Find first file of specified type
+                for filename in z.namelist():
+                    if filename.endswith(f'.{file_type}'):
+                        with z.open(filename) as f:
+                            if file_type == 'csv':
+                                return pd.read_csv(f)
+                            elif file_type == 'xlsx':
+                                return pd.read_excel(f)
+                            elif file_type == 'json':
+                                return pd.DataFrame(json.load(f))
+            return pd.DataFrame()
         except Exception as e:
             self.logger.error(f"Error reading ZIP: {str(e)}")
             return pd.DataFrame()
-    
-    def process(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Process database data"""
-        # Add collection timestamp
-        data['collection_date'] = datetime.now()
-        
-        # Clean column names
-        data.columns = [col.lower().replace(' ', '_') for col in data.columns]
-        
-        # Save processed data
-        if self.output_path:
-            output_file = os.path.join(
-                self.output_path,
-                f"database_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-            )
-            data.to_csv(output_file, index=False)
             
-        return data 
+    def _process_database(self, name: str, config: Dict[str, Any]) -> pd.DataFrame:
+        """Process a single database"""
+        try:
+            content = self._download_file(config['url'])
+            
+            if config['type'] == 'csv':
+                df = self._process_csv(content, config.get('encoding', 'utf-8'))
+            elif config['type'] == 'excel':
+                df = self._process_excel(content, config.get('sheet_name'))
+            elif config['type'] == 'json':
+                df = self._process_json(content)
+            elif config['type'] == 'zip':
+                df = self._process_zip(content, config.get('file_type', 'csv'))
+            else:
+                self.logger.error(f"Unsupported database type: {config['type']}")
+                return pd.DataFrame()
+                
+            if not df.empty:
+                # Add metadata
+                df['source'] = name
+                df['collection_date'] = datetime.now()
+                
+                # Save to file
+                output_file = os.path.join(
+                    self.output_path,
+                    f"{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                )
+                df.to_csv(output_file, index=False, encoding='utf-8')
+                self.logger.info(f"Saved {name} data to {output_file}")
+                
+            return df
+            
+        except Exception as e:
+            self.logger.error(f"Error processing {name}: {str(e)}")
+            return pd.DataFrame()
+            
+    def run(self) -> pd.DataFrame:
+        """Run the collector on all configured databases"""
+        all_data = []
+        
+        # Use ThreadPoolExecutor for parallel processing
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_db = {
+                executor.submit(self._process_database, name, config): name
+                for name, config in self.config['databases'].items()
+            }
+            
+            for future in concurrent.futures.as_completed(future_to_db):
+                name = future_to_db[future]
+                try:
+                    df = future.result()
+                    if not df.empty:
+                        all_data.append(df)
+                except Exception as e:
+                    self.logger.error(f"Error processing {name}: {str(e)}")
+                    
+        # Combine all data
+        if all_data:
+            final_df = pd.concat(all_data, ignore_index=True)
+            
+            # Validate required columns
+            missing_columns = [
+                col for col in self.config['required_columns']
+                if col not in final_df.columns
+            ]
+            if missing_columns:
+                self.logger.error(f"Missing required columns: {missing_columns}")
+                return pd.DataFrame()
+                
+            return final_df
+            
+        return pd.DataFrame() 
