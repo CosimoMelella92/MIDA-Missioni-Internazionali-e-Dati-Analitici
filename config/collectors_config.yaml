@@ -1,0 +1,102 @@
+# API Configuration
+api_collector:
+  api_key: "YOUR_API_KEY"
+  base_url: "https://api.example.com"
+  endpoints:
+    missions:
+      path: "missions"
+      params:
+        limit: 100
+      data_path: "data.missions"
+    countries:
+      path: "countries"
+      data_path: "data.countries"
+  required_columns:
+    - "id"
+    - "name"
+    - "date"
+
+# Web Scraping Configuration
+web_scraper:
+  urls:
+    - "https://example.com/missions"
+    - "https://example.com/countries"
+  selectors:
+    mission_list:
+      css: "div.mission-item"
+      fields:
+        title:
+          type: "text"
+          css: "h2.title"
+        description:
+          type: "text"
+          css: "p.description"
+        date:
+          type: "text"
+          css: "span.date"
+        link:
+          type: "attribute"
+          css: "a.more"
+          attr: "href"
+  delay: 2
+  required_columns:
+    - "title"
+    - "description"
+    - "date"
+
+# RSS Feed Configuration
+rss_collector:
+  feeds:
+    - "https://example.com/feed.xml"
+    - "https://example.com/news/feed"
+  delay: 1
+  required_columns:
+    - "title"
+    - "link"
+    - "published"
+
+# OCR Configuration
+ocr_collector:
+  input_path: "data/documents"
+  output_path: "data/processed/ocr"
+  required_columns:
+    - "filename"
+    - "text"
+    - "processed_date"
+
+# Social Media Configuration
+social_media_collector:
+  platform: "twitter"
+  api_keys:
+    bearer_token: "YOUR_BEARER_TOKEN"
+    api_key: "YOUR_API_KEY"
+    api_secret: "YOUR_API_SECRET"
+    access_token: "YOUR_ACCESS_TOKEN"
+    access_token_secret: "YOUR_ACCESS_TOKEN_SECRET"
+  search_terms:
+    - "international mission"
+    - "peacekeeping"
+    - "humanitarian aid"
+  max_results: 100
+  required_columns:
+    - "text"
+    - "created_at"
+    - "id"
+
+# Database Configuration
+database_collector:
+  databases:
+    un_missions:
+      type: "csv"
+      url: "https://example.com/un-missions.csv"
+    world_bank:
+      type: "excel"
+      url: "https://example.com/world-bank-data.xlsx"
+    oecd:
+      type: "zip"
+      url: "https://example.com/oecd-data.zip"
+  output_path: "data/processed/databases"
+  required_columns:
+    - "id"
+    - "name"
+    - "date" 
