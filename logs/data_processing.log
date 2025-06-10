@@ -1,0 +1,25 @@
+2025-06-10 13:25:51,857 - root - INFO - Avvio elaborazione dati
+2025-06-10 13:25:51,865 - root - ERROR - Errore durante l'elaborazione: Errore nel caricamento della configurazione: while scanning a double-quoted scalar
+  in "config\config.yaml", line 31, column 22
+found unknown escape character 's'
+  in "config\config.yaml", line 31, column 32
+2025-06-10 13:26:52,186 - root - INFO - Avvio elaborazione dati
+2025-06-10 13:26:52,229 - root - INFO - Configurazione caricata con successo
+2025-06-10 13:26:56,477 - data_processor - INFO - File Excel caricato con successo: 45 righe
+2025-06-10 13:26:56,477 - root - INFO - Dati Excel caricati con successo
+2025-06-10 13:26:56,479 - root - INFO - Processati 0 documenti
+2025-06-10 13:26:56,479 - root - INFO - Aggiornate 0 missioni con dati dai documenti
+2025-06-10 13:26:56,714 - data_processor - INFO - Dati salvati in: data\processed\Matrice dati 1AGG_enriched.xlsx
+2025-06-10 13:26:56,715 - root - INFO - Elaborazione completata con successo
+2025-06-10 13:28:01,779 - root - INFO - Avvio elaborazione dati
+2025-06-10 13:28:01,847 - root - INFO - Configurazione caricata con successo
+2025-06-10 13:28:02,870 - data_processor - INFO - File Excel caricato con successo: 45 righe
+2025-06-10 13:28:02,871 - root - INFO - Dati Excel caricati con successo
+2025-06-10 13:28:02,872 - root - INFO - Processando documento: data\documents\DI0145.pdf
+2025-06-10 13:28:03,696 - root - INFO - Processando documento: data\documents\DI0147.pdf
+2025-06-10 13:28:03,757 - root - INFO - Processando documento: data\documents\DI0148.pdf
+2025-06-10 13:28:03,885 - root - INFO - Processando documento: data\documents\INTERO.pdf
+2025-06-10 13:28:15,148 - root - INFO - Processati 4 documenti
+2025-06-10 13:28:15,150 - root - INFO - Aggiornate 0 missioni con dati dai documenti
+2025-06-10 13:28:15,338 - data_processor - INFO - Dati salvati in: data\processed\Matrice dati 1AGG_enriched.xlsx
+2025-06-10 13:28:15,339 - root - INFO - Elaborazione completata con successo

@@ -11,11 +11,14 @@ percorsi:
 
 # Configurazione generale
 configurazione:
+  excel_path: "data/raw/Matrice dati 1AGG.xlsx"
+  documenti: "data/documents"
+  processed_data: "data/processed"
   timeout: 60
   max_retries: 3
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
-# Fonti dati
+# Configurazione fonti dati
 fonti_dati:
   camera:
     url_base: "https://www.camera.it"
@@ -25,14 +28,14 @@ fonti_dati:
       - "missioni-internazionali"
       - "operazioni-militari"
     patterns:
-      nome_missione: "Missione\s*:\s*([^\n]+)"
-      paese: "Paese\s*:\s*([^\n]+)"
-      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
-      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
-      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
-      mandato: "Mandato\s*:\s*([^\n]+)"
+      nome_missione: "Missione\\s*:\\s*([^\\n]+)"
+      paese: "Paese\\s*:\\s*([^\\n]+)"
+      data_inizio: "Data\\s*inizio\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      data_fine: "Data\\s*fine\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      personale_totale: "Personale\\s*totale\\s*:\\s*(\\d+)"
+      costo_totale: "Costo\\s*totale\\s*:\\s*€\\s*([\\d,.]+)"
+      tipo_missione: "Tipo\\s*missione\\s*:\\s*([^\\n]+)"
+      mandato: "Mandato\\s*:\\s*([^\\n]+)"
   senato:
     url_base: "https://www.senato.it"
     document_urls:
@@ -49,14 +52,14 @@ fonti_dati:
       - "operazioni-militari"
       - "missioni-internazionali"
     patterns:
-      nome_missione: "Missione\s*:\s*([^\n]+)"
-      paese: "Paese\s*:\s*([^\n]+)"
-      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
-      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
-      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
-      mandato: "Mandato\s*:\s*([^\n]+)"
+      nome_missione: "Missione\\s*:\\s*([^\\n]+)"
+      paese: "Paese\\s*:\\s*([^\\n]+)"
+      data_inizio: "Data\\s*inizio\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      data_fine: "Data\\s*fine\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      personale_totale: "Personale\\s*totale\\s*:\\s*(\\d+)"
+      costo_totale: "Costo\\s*totale\\s*:\\s*€\\s*([\\d,.]+)"
+      tipo_missione: "Tipo\\s*missione\\s*:\\s*([^\\n]+)"
+      mandato: "Mandato\\s*:\\s*([^\\n]+)"
   esteri:
     url_base: "https://www.esteri.it"
     document_urls:
@@ -66,14 +69,14 @@ fonti_dati:
       - "politica-estera"
       - "cooperazione-internazionale"
     patterns:
-      nome_missione: "Missione\s*:\s*([^\n]+)"
-      paese: "Paese\s*:\s*([^\n]+)"
-      data_inizio: "Data\s*inizio\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      data_fine: "Data\s*fine\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-      personale_totale: "Personale\s*totale\s*:\s*(\d+)"
-      costo_totale: "Costo\s*totale\s*:\s*€\s*([\d,.]+)"
-      tipo_missione: "Tipo\s*missione\s*:\s*([^\n]+)"
-      mandato: "Mandato\s*:\s*([^\n]+)"
+      nome_missione: "Missione\\s*:\\s*([^\\n]+)"
+      paese: "Paese\\s*:\\s*([^\\n]+)"
+      data_inizio: "Data\\s*inizio\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      data_fine: "Data\\s*fine\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      personale_totale: "Personale\\s*totale\\s*:\\s*(\\d+)"
+      costo_totale: "Costo\\s*totale\\s*:\\s*€\\s*([\\d,.]+)"
+      tipo_missione: "Tipo\\s*missione\\s*:\\s*([^\\n]+)"
+      mandato: "Mandato\\s*:\\s*([^\\n]+)"
   eeas:
     url_base: "https://www.eeas.europa.eu"
     document_urls:
@@ -86,23 +89,23 @@ fonti_dati:
       - "fr"
     patterns:
       en:
-        nome_missione: "Mission\s*:\s*([^\n]+)"
-        paese: "Country\s*:\s*([^\n]+)"
-        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
-        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Mission\s*Type\s*:\s*([^\n]+)"
-        mandato: "Mandate\s*:\s*([^\n]+)"
+        nome_missione: "Mission\\s*:\\s*([^\\n]+)"
+        paese: "Country\\s*:\\s*([^\\n]+)"
+        data_inizio: "Start\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "End\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Total\\s*Personnel\\s*:\\s*(\\d+)"
+        costo_totale: "Total\\s*Cost\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Mission\\s*Type\\s*:\\s*([^\\n]+)"
+        mandato: "Mandate\\s*:\\s*([^\\n]+)"
       fr:
-        nome_missione: "Mission\s*:\s*([^\n]+)"
-        paese: "Pays\s*:\s*([^\n]+)"
-        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
-        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Type\s*de\s*mission\s*:\s*([^\n]+)"
-        mandato: "Mandat\s*:\s*([^\n]+)"
+        nome_missione: "Mission\\s*:\\s*([^\\n]+)"
+        paese: "Pays\\s*:\\s*([^\\n]+)"
+        data_inizio: "Date\\s*de\\s*début\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "Date\\s*de\\s*fin\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Personnel\\s*total\\s*:\\s*(\\d+)"
+        costo_totale: "Coût\\s*total\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Type\\s*de\\s*mission\\s*:\\s*([^\\n]+)"
+        mandato: "Mandat\\s*:\\s*([^\\n]+)"
   nato:
     url_base: "https://www.nato.int"
     document_urls:
@@ -115,23 +118,23 @@ fonti_dati:
       - "fr"
     patterns:
       en:
-        nome_missione: "Operation\s*:\s*([^\n]+)"
-        paese: "Country\s*:\s*([^\n]+)"
-        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
-        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Operation\s*Type\s*:\s*([^\n]+)"
-        mandato: "Mandate\s*:\s*([^\n]+)"
+        nome_missione: "Operation\\s*:\\s*([^\\n]+)"
+        paese: "Country\\s*:\\s*([^\\n]+)"
+        data_inizio: "Start\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "End\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Total\\s*Personnel\\s*:\\s*(\\d+)"
+        costo_totale: "Total\\s*Cost\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Operation\\s*Type\\s*:\\s*([^\\n]+)"
+        mandato: "Mandate\\s*:\\s*([^\\n]+)"
       fr:
-        nome_missione: "Opération\s*:\s*([^\n]+)"
-        paese: "Pays\s*:\s*([^\n]+)"
-        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
-        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Type\s*d'opération\s*:\s*([^\n]+)"
-        mandato: "Mandat\s*:\s*([^\n]+)"
+        nome_missione: "Opération\\s*:\\s*([^\\n]+)"
+        paese: "Pays\\s*:\\s*([^\\n]+)"
+        data_inizio: "Date\\s*de\\s*début\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "Date\\s*de\\s*fin\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Personnel\\s*total\\s*:\\s*(\\d+)"
+        costo_totale: "Coût\\s*total\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Type\\s*d'opération\\s*:\\s*([^\\n]+)"
+        mandato: "Mandat\\s*:\\s*([^\\n]+)"
   un:
     url_base: "https://peacekeeping.un.org"
     document_urls:
@@ -144,23 +147,23 @@ fonti_dati:
       - "fr"
     patterns:
       en:
-        nome_missione: "Mission\s*:\s*([^\n]+)"
-        paese: "Country\s*:\s*([^\n]+)"
-        data_inizio: "Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Total\s*Personnel\s*:\s*(\d+)"
-        costo_totale: "Total\s*Cost\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Mission\s*Type\s*:\s*([^\n]+)"
-        mandato: "Mandate\s*:\s*([^\n]+)"
+        nome_missione: "Mission\\s*:\\s*([^\\n]+)"
+        paese: "Country\\s*:\\s*([^\\n]+)"
+        data_inizio: "Start\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "End\\s*Date\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Total\\s*Personnel\\s*:\\s*(\\d+)"
+        costo_totale: "Total\\s*Cost\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Mission\\s*Type\\s*:\\s*([^\\n]+)"
+        mandato: "Mandate\\s*:\\s*([^\\n]+)"
       fr:
-        nome_missione: "Mission\s*:\s*([^\n]+)"
-        paese: "Pays\s*:\s*([^\n]+)"
-        data_inizio: "Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        data_fine: "Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})"
-        personale_totale: "Personnel\s*total\s*:\s*(\d+)"
-        costo_totale: "Coût\s*total\s*:\s*€\s*([\d,.]+)"
-        tipo_missione: "Type\s*de\s*mission\s*:\s*([^\n]+)"
-        mandato: "Mandat\s*:\s*([^\n]+)"
+        nome_missione: "Mission\\s*:\\s*([^\\n]+)"
+        paese: "Pays\\s*:\\s*([^\\n]+)"
+        data_inizio: "Date\\s*de\\s*début\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        data_fine: "Date\\s*de\\s*fin\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+        personale_totale: "Personnel\\s*total\\s*:\\s*(\\d+)"
+        costo_totale: "Coût\\s*total\\s*:\\s*€\\s*([\\d,.]+)"
+        tipo_missione: "Type\\s*de\\s*mission\\s*:\\s*([^\\n]+)"
+        mandato: "Mandat\\s*:\\s*([^\\n]+)"
 
 # Configurazione logging
 logging:
