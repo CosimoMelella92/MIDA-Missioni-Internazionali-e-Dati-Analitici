@@ -188,4 +188,92 @@ document_collector:
     - "original_url"
     - "download_date"
     - "file_size"
-    - "source_domain" 
+    - "source_domain"
+
+# European Document Collector Configuration
+european_document_collector:
+  urls:
+    - "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32021R0841"
+    - "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
+    - "https://www.esteri.it/it/politica-estera-e-cooperazione-allo-sviluppo/missioni-internazionali/"
+    - "https://www.eeas.europa.eu/eeas/common-security-and-defence-policy-csdp_en"
+    - "https://www.parlamento.it/parlam/leggi/"
+    - "https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/v3StatisticheDettaglio.html"
+    - "https://www.camera.it/leg19/1264"
+    - "https://www.governo.it/it/articolo/missioni-internazionali"
+    - "https://www.carabinieri.it/cittadino/informazioni/missioni-estero"
+    - "https://www.marina.difesa.it/noi-siamo-la-marina/mezzi/forze-navali/Pagine/default.aspx"
+    - "https://www.esercito.difesa.it/organizzazione/capo-di-sme/Comando-Forze-Operative-Sud/brigata-meccanizzata-aosta/Pagine/default.aspx"
+    - "https://www.aeronautica.difesa.it/operazioni/Pagine/default.aspx"
+  output_path: "data/documents/european"
+  allowed_extensions:
+    - ".pdf"
+    - ".doc"
+    - ".docx"
+  keywords:
+    - "missione italiana"
+    - "afghanistan"
+    - "libano"
+    - "eu navfor"
+    - "operazione"
+    - "peacekeeping"
+    - "missione internazionale"
+    - "forze armate"
+    - "difesa"
+    - "esteri"
+  required_columns:
+    - "filename"
+    - "original_url"
+    - "download_date"
+    - "file_size"
+    - "source_domain"
+    - "content_hash"
+
+# Sitemap Document Collector Configuration
+sitemap_document_collector:
+  sitemap_urls:
+    - "https://www.camera.it/sitemap.xml"
+    - "https://www.difesa.it/sitemap.xml"
+  output_path: "data/documents/sitemap"
+  allowed_extensions:
+    - ".pdf"
+    - ".doc"
+    - ".docx"
+  sleep_time: 2
+  required_columns:
+    - "filename"
+    - "original_url"
+    - "download_date"
+    - "file_size"
+    - "source_domain"
+    - "content_hash"
+
+# Smart Document Fetcher Configuration
+smart_document_fetcher:
+  sitemap_urls:
+    - "https://www.camera.it/leg18/sitemap.xml"
+    - "https://www.senato.it/leg18/sitemap.xml"
+    - "https://www.governo.it/sitemap.xml"
+  indice_urls:
+    - "https://www.difesa.it/OperazioniMilitari/"
+    - "https://www.camera.it/leg18/1132"
+    - "https://www.esteri.it/it/politica-estera-e-cooperazione-allo-sviluppo/missioni-internazionali/"
+    - "https://www.carabinieri.it/cittadino/informazioni/missioni-estero"
+    - "https://www.marina.difesa.it/noi-siamo-la-marina/mezzi/forze-navali/Pagine/default.aspx"
+    - "https://www.esercito.difesa.it/organizzazione/capo-di-sme/Comando-Forze-Operative-Sud/brigata-meccanizzata-aosta/Pagine/default.aspx"
+    - "https://www.aeronautica.difesa.it/operazioni/Pagine/default.aspx"
+  output_path: "data/documents/smart"
+  allowed_extensions:
+    - ".pdf"
+    - ".doc"
+    - ".docx"
+  sleep_time: 2
+  max_retries: 3
+  retry_delay: 5
+  required_columns:
+    - "filename"
+    - "original_url"
+    - "download_date"
+    - "file_size"
+    - "source_domain"
+    - "content_hash" 

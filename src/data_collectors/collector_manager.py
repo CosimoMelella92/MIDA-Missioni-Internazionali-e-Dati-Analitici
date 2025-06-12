@@ -16,6 +16,9 @@ from .social_media_collector import SocialMediaCollector
 from .database_collector import DatabaseCollector
 from .base_collector import BaseCollector
 from .document_collector import DocumentCollector
+from .european_document_collector import EuropeanDocumentCollector
+from .sitemap_document_collector import SitemapDocumentCollector
+from .smart_document_fetcher import SmartDocumentFetcher
 
 class CollectorManager:
     """Manager for all data collectors"""
@@ -66,6 +69,18 @@ class CollectorManager:
         # Document Collector
         if 'document_collector' in self.config:
             collectors['document'] = DocumentCollector(self.config['document_collector'])
+            
+        # European Document Collector
+        if 'european_document_collector' in self.config:
+            collectors['european_document'] = EuropeanDocumentCollector(self.config['european_document_collector'])
+            
+        # Sitemap Document Collector
+        if 'sitemap_document_collector' in self.config:
+            collectors['sitemap_document'] = SitemapDocumentCollector(self.config['sitemap_document_collector'])
+            
+        # Smart Document Fetcher
+        if 'smart_document_fetcher' in self.config:
+            collectors['smart_document'] = SmartDocumentFetcher(self.config['smart_document_fetcher'])
             
         return collectors
     

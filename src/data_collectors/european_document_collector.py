@@ -1,7 +1,7 @@
 import httpx
 import os
-import re
 import hashlib
+import re
 import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
@@ -10,23 +10,24 @@ from typing import List, Dict, Any, Optional
 from .base_collector import BaseCollector
 import pandas as pd
 
-class DocumentCollector(BaseCollector):
-    """Collector specializzato per documenti PDF e DOC da siti istituzionali"""
+class EuropeanDocumentCollector(BaseCollector):
+    """Collector specializzato per documenti da siti istituzionali europei e italiani"""
     
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.allowed_extensions = ['.pdf', '.doc', '.docx']
-        self.allowed_domains = [
-            'difesa.it',
-            'esteri.it',
-            'senato.it',
-            'camera.it',
-            'governo.it',
-            'carabinieri.it',
-            'marina.difesa.it',
-            'esercito.difesa.it',
-            'aeronautica.difesa.it'
-        ]
+        self.keywords = config.get('keywords', [
+            "missione italiana",
+            "afghanistan",
+            "libano",
+            "eu navfor",
+            "operazione",
+            "peacekeeping",
+            "missione internazionale",
+            "forze armate",
+            "difesa",
+            "esteri"
+        ])
+        self.allowed_extensions = config.get('allowed_extensions', ['.pdf', '.doc', '.docx'])
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -37,21 +38,13 @@ class DocumentCollector(BaseCollector):
             'Upgrade-Insecure-Requests': '1'
         }
         
-    def _is_allowed_domain(self, url: str) -> bool:
-        """Verifica se il dominio è tra quelli consentiti"""
-        domain = urlparse(url).netloc.lower()
-        return any(allowed in domain for allowed in self.allowed_domains)
-        
     def _is_document_url(self, url: str) -> bool:
         """Verifica se l'URL punta a un documento consentito"""
         return any(url.lower().endswith(ext) for ext in self.allowed_extensions)
         
-    def _generate_filename(self, content: bytes, original_url: str) -> str:
-        """Genera un nome file univoco basato sul contenuto"""
-        ext = os.path.splitext(original_url)[1].lower()
-        content_hash = hashlib.sha256(content).hexdigest()[:12]
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        return f"{content_hash}_{timestamp}{ext}"
+    def _hash_content(self, content: bytes) -> str:
+        """Genera hash del contenuto per evitare duplicati"""
+        return hashlib.sha256(content).hexdigest()
         
     def _download_file(self, url: str, session: httpx.Client) -> Optional[Dict[str, Any]]:
         """Scarica un file con gestione errori e validazione"""
@@ -63,7 +56,9 @@ class DocumentCollector(BaseCollector):
                 return None
                 
             content = response.content
-            filename = self._generate_filename(content, url)
+            content_hash = self._hash_content(content)
+            ext = os.path.splitext(url)[1].lower()
+            filename = f"{content_hash[:12]}{ext}"
             filepath = os.path.join(self.output_path, filename)
             
             # Salva il file
@@ -77,7 +72,8 @@ class DocumentCollector(BaseCollector):
                 'download_date': datetime.now().isoformat(),
                 'file_size': len(content),
                 'content_type': response.headers.get('content-type', ''),
-                'source_domain': urlparse(url).netloc
+                'source_domain': urlparse(url).netloc,
+                'content_hash': content_hash
             }
             
             self.logger.info(f"Scaricato: {filename} da {url}")
@@ -94,11 +90,39 @@ class DocumentCollector(BaseCollector):
         
         for a in soup.find_all('a', href=True):
             href = urljoin(base_url, a['href'])
-            if self._is_document_url(href) and self._is_allowed_domain(href):
+            if self._is_document_url(href):
                 links.append(href)
                 
         return links
         
+    def _search_in_site(self, url: str, session: httpx.Client) -> List[Dict[str, Any]]:
+        """Cerca documenti in un sito"""
+        try:
+            response = session.get(url, timeout=30)
+            response.raise_for_status()
+            
+            # Verifica se la pagina contiene keywords
+            if not any(k.lower() in response.text.lower() for k in self.keywords):
+                self.logger.info(f"Nessuna keyword trovata in {url}")
+                return []
+                
+            self.logger.info(f"Keywords trovate in {url}")
+            
+            # Estrai e scarica documenti
+            doc_links = self._extract_links(response.text, url)
+            metadata_list = []
+            
+            for link in doc_links:
+                metadata = self._download_file(link, session)
+                if metadata:
+                    metadata_list.append(metadata)
+                    
+            return metadata_list
+            
+        except Exception as e:
+            self.logger.error(f"Errore elaborazione {url}: {str(e)}")
+            return []
+            
     def collect(self) -> pd.DataFrame:
         """Raccoglie documenti da tutte le URL configurate"""
         all_metadata = []
@@ -106,20 +130,9 @@ class DocumentCollector(BaseCollector):
         with httpx.Client(headers=self.headers, follow_redirects=True) as session:
             for url in self.config['urls']:
                 try:
-                    # Scarica pagina iniziale
-                    response = session.get(url, timeout=30)
-                    response.raise_for_status()
+                    metadata_list = self._search_in_site(url, session)
+                    all_metadata.extend(metadata_list)
                     
-                    # Estrai link a documenti
-                    doc_links = self._extract_links(response.text, url)
-                    self.logger.info(f"Trovati {len(doc_links)} documenti in {url}")
-                    
-                    # Scarica ogni documento
-                    for doc_url in doc_links:
-                        metadata = self._download_file(doc_url, session)
-                        if metadata:
-                            all_metadata.append(metadata)
-                            
                 except Exception as e:
                     self.logger.error(f"Errore elaborazione {url}: {str(e)}")
                     continue
@@ -149,7 +162,8 @@ class DocumentCollector(BaseCollector):
             'original_url',
             'download_date',
             'file_size',
-            'source_domain'
+            'source_domain',
+            'content_hash'
         ]
         
         return all(col in data.columns for col in required_columns) 
