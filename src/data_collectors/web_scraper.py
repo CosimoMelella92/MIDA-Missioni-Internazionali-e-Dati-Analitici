@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import re
 from fake_useragent import UserAgent
 import cloudscraper
+from datetime import datetime
 
 class WebScraper:
     """Web scraper for collecting data from multiple sources"""
@@ -73,29 +74,55 @@ class WebScraper:
                 links.append(full_url)
         return list(set(links))
         
+    def _extract_data(self, soup: BeautifulSoup, url: str) -> List[Dict[str, Any]]:
+        """Extract data from BeautifulSoup object"""
+        data = []
+        
+        # Try different selectors for mission list
+        selectors = self.config['selectors']['mission_list']['css'].split(',')
+        for selector in selectors:
+            elements = soup.select(selector.strip())
+            if elements:
+                for element in elements:
+                    item = {}
+                    for field, field_config in self.config['selectors']['mission_list']['fields'].items():
+                        try:
+                            # Try each CSS selector for the field
+                            field_selectors = field_config['css'].split(',')
+                            for field_selector in field_selectors:
+                                field_element = element.select_one(field_selector.strip())
+                                if field_element:
+                                    if field_config['type'] == 'text':
+                                        value = field_element.get_text(strip=True)
+                                    elif field_config['type'] == 'attribute':
+                                        value = field_element[field_config['attr']]
+                                    if value:
+                                        item[field] = value
+                                        break
+                        except Exception as e:
+                            self.logger.warning(f"Error extracting {field} from {url}: {str(e)}")
+                            item[field] = None
+                    
+                    # Add source URL
+                    item['source_url'] = url
+                    
+                    # Add collection timestamp
+                    item['collection_date'] = datetime.now().isoformat()
+                    
+                    if item:
+                        data.append(item)
+        
+        return data
+        
     def _scrape_page(self, url: str) -> List[Dict[str, Any]]:
         """Scrape a single page"""
         try:
             response = self._make_request(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # Extract data based on selectors
-            data = []
-            for element in soup.select(self.config['selectors']['mission_list']['css']):
-                item = {}
-                for field, field_config in self.config['selectors']['mission_list']['fields'].items():
-                    try:
-                        if field_config['type'] == 'text':
-                            value = element.select_one(field_config['css']).get_text(strip=True)
-                        elif field_config['type'] == 'attribute':
-                            value = element.select_one(field_config['css'])[field_config['attr']]
-                        item[field] = value
-                    except Exception as e:
-                        self.logger.warning(f"Error extracting {field} from {url}: {str(e)}")
-                        item[field] = None
-                if item:
-                    data.append(item)
-                    
+            # Extract data
+            data = self._extract_data(soup, url)
+            
             # Extract and follow links
             links = self._extract_links(soup, url)
             for link in links[:5]:  # Limit to first 5 links to avoid infinite crawling
@@ -104,7 +131,7 @@ class WebScraper:
                     data.extend(sub_data)
                 except Exception as e:
                     self.logger.warning(f"Error scraping {link}: {str(e)}")
-                    
+            
             return data
             
         except Exception as e:

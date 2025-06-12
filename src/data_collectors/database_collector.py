@@ -40,7 +40,17 @@ class DatabaseCollector:
     def _process_csv(self, content: bytes, encoding: str = 'utf-8') -> pd.DataFrame:
         """Process CSV content"""
         try:
-            return pd.read_csv(BytesIO(content), encoding=encoding)
+            # Try different encodings
+            encodings = [encoding, 'utf-8', 'latin1', 'cp1252']
+            for enc in encodings:
+                try:
+                    df = pd.read_csv(BytesIO(content), encoding=enc)
+                    # Clean column names
+                    df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+                    return df
+                except UnicodeDecodeError:
+                    continue
+            return pd.DataFrame()
         except Exception as e:
             self.logger.error(f"Error reading CSV: {str(e)}")
             return pd.DataFrame()
@@ -48,7 +58,21 @@ class DatabaseCollector:
     def _process_excel(self, content: bytes, sheet_name: str = None) -> pd.DataFrame:
         """Process Excel content"""
         try:
-            return pd.read_excel(BytesIO(content), sheet_name=sheet_name)
+            # Try different sheet names
+            if sheet_name:
+                sheet_names = [sheet_name, 'Data', 'Sheet1', 0]
+            else:
+                sheet_names = ['Data', 'Sheet1', 0]
+            
+            for sheet in sheet_names:
+                try:
+                    df = pd.read_excel(BytesIO(content), sheet_name=sheet)
+                    # Clean column names
+                    df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+                    return df
+                except Exception:
+                    continue
+            return pd.DataFrame()
         except Exception as e:
             self.logger.error(f"Error reading Excel: {str(e)}")
             return pd.DataFrame()
@@ -57,7 +81,21 @@ class DatabaseCollector:
         """Process JSON content"""
         try:
             data = json.loads(content)
-            return pd.DataFrame(data)
+            # Handle different JSON structures
+            if isinstance(data, dict):
+                if 'data' in data:
+                    data = data['data']
+                elif 'results' in data:
+                    data = data['results']
+            elif isinstance(data, list):
+                pass
+            else:
+                return pd.DataFrame()
+            
+            df = pd.DataFrame(data)
+            # Clean column names
+            df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+            return df
         except Exception as e:
             self.logger.error(f"Error reading JSON: {str(e)}")
             return pd.DataFrame()
@@ -66,17 +104,25 @@ class DatabaseCollector:
         """Process ZIP content"""
         try:
             with zipfile.ZipFile(BytesIO(content)) as z:
-                # Find first file of specified type
-                for filename in z.namelist():
-                    if filename.endswith(f'.{file_type}'):
-                        with z.open(filename) as f:
-                            if file_type == 'csv':
-                                return pd.read_csv(f)
-                            elif file_type == 'xlsx':
-                                return pd.read_excel(f)
-                            elif file_type == 'json':
-                                return pd.DataFrame(json.load(f))
-            return pd.DataFrame()
+                # Find all files of specified type
+                matching_files = [f for f in z.namelist() if f.endswith(f'.{file_type}')]
+                
+                if not matching_files:
+                    return pd.DataFrame()
+                
+                # Process first matching file
+                with z.open(matching_files[0]) as f:
+                    if file_type == 'csv':
+                        df = pd.read_csv(f)
+                    elif file_type == 'xlsx':
+                        df = pd.read_excel(f)
+                    elif file_type == 'json':
+                        df = pd.DataFrame(json.load(f))
+                    
+                    # Clean column names
+                    df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+                    return df
+                
         except Exception as e:
             self.logger.error(f"Error reading ZIP: {str(e)}")
             return pd.DataFrame()
@@ -103,6 +149,14 @@ class DatabaseCollector:
                 df['source'] = name
                 df['collection_date'] = datetime.now()
                 
+                # Convert date columns
+                date_columns = [col for col in df.columns if 'date' in col.lower()]
+                for col in date_columns:
+                    try:
+                        df[col] = pd.to_datetime(df[col])
+                    except:
+                        pass
+                    
                 # Save to file
                 output_file = os.path.join(
                     self.output_path,

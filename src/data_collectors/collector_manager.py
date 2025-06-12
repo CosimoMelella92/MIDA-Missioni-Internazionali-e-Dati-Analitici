@@ -14,6 +14,8 @@ from .rss_collector import RSSCollector
 from .ocr_collector import OCRCollector
 from .social_media_collector import SocialMediaCollector
 from .database_collector import DatabaseCollector
+from .base_collector import BaseCollector
+from .document_collector import DocumentCollector
 
 class CollectorManager:
     """Manager for all data collectors"""
@@ -33,7 +35,7 @@ class CollectorManager:
             self.logger.error(f"Error loading config: {str(e)}")
             return {}
     
-    def _initialize_collectors(self) -> Dict[str, Any]:
+    def _initialize_collectors(self) -> Dict[str, BaseCollector]:
         """Initialize all collectors"""
         collectors = {}
         
@@ -56,6 +58,14 @@ class CollectorManager:
         # Social Media Collector
         if 'social_media_collector' in self.config:
             collectors['social'] = SocialMediaCollector(self.config['social_media_collector'])
+            
+        # API Collector
+        if 'api_collector' in self.config:
+            collectors['api'] = APICollector(self.config['api_collector'])
+            
+        # Document Collector
+        if 'document_collector' in self.config:
+            collectors['document'] = DocumentCollector(self.config['document_collector'])
             
         return collectors
     
@@ -83,9 +93,12 @@ class CollectorManager:
         for name, collector in self.collectors.items():
             try:
                 self.logger.info(f"Collecting data from {name}")
-                data = collector.run()
-                if not data.empty:
+                data = collector.collect()
+                
+                if collector.validate(data):
                     results[name] = data
+                else:
+                    self.logger.error(f"Data validation failed for {name}")
                     
             except Exception as e:
                 self.logger.error(f"Error collecting data from {name}: {str(e)}")

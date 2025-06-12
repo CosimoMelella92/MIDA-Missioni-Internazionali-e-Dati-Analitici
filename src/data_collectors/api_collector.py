@@ -4,6 +4,9 @@ from typing import Dict, Any, List
 from .base_collector import BaseCollector
 import logging
 from datetime import datetime
+import time
+import json
+import os
 
 class APICollector(BaseCollector):
     """Collector for API data sources"""
@@ -14,27 +17,108 @@ class APICollector(BaseCollector):
         self.base_url = config.get('base_url')
         self.endpoints = config.get('endpoints', {})
         
-    def collect(self) -> pd.DataFrame:
-        """Collect data from configured APIs"""
-        all_data = []
+    def _make_request(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Make API request with error handling and retries"""
+        max_retries = 3
+        retry_delay = 2
         
-        for endpoint_name, endpoint_config in self.endpoints.items():
+        for attempt in range(max_retries):
             try:
-                url = f"{self.base_url}/{endpoint_config['path']}"
-                headers = self._get_headers(endpoint_config)
-                params = self._get_params(endpoint_config)
+                # Add API key to headers
+                headers = {
+                    'Authorization': f'Bearer {self.api_key}',
+                    'Accept': 'application/json'
+                }
                 
-                response = requests.get(url, headers=headers, params=params)
+                # Make request
+                response = requests.get(
+                    f"{self.base_url}/{endpoint}",
+                    params=params,
+                    headers=headers,
+                    timeout=30
+                )
+                
+                # Check response
                 response.raise_for_status()
                 
+                # Parse JSON
                 data = response.json()
-                df = self._parse_response(data, endpoint_config)
+                
+                # Extract data using data_path
+                if 'data_path' in self.config['endpoints'][endpoint]:
+                    data_path = self.config['endpoints'][endpoint]['data_path']
+                    for key in data_path.split('.'):
+                        data = data[key]
+                
+                return data
+                
+            except requests.exceptions.RequestException as e:
+                self.logger.error(f"Request failed (attempt {attempt + 1}/{max_retries}): {str(e)}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay * (attempt + 1))
+                else:
+                    raise
+            except (KeyError, json.JSONDecodeError) as e:
+                self.logger.error(f"Error parsing response: {str(e)}")
+                raise
+            except Exception as e:
+                self.logger.error(f"Unexpected error: {str(e)}")
+                raise
+
+    def collect(self) -> pd.DataFrame:
+        """Collect data from all configured endpoints"""
+        all_data = []
+        
+        for endpoint, config in self.config['endpoints'].items():
+            try:
+                # Get data from endpoint
+                data = self._make_request(endpoint, config.get('params'))
+                
+                # Convert to DataFrame
+                if isinstance(data, list):
+                    df = pd.DataFrame(data)
+                elif isinstance(data, dict):
+                    df = pd.DataFrame([data])
+                else:
+                    self.logger.warning(f"Unexpected data type from {endpoint}: {type(data)}")
+                    continue
+                
+                # Add metadata
+                df['source'] = endpoint
+                df['collection_date'] = datetime.now()
+                
+                # Clean column names
+                df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+                
+                # Convert date columns
+                date_columns = [col for col in df.columns if 'date' in col.lower()]
+                for col in date_columns:
+                    try:
+                        df[col] = pd.to_datetime(df[col])
+                    except:
+                        pass
+                
                 all_data.append(df)
                 
             except Exception as e:
-                self.logger.error(f"Error collecting data from {endpoint_name}: {str(e)}")
-                
-        return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+                self.logger.error(f"Error collecting data from {endpoint}: {str(e)}")
+                continue
+        
+        if not all_data:
+            return pd.DataFrame()
+        
+        # Combine all DataFrames
+        result = pd.concat(all_data, ignore_index=True)
+        
+        # Save to file
+        output_file = os.path.join(
+            self.output_path,
+            f"api_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        )
+        result.to_csv(output_file, index=False, encoding='utf-8')
+        self.logger.info(f"Saved API data to {output_file}")
+        
+        return result
     
     def validate(self, data: pd.DataFrame) -> bool:
         """Validate collected API data"""

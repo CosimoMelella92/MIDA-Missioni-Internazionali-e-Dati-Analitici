@@ -1,48 +1,71 @@
 # API Configuration
 api_collector:
-  api_key: "YOUR_API_KEY"
-  base_url: "https://api.example.com"
+  api_key: "${UN_API_KEY}"  # Usa variabile d'ambiente
+  base_url: "https://api.un.org"
   endpoints:
     missions:
-      path: "missions"
+      path: "peacekeeping/missions"
       params:
         limit: 100
-      data_path: "data.missions"
+        format: "json"
+      data_path: "data"
     countries:
       path: "countries"
-      data_path: "data.countries"
+      params:
+        format: "json"
+      data_path: "data"
+    peacekeeping:
+      path: "peacekeeping/operations"
+      params:
+        format: "json"
+      data_path: "data"
   required_columns:
     - "id"
     - "name"
     - "date"
+    - "location"
+    - "status"
+    - "type"
+    - "mandate"
+    - "troop_count"
+    - "budget"
 
 # Web Scraping Configuration
 web_scraper:
   urls:
-    - "https://peacekeeping.un.org/en/current-peacekeeping-operations"
-    - "https://peacekeeping.un.org/en/past-peacekeeping-operations"
+    - "https://peacekeeping.un.org/en/where-we-operate"
+    - "https://peacekeeping.un.org/en/mission"
+    - "https://peacekeeping.un.org/en/our-peacekeeping-missions"
   selectors:
     mission_list:
-      css: "div.views-row"
+      css: "div.views-row, div.mission-item, div.mission-card"
       fields:
         title:
           type: "text"
-          css: "h2.field-content"
+          css: "h2.field-content, h3.mission-title, h2.mission-name"
         description:
           type: "text"
-          css: "div.field-content"
+          css: "div.field-content, div.mission-description, p.mission-summary"
         date:
           type: "text"
-          css: "span.date-display-single"
+          css: "span.date-display-single, span.mission-date, time.mission-period"
         link:
           type: "attribute"
           css: "a"
           attr: "href"
+        location:
+          type: "text"
+          css: "div.field-location, span.mission-location, div.mission-country"
+        status:
+          type: "text"
+          css: "div.field-status, span.mission-status, div.mission-state"
   delay: 2
   required_columns:
     - "title"
     - "description"
     - "date"
+    - "location"
+    - "status"
 
 # RSS Feed Configuration
 rss_collector:
@@ -103,7 +126,7 @@ database_collector:
   databases:
     un_missions:
       type: "csv"
-      url: "https://data.humdata.org/dataset/peacekeeping-missions/resource/8c9c4c9a-4c9a-4c9a-4c9a-4c9a4c9a4c9a/download/peacekeeping-missions.csv"
+      url: "https://data.un.org/ws/rest/data/DF_UNData_UNFCC"
       encoding: "utf-8"
     world_bank:
       type: "excel"
@@ -113,15 +136,56 @@ database_collector:
       type: "csv"
       url: "https://stats.oecd.org/SDMX-JSON/data/AID_CRS/1.20001.1.1000.D/all?startTime=2020&endTime=2024"
       encoding: "utf-8"
-    un_data:
-      type: "json"
-      url: "https://data.un.org/ws/rest/data/DF_UNData_UNFCC"
     peacekeeping:
-      type: "zip"
-      url: "https://peacekeeping.un.org/sites/default/files/peacekeeping-mission-data.zip"
+      type: "json"
+      url: "https://peacekeeping.un.org/en/where-we-operate"
+      format: "json"
+    sipri:
+      type: "csv"
+      url: "https://www.sipri.org/sites/default/files/2024-01/sipri-military-expenditure-database-1949-2023.csv"
+      encoding: "utf-8"
+    ucdp:
+      type: "csv"
+      url: "https://ucdp.uu.se/downloads/ged/ged231-csv.zip"
       file_type: "csv"
   output_path: "data/processed/databases"
   required_columns:
     - "id"
     - "name"
-    - "date" 
+    - "date"
+    - "location"
+    - "status"
+
+# Document Collector Configuration
+document_collector:
+  urls:
+    - "https://www.difesa.it/OperazioniMilitari/Pagine/default.aspx"
+    - "https://www.esteri.it/it/politica_estera_e_cooperazione_internazionale/cooperazione_internazionale/"
+    - "https://www.senato.it/leg/19/BGT/Schede/v3/Statistiche/v3StatisticheDettaglio.html"
+    - "https://www.camera.it/leg19/1264"
+    - "https://www.governo.it/it/articolo/missioni-internazionali"
+    - "https://www.carabinieri.it/cittadino/informazioni/missioni-estero"
+    - "https://www.marina.difesa.it/noi-siamo-la-marina/mezzi/forze-navali/Pagine/default.aspx"
+    - "https://www.esercito.difesa.it/organizzazione/capo-di-sme/Comando-Forze-Operative-Sud/brigata-meccanizzata-aosta/Pagine/default.aspx"
+    - "https://www.aeronautica.difesa.it/operazioni/Pagine/default.aspx"
+  output_path: "data/documents"
+  allowed_extensions:
+    - ".pdf"
+    - ".doc"
+    - ".docx"
+  allowed_domains:
+    - "difesa.it"
+    - "esteri.it"
+    - "senato.it"
+    - "camera.it"
+    - "governo.it"
+    - "carabinieri.it"
+    - "marina.difesa.it"
+    - "esercito.difesa.it"
+    - "aeronautica.difesa.it"
+  required_columns:
+    - "filename"
+    - "original_url"
+    - "download_date"
+    - "file_size"
+    - "source_domain" 
