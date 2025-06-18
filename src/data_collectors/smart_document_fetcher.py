@@ -23,6 +23,7 @@ class SmartDocumentFetcher(BaseCollector):
         self.sleep_time = config.get('sleep_time', 2)
         self.max_retries = config.get('max_retries', 3)
         self.retry_delay = config.get('retry_delay', 5)
+        self.output_path = config.get('output_path', 'data/documents/smart')
         
         # Headers più realistici
         self.headers = {
