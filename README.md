@@ -4,7 +4,7 @@
 **Cosimo Melella**
 
 ## 📊 Panoramica
-MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni.
+MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni. Il sistema analizza **50 missioni internazionali italiane** dal 1978 al 2025, coprendo un arco temporale di quasi 50 anni di impegno internazionale dell'Italia.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -17,11 +17,17 @@ MIDA/
 │   │   └── PDF/             # Documenti PDF originali
 │   ├── documents/           # Documenti PDF processati
 │   └── processed/           # Dati elaborati
+│       └── missioni_complete.csv  # Dataset completo aggiornato
 ├── src/
 │   ├── main.py              # Script principale
 │   ├── document_processor.py # Elaborazione documenti
 │   ├── data_processor.py    # Elaborazione dati
-│   └── dashboard.py         # Dashboard Streamlit
+│   ├── missioni_dashboard.py # Dashboard Streamlit principale
+│   ├── map_utils.py         # Funzioni per le mappe interattive
+│   └── run_dashboard.py     # Script di avvio dashboard
+├── docs/
+│   ├── images/              # Screenshot e immagini
+│   └── missioni_analizzate.md # Documentazione missioni
 └── requirements.txt         # Dipendenze Python
 ```
 
@@ -32,22 +38,27 @@ graph LR
     C[File Excel] --> D[Data Processor]
     B --> E[Data Enrichment]
     D --> E
-    E --> F[Dashboard]
+    E --> F[Dashboard Interattiva]
+    F --> G[Mappe Avanzate]
+    F --> H[Analisi Organizzazioni]
 ```
 
 ## 📁 Struttura dei Dati
 
-### File Excel Principale
-Il file Excel contiene le seguenti colonne:
-- **Nome Missione**: Identificativo univoco della missione
-- **Data Inizio**: Data di inizio della missione
-- **Data Fine**: Data di fine della missione
-- **Tipo Missione**: Categoria della missione
-- **Personale Totale**: Numero di persone coinvolte
-- **Costo Totale**: Budget complessivo
-- **Mandato**: Obiettivi e finalità
-- **Stato**: Stato attuale della missione
-- **Note**: Informazioni aggiuntive
+### File CSV Principale (`missioni_complete.csv`)
+Il file contiene le seguenti colonne:
+- **nome**: Identificativo univoco della missione
+- **paese**: Paese di destinazione
+- **regione**: Regione geografica (Africa, Europa, Medio Oriente, Asia, America)
+- **sub_regione**: Sub-regione specifica
+- **tipo_partecipazione**: Tipo di partecipazione (mil, civ, civmil)
+- **data_inizio**: Data di inizio della missione
+- **data_fine**: Data di fine della missione
+- **personale_militare**: Numero di personale militare
+- **personale_civile**: Numero di personale civile
+- **personale_totale**: Numero totale di persone coinvolte
+- **costo_totale**: Budget complessivo
+- **tipo_missione**: Organizzazione (ONU, UE, NATO, ITA)
 
 ### Documenti PDF
 I documenti PDF vengono elaborati per estrarre:
@@ -57,92 +68,210 @@ I documenti PDF vengono elaborati per estrarre:
 - Dettagli finanziari
 - Riferimenti normativi
 
-## 📈 Dashboard
-La dashboard offre diverse visualizzazioni dei dati:
+## 📈 Dashboard Avanzata
 
-### 1. Panoramica Missioni
-![Panoramica Missioni](docs/images/panoramica%20missioni.png)
-- Numero totale di missioni
-- Distribuzione per tipo di missione (grafico a torta)
-- Numero di missioni per paese (grafico a barre)
+### 🎯 Metriche Principali
+- **📊 Missioni Totali**: Numero complessivo di missioni
+- **👥 Personale Totale**: Somma di tutto il personale impiegato
+- **💰 Costo Totale**: Budget complessivo investito
+- **🟢 Missioni Attive**: Missioni attualmente in corso
 
-### 2. Dettagli Missioni
-![Dettagli Missioni](docs/images/dettagli%20missioni.png)
-- Timeline delle missioni
-- Costi per missione (grafico a barre)
-- Tabella dettagliata con tutte le informazioni
+### 📅 Analisi per Periodi Temporali
+- **1991-2001**: Post Guerra Fredda
+- **2001-2015**: Guerra al Terrorismo  
+- **2015-Presente**: Crisi Migratoria e Stabilizzazione
 
-### 3. Filtri
-- Selezione per paese
-- Selezione per tipo di missione
+### 🎯 Analisi per Tipo di Partecipazione
+- **🎖️ Militare (mil)**: Operazioni di combattimento, training militare
+- **👔 Civile (civ)**: Capacity building, assistenza tecnica
+- **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
+
+### 🏛️ Analisi per Organizzazione
+- **🏛️ ONU**: 15 missioni (UNIFIL, KFOR, MINURSO, etc.)
+- **🇪🇺 UE**: 8 missioni (EUTM, EUCAP, EUNAVFOR, etc.)
+- **🛡️ NATO**: 3 missioni (ISAF, IFOR, SFOR)
+- **🇮🇹 ITA**: 1 missione (MISIN)
+
+### 🌍 Analisi per Regione e Sub-Regione
+- **Africa**: 25 missioni (Mali, Niger, Somalia, etc.)
+- **Europa**: 8 missioni (Balcani, Mediterraneo)
+- **Medio Oriente**: 8 missioni (Libano, Iraq, Kuwait)
+- **Asia**: 4 missioni (Afghanistan, Timor Est)
+- **America**: 5 missioni (Haiti)
+
+## 🗺️ Mappe Interattive Avanzate
+
+### 🌍 Mappa del Mondo
+![Mappa del Mondo](docs/images/mappa_mondo.png)
+- **Colori per organizzazione**: 🔵 ONU, 🟠 UE, 🟢 NATO, 🔴 ITA
+- **Marker intelligenti**: Dimensioni basate sul personale
+- **Hover ricchi**: Tutti i dettagli della missione con emoji
+- **Legenda integrata**: Visibile e ben posizionata
+
+### 🔥 Mappa di Calore
+![Mappa di Calore](docs/images/mappa_calore.png)
+- **Densità personale**: Visualizzazione della concentrazione di personale
+- **Scala colori**: Blu (basso) → Rosso (alto)
+- **Radius ottimizzato**: 40px per migliore visualizzazione
+
+### ⏰ Timeline Geografica
+![Timeline](docs/images/timeline.png)
+- **Slider temporale**: Navigazione anno per anno
+- **Evoluzione missioni**: Come si sono sviluppate nel tempo
+- **Colori mantenuti**: Organizzazioni sempre distinguibili
+
+### 📍 Mappa Cluster
+![Cluster](docs/images/cluster.png)
+- **Raggruppamento automatico**: Missioni vicine raggruppate
+- **Popup HTML ricchi**: Informazioni complete con styling
+- **Layer control**: Attiva/disattiva organizzazioni
 
 ## 🚀 Installazione e Utilizzo
 
-1. **Installazione**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1. **Installazione Dipendenze**
+```bash
+# Dipendenze base
+pip install -r requirements.txt
 
-2. **Configurazione**:
-   ```yaml
-   # config/config.yaml
-   configurazione:
-     excel_path: "data/raw/Excel/Matrice dati 1AGG.xlsx"
-     documenti: "data/documents"
-     processed_data: "data/processed"
-   ```
+# Dipendenze per le mappe (se non incluse)
+pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0
+```
 
-3. **Elaborazione Dati**:
-   ```bash
-   python src/main.py
-   ```
+### 2. **Configurazione**
+```yaml
+# config/config.yaml
+configurazione:
+  excel_path: "data/raw/Excel/Matrice dati 1AGG.xlsx"
+  documenti: "data/documents"
+  processed_data: "data/processed"
+```
 
-4. **Avvio Dashboard**:
-   ```bash
-   python -m streamlit run src/dashboard.py
-   ```
+### 3. **Elaborazione Dati**
+```bash
+python src/main.py
+```
+
+### 4. **Avvio Dashboard**
+```bash
+# Metodo 1 (consigliato)
+python run_dashboard.py
+
+# Metodo 2 (alternativo)
+python -m streamlit run src/missioni_dashboard.py
+```
+
+### 5. **Accesso Dashboard**
+- **URL**: http://localhost:8501
+- **Porta**: 8501 (configurabile)
 
 ## 🛠️ Tecnologie Utilizzate
-- **Python**: Linguaggio principale
-- **Pandas**: Manipolazione dati
-- **PyMuPDF**: Estrazione testo da PDF
-- **Streamlit**: Dashboard interattiva
-- **Plotly**: Visualizzazioni grafiche
 
-## 📝 Note
-- I dati vengono salvati in formato Excel arricchito in `data/processed/`
-- La dashboard è accessibile all'indirizzo http://localhost:8501
-- I documenti PDF devono essere nella cartella `data/documents/`
+### Backend
+- **Python 3.11+**: Linguaggio principale
+- **Pandas**: Manipolazione e analisi dati
+- **NumPy**: Calcoli numerici avanzati
+
+### Frontend & Visualizzazioni
+- **Streamlit**: Dashboard interattiva
+- **Plotly**: Grafici e mappe interattive
+- **Folium**: Mappe geografiche avanzate
+
+### Elaborazione Documenti
+- **PyMuPDF**: Estrazione testo da PDF
+- **BeautifulSoup**: Parsing HTML
+- **httpx**: Download documenti
+
+### Geografia & Mappe
+- **Geopandas**: Dati geografici
+- **Geopy**: Geocoding e coordinate
+- **PyDeck**: Visualizzazioni 3D
+
+## 📊 Funzionalità Dashboard
+
+### 🔍 Filtri Avanzati
+- **Anno di inizio**: Dal 1978 al 2025
+- **Tipo di partecipazione**: Militare, Civile, Misto
+- **Regione**: Africa, Europa, Medio Oriente, Asia, America
+- **Tipo missione**: ONU, UE, NATO, ITA
+- **Organizzazione**: Filtro specifico per organizzazione
+
+### 📈 Visualizzazioni
+- **Grafici a barre**: Missioni per periodo/organizzazione
+- **Grafici a torta**: Distribuzione budget e personale
+- **Timeline**: Evoluzione temporale delle missioni
+- **Tabelle interattive**: Dati completi con formattazione
+- **Mappe interattive**: 4 tipi di mappe avanzate
+
+### 📥 Esportazione Dati
+- **CSV**: Download dati filtrati
+- **Excel**: Export completo con multiple sheet
+- **Formattazione**: Valori monetari e numerici formattati
+
+## 📝 Documentazione Missioni
+
+### Tipologie di Missioni Analizzate
+- **🏛️ Missioni ONU**: UNIFIL, KFOR, MINURSO, UNMISS, MONUSCO, etc.
+- **🇪🇺 Missioni UE**: EUTM Mali/Somalia/RCA, EUCAP Sahel, EUNAVFOR MED, IRINI
+- **🛡️ Missioni NATO**: ISAF, IFOR, SFOR
+- **🇮🇹 Missioni Italiane**: MISIN (Niger)
+
+### Distribuzione Geografica
+- **Africa**: 25 missioni (Mali, Niger, Somalia, Repubblica Centrafricana, etc.)
+- **Europa**: 8 missioni (Bosnia, Kosovo, Mediterraneo)
+- **Medio Oriente**: 8 missioni (Libano, Iraq, Kuwait)
+- **Asia**: 4 missioni (Afghanistan, Timor Est)
+- **America**: 5 missioni (Haiti)
 
 ## 🔜 Sviluppi Futuri
-- [ ] Aggiunta di più tipi di visualizzazioni
-- [ ] Implementazione di analisi predittive
-- [ ] Integrazione con altre fonti dati
-- [ ] Miglioramento dell'estrazione dati dai PDF
+- [x] ✅ Mappe interattive avanzate
+- [x] ✅ Analisi per organizzazione
+- [x] ✅ Filtri avanzati
+- [x] ✅ Timeline geografica
+- [ ] 🔄 Integrazione con API esterne
+- [ ] 🔄 Analisi predittive
+- [ ] 🔄 Machine Learning per estrazione dati
+- [ ] 🔄 Dashboard mobile responsive
+- [ ] 🔄 Export PDF dei report
+- [ ] 🔄 Notifiche in tempo reale
 
 ## 🐛 Risoluzione Problemi
 
 ### Problemi Comuni
-1. **Porta 8501 già in uso**:
-   ```bash
-   # Windows
-   netstat -ano | findstr :8501
-   taskkill /PID <PID> /F
-   
-   # Linux/Mac
-   lsof -i :8501
-   kill -9 <PID>
-   ```
 
-2. **Errori di Installazione**:
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt --no-cache-dir
-   ```
+#### 1. **Porta 8501 già in uso**
+```bash
+# Windows
+netstat -ano | findstr :8501
+taskkill /PID <PID> /F
 
-3. **Problemi con i PDF**:
-   - Verificare che i PDF non siano protetti da password
-   - Assicurarsi che i PDF siano in formato testo (non scansione)
+# Linux/Mac
+lsof -i :8501
+kill -9 <PID>
+```
+
+#### 2. **Errori di Installazione**
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt --no-cache-dir
+```
+
+#### 3. **Mappe non visibili**
+```bash
+# Installa dipendenze mappe
+pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0
+```
+
+#### 4. **StreamlitDuplicateElementId**
+- ✅ **Risolto**: Tutti i plotly_chart hanno chiavi uniche
+- Se persiste, riavvia la dashboard
+
+#### 5. **Problemi con i PDF**
+- Verificare che i PDF non siano protetti da password
+- Assicurarsi che i PDF siano in formato testo (non scansione)
+
+### Debug Dashboard
+- Attiva "🔧 Debug Info" nella sidebar per informazioni tecniche
+- Controlla i log nella console per errori dettagliati
 
 ## 🤝 Contribuire
 1. Fork del repository
@@ -152,4 +281,24 @@ La dashboard offre diverse visualizzazioni dei dati:
 5. Creazione Pull Request
 
 ## 📄 Licenza
-Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggiori dettagli. 
+Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggiori dettagli.
+
+---
+
+## 📸 Screenshots Dashboard
+
+### Panoramica Generale
+![Panoramica Missioni](docs/images/panoramica%20missioni.png)
+
+### Dettagli Missioni
+![Dettagli Missioni](docs/images/dettagli%20missioni.png)
+
+### Analisi per Organizzazione
+![Analisi Organizzazione](docs/images/analisi_organizzazione.png)
+
+### Mappe Interattive
+![Mappe](docs/images/mappe_interattive.png)
+
+---
+
+**🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1978 al 2025** 

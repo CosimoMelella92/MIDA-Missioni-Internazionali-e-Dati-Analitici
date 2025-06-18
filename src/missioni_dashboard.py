@@ -492,9 +492,120 @@ def main():
     
     st.markdown("---")
     
-    # 🗺️ SEZIONE MAPPE
-    st.markdown('<h2 class="period-header">🗺️ Mappe Interattive</h2>', 
+    # 4. ANALISI PER ORGANIZZAZIONE
+    st.markdown('<h2 class="period-header">🏛️ Analisi per Organizzazione</h2>', 
                 unsafe_allow_html=True)
+    
+    # Analisi per organizzazione
+    org_stats = df_filtered.groupby('tipo_missione').agg({
+        'nome': 'count',
+        'personale_totale': 'sum',
+        'costo_totale': 'sum',
+        'personale_militare': 'sum',
+        'personale_civile': 'sum'
+    }).reset_index()
+    
+    org_stats.columns = ['Organizzazione', 'Numero Missioni', 'Personale Totale', 
+                        'Costo Totale', 'Personale Militare', 'Personale Civile']
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Grafico per numero di missioni per organizzazione
+        fig_org_missions = px.bar(
+            org_stats,
+            x='Organizzazione',
+            y='Numero Missioni',
+            title='Numero di Missioni per Organizzazione',
+            color='Organizzazione',
+            color_discrete_map={
+                'ONU': '#1f77b4',
+                'UE': '#ff7f0e',
+                'NATO': '#2ca02c',
+                'ITA': '#d62728'
+            }
+        )
+        st.plotly_chart(fig_org_missions, use_container_width=True, key="org_missions")
+        
+        # Grafico a torta per distribuzione personale
+        fig_org_personnel = px.pie(
+            org_stats,
+            values='Personale Totale',
+            names='Organizzazione',
+            title='Distribuzione Personale per Organizzazione'
+        )
+        st.plotly_chart(fig_org_personnel, use_container_width=True, key="org_personnel")
+    
+    with col2:
+        # Grafico per personale militare vs civile per organizzazione
+        fig_org_mil_civ = go.Figure()
+        
+        fig_org_mil_civ.add_trace(go.Bar(
+            name='Personale Militare',
+            x=org_stats['Organizzazione'],
+            y=org_stats['Personale Militare'],
+            marker_color='#1f77b4'
+        ))
+        
+        fig_org_mil_civ.add_trace(go.Bar(
+            name='Personale Civile',
+            x=org_stats['Organizzazione'],
+            y=org_stats['Personale Civile'],
+            marker_color='#ff7f0e'
+        ))
+        
+        fig_org_mil_civ.update_layout(
+            title='Personale per Organizzazione (Militare vs Civile)',
+            barmode='stack',
+            xaxis_title='Organizzazione',
+            yaxis_title='Numero di Personale'
+        )
+        st.plotly_chart(fig_org_mil_civ, use_container_width=True, key="org_mil_civ")
+        
+        # Grafico per costo per organizzazione
+        fig_org_cost = px.bar(
+            org_stats,
+            x='Organizzazione',
+            y='Costo Totale',
+            title='Costo Totale per Organizzazione',
+            color='Organizzazione',
+            color_discrete_map={
+                'ONU': '#1f77b4',
+                'UE': '#ff7f0e',
+                'NATO': '#2ca02c',
+                'ITA': '#d62728'
+            }
+        )
+        st.plotly_chart(fig_org_cost, use_container_width=True, key="org_cost")
+    
+    # Tabella dettagliata per organizzazione
+    st.subheader("📊 Dettagli per Organizzazione")
+    
+    # Formatta i dati
+    org_display = org_stats.copy()
+    org_display['Costo Totale'] = org_display['Costo Totale'].apply(format_currency)
+    org_display['Personale Totale'] = org_display['Personale Totale'].apply(lambda x: f"{x:,.0f}")
+    org_display['Personale Militare'] = org_display['Personale Militare'].apply(lambda x: f"{x:,.0f}")
+    org_display['Personale Civile'] = org_display['Personale Civile'].apply(lambda x: f"{x:,.0f}")
+    
+    st.dataframe(org_display, use_container_width=True)
+    
+    st.markdown("---")
+    
+    # 🗺️ SEZIONE MAPPE MIGLIORATA
+    st.markdown('<h2 class="period-header">🗺️ Mappe Interattive Avanzate</h2>', 
+                unsafe_allow_html=True)
+    
+    # Info box per le mappe
+    st.markdown("""
+    <div class="info-box">
+        <strong>🗺️ Guida alle Mappe</strong><br>
+        • <strong>Mappa del Mondo:</strong> Visualizzazione completa con colori per organizzazione<br>
+        • <strong>Mappa di Calore:</strong> Densità del personale impiegato nelle missioni<br>
+        • <strong>Timeline:</strong> Evoluzione temporale delle missioni (usa lo slider)<br>
+        • <strong>Cluster:</strong> Mappa interattiva con raggruppamento automatico
+    </div>
+    """, unsafe_allow_html=True)
     
     if not MAPS_AVAILABLE:
         st.warning("⚠️ Le funzioni delle mappe non sono disponibili. Installa le dipendenze con: pip install folium geopandas pydeck geopy")
@@ -510,50 +621,55 @@ def main():
         ])
         
         with map_tab1:
-            st.subheader("Mappa del Mondo - Distribuzione Missioni")
+            st.subheader("🌍 Mappa del Mondo - Distribuzione Missioni")
             
             # Mappa del mondo con Plotly
             world_map = create_world_map_plotly(df_filtered, geo_df)
-            st.plotly_chart(world_map, use_container_width=True, key="world_map")
+            st.plotly_chart(world_map, use_container_width=True, key="world_map_improved")
             
             # Informazioni sulla mappa
             st.info("""
-            **Legenda Mappa:**
-            - **Colori**: Diversi per regione geografica
-            - **Dimensioni**: Basate sul numero di personale
-            - **Hover**: Mostra dettagli della missione
+            **🎯 Legenda Mappa:**
+            - **🔵 Blu:** Missioni ONU
+            - **🟠 Arancione:** Missioni UE  
+            - **🟢 Verde:** Missioni NATO
+            - **🔴 Rosso:** Missioni Italiane
+            - **Dimensioni:** Basate sul numero di personale
+            - **Hover:** Mostra dettagli completi della missione
             """)
         
         with map_tab2:
-            st.subheader("Mappa di Calore - Densità Personale")
+            st.subheader("🔥 Mappa di Calore - Densità Personale")
             
             # Mappa di calore
             heatmap = create_heatmap_plotly(df_filtered, geo_df)
-            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_map")
+            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_improved")
             
             st.info("""
-            **Mappa di Calore:**
+            **🔥 Mappa di Calore:**
             - Mostra la densità del personale impiegato
             - Zone più scure = più personale
             - Utile per identificare aree di maggiore impegno
+            - Scala colori: Blu (basso) → Rosso (alto)
             """)
         
         with map_tab3:
-            st.subheader("Timeline Geografica - Evoluzione Temporale")
+            st.subheader("⏰ Timeline Geografica - Evoluzione Temporale")
             
             # Mappa timeline
             timeline_map = create_timeline_map(df_filtered, geo_df)
-            st.plotly_chart(timeline_map, use_container_width=True, key="timeline_map")
+            st.plotly_chart(timeline_map, use_container_width=True, key="timeline_improved")
             
             st.info("""
-            **Timeline Interattiva:**
+            **⏰ Timeline Interattiva:**
             - Mostra l'evoluzione delle missioni nel tempo
             - Usa i controlli per navigare tra gli anni
             - Visualizza come si sono sviluppate le missioni geograficamente
+            - Colori per organizzazione mantenuti nel tempo
             """)
         
         with map_tab4:
-            st.subheader("Mappa con Cluster - Raggruppamento Missioni")
+            st.subheader("📍 Mappa con Cluster - Raggruppamento Missioni")
             
             # Mappa con cluster (Folium)
             try:
@@ -567,15 +683,16 @@ def main():
                 st.warning("Folium non installato. Installa con: pip install folium")
             
             st.info("""
-            **Mappa Cluster:**
+            **📍 Mappa Cluster:**
             - Raggruppa missioni vicine per una migliore visualizzazione
             - Zoom per vedere i dettagli
-            - Clicca sui marker per informazioni
+            - Clicca sui marker per informazioni complete
+            - Layer control per attivare/disattivare organizzazioni
             """)
     
     st.markdown("---")
     
-    # 4. TIMELINE DELLE MISSIONI
+    # 5. TIMELINE DELLE MISSIONI
     st.markdown('<h2 class="period-header">⏰ Timeline delle Missioni</h2>', 
                 unsafe_allow_html=True)
     
@@ -610,7 +727,7 @@ def main():
     
     st.markdown("---")
     
-    # 5. TABELLA COMPLETA DEI DATI
+    # 6. TABELLA COMPLETA DEI DATI
     st.markdown('<h2 class="period-header">📊 Dati Completi delle Missioni</h2>', 
                 unsafe_allow_html=True)
     

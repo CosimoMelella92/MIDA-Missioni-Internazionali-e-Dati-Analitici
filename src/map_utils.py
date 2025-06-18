@@ -7,7 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import folium
-from folium.plugins import MarkerCluster
+from folium.plugins import MarkerCluster, HeatMap
 import geopandas as gpd
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
@@ -48,7 +48,7 @@ def load_geo_data() -> pd.DataFrame:
     return pd.DataFrame(geo_data)
 
 def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
-    """Crea una mappa del mondo con Plotly"""
+    """Crea una mappa del mondo SPETTACOLARE con Plotly"""
     try:
         # Unisci i dati delle missioni con le coordinate geografiche
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -57,51 +57,120 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
         df_with_coords = df_with_coords.dropna(subset=['lat', 'lon'])
         
         if len(df_with_coords) == 0:
-            # Fallback: crea una mappa vuota
+            # Fallback: crea una mappa vuota ma bella
             fig = go.Figure()
             fig.add_trace(go.Scattergeo())
             fig.update_layout(
-                title="Mappa del Mondo - Missioni Internazionali",
+                title="🌍 Mappa del Mondo - Missioni Internazionali",
                 geo=dict(
                     scope='world',
                     showland=True,
                     landcolor='rgb(243, 243, 243)',
                     coastlinecolor='rgb(204, 204, 204)',
-                )
+                    showocean=True,
+                    oceancolor='rgb(230, 230, 250)',
+                    showcountries=True,
+                    countrycolor='rgb(255, 255, 255)',
+                    showframe=False,
+                    projection_type='natural earth'
+                ),
+                height=600,
+                margin=dict(l=0, r=0, t=50, b=0)
             )
             return fig
+        
+        # Colori per organizzazione
+        color_map = {
+            'ONU': '#1f77b4',      # Blu
+            'UE': '#ff7f0e',       # Arancione  
+            'NATO': '#2ca02c',     # Verde
+            'ITA': '#d62728'       # Rosso
+        }
         
         # Crea la mappa
         fig = go.Figure()
         
-        # Aggiungi i marker per ogni missione
+        # Aggiungi i marker per ogni missione con stile migliorato
         for _, row in df_with_coords.iterrows():
+            # Calcola dimensione marker basata sul personale (logaritmica per evitare marker troppo grandi)
+            size = max(8, min(25, np.log(row['personale_totale'] + 1) * 3))
+            
+            # Colore basato sull'organizzazione
+            color = color_map.get(row['tipo_missione'], '#9467bd')
+            
+            # Testo hover ricco
+            hover_text = f"""
+            <b>🎯 {row['nome']}</b><br>
+            📍 Paese: {row['paese']}<br>
+            🌍 Regione: {row['regione']}<br>
+            👥 Personale: {row['personale_totale']:,.0f}<br>
+            💰 Costo: €{row['costo_totale']:,.0f}<br>
+            🏛️ Organizzazione: {row['tipo_missione']}<br>
+            📅 Periodo: {row['data_inizio'].strftime('%Y')} - {row['data_fine'].strftime('%Y')}<br>
+            🎖️ Tipo: {row['tipo_partecipazione']}
+            """
+            
             fig.add_trace(go.Scattergeo(
                 lon=[row['lon']],
                 lat=[row['lat']],
                 mode='markers',
                 name=row['nome'],
-                text=f"{row['nome']}<br>Paese: {row['paese']}<br>Personale: {row['personale_totale']}<br>Tipo: {row['tipo_partecipazione']}",
-                hovertemplate="<b>%{text}</b><extra></extra>",
+                text=hover_text,
+                hovertemplate="%{text}<extra></extra>",
                 marker=dict(
-                    size=np.log(row['personale_totale'] + 1) * 5,
-                    color=row['personale_totale'],
-                    colorscale='Viridis',
-                    showscale=True,
-                    colorbar=dict(title="Personale")
-                )
+                    size=size,
+                    color=color,
+                    line=dict(width=2, color='white'),
+                    opacity=0.8,
+                    symbol='circle'
+                ),
+                showlegend=False
+            ))
+        
+        # Aggiungi legenda per organizzazioni
+        for org, color in color_map.items():
+            fig.add_trace(go.Scattergeo(
+                lon=[None],
+                lat=[None],
+                mode='markers',
+                name=f'🏛️ {org}',
+                marker=dict(size=10, color=color),
+                showlegend=True
             ))
         
         fig.update_layout(
-            title="Mappa del Mondo - Missioni Internazionali",
+            title={
+                'text': "🌍 Mappa del Mondo - Missioni Internazionali Italiane",
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 20, 'color': '#2c3e50'}
+            },
             geo=dict(
                 scope='world',
                 showland=True,
                 landcolor='rgb(243, 243, 243)',
                 coastlinecolor='rgb(204, 204, 204)',
-                projection_type='equirectangular'
+                showocean=True,
+                oceancolor='rgb(230, 230, 250)',
+                showcountries=True,
+                countrycolor='rgb(255, 255, 255)',
+                showframe=False,
+                projection_type='natural earth',
+                center=dict(lat=20, lon=0),
+                projection_scale=1.2
             ),
-            height=600
+            height=700,
+            margin=dict(l=0, r=0, t=80, b=0),
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01,
+                bgcolor='rgba(255, 255, 255, 0.8)',
+                bordercolor='rgba(0, 0, 0, 0.2)',
+                borderwidth=1
+            ),
+            hovermode='closest'
         )
         
         return fig
@@ -112,13 +181,13 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
         fig = go.Figure()
         fig.add_trace(go.Scattergeo())
         fig.update_layout(
-            title="Mappa del Mondo - Errore nel caricamento",
+            title="🌍 Mappa del Mondo - Errore nel caricamento",
             geo=dict(scope='world')
         )
         return fig
 
 def create_region_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
-    """Crea una mappa regionale con Plotly"""
+    """Crea una mappa regionale migliorata con Plotly"""
     try:
         # Unisci i dati
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -136,34 +205,73 @@ def create_region_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figur
             'lon': 'mean'
         }).reset_index()
         
+        # Colori per regioni
+        region_colors = {
+            'Africa': '#e74c3c',
+            'Europa': '#3498db', 
+            'Medio Oriente': '#f39c12',
+            'Asia': '#9b59b6',
+            'America': '#2ecc71'
+        }
+        
         fig = go.Figure()
         
         for _, row in region_stats.iterrows():
+            color = region_colors.get(row['regione'], '#95a5a6')
+            size = max(15, min(40, np.log(row['personale_totale'] + 1) * 5))
+            
+            hover_text = f"""
+            <b>🌍 {row['regione']}</b><br>
+            🎯 Missioni: {row['nome']}<br>
+            👥 Personale: {row['personale_totale']:,.0f}<br>
+            💰 Costo: €{row['costo_totale']:,.0f}<br>
+            📍 Coordinate: {row['lat']:.2f}, {row['lon']:.2f}
+            """
+            
             fig.add_trace(go.Scattergeo(
                 lon=[row['lon']],
                 lat=[row['lat']],
                 mode='markers',
                 name=row['regione'],
-                text=f"{row['regione']}<br>Missioni: {row['nome']}<br>Personale: {row['personale_totale']:,.0f}",
-                hovertemplate="<b>%{text}</b><extra></extra>",
+                text=hover_text,
+                hovertemplate="%{text}<extra></extra>",
                 marker=dict(
-                    size=np.log(row['personale_totale'] + 1) * 8,
-                    color=row['nome'],
-                    colorscale='Plasma',
-                    showscale=True,
-                    colorbar=dict(title="Numero Missioni")
+                    size=size,
+                    color=color,
+                    line=dict(width=3, color='white'),
+                    opacity=0.8,
+                    symbol='diamond'
                 )
             ))
         
         fig.update_layout(
-            title="Mappa Regionale - Missioni per Regione",
+            title={
+                'text': "🌍 Mappa Regionale - Missioni per Regione",
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18, 'color': '#2c3e50'}
+            },
             geo=dict(
                 scope='world',
                 showland=True,
                 landcolor='rgb(243, 243, 243)',
-                coastlinecolor='rgb(204, 204, 204)'
+                coastlinecolor='rgb(204, 204, 204)',
+                showocean=True,
+                oceancolor='rgb(230, 230, 250)',
+                showcountries=True,
+                countrycolor='rgb(255, 255, 255)',
+                showframe=False,
+                projection_type='natural earth'
             ),
-            height=600
+            height=600,
+            margin=dict(l=0, r=0, t=80, b=0),
+            showlegend=True,
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left", 
+                x=0.01
+            )
         )
         
         return fig
@@ -173,7 +281,7 @@ def create_region_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figur
         return create_world_map_plotly(df, geo_df)
 
 def create_heatmap_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
-    """Crea una mappa di calore con Plotly"""
+    """Crea una mappa di calore SPETTACOLARE con Plotly"""
     try:
         # Unisci i dati
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -182,26 +290,47 @@ def create_heatmap_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         if len(df_with_coords) == 0:
             return create_world_map_plotly(df, geo_df)
         
-        # Crea la mappa di calore
+        # Crea la mappa di calore con stile migliorato
         fig = go.Figure()
         
         fig.add_trace(go.Densitymapbox(
             lat=df_with_coords['lat'],
             lon=df_with_coords['lon'],
             z=df_with_coords['personale_totale'],
-            radius=30,
-            colorscale='Viridis',
-            colorbar=dict(title="Personale Totale")
+            radius=40,
+            colorscale=[
+                [0, 'rgba(0, 0, 255, 0.1)'],
+                [0.3, 'rgba(0, 255, 255, 0.3)'],
+                [0.6, 'rgba(255, 255, 0, 0.5)'],
+                [0.8, 'rgba(255, 165, 0, 0.7)'],
+                [1, 'rgba(255, 0, 0, 0.9)']
+            ],
+            colorbar=dict(
+                title="👥 Personale Totale",
+                titleside="right",
+                thickness=15,
+                len=0.5,
+                x=0.95
+            ),
+            hovertemplate="<b>Densità Personale</b><br>" +
+                         "Personale: %{z:,.0f}<br>" +
+                         "Coordinate: %{lat:.2f}, %{lon:.2f}<extra></extra>"
         ))
         
         fig.update_layout(
-            title="Mappa di Calore - Densità Personale",
+            title={
+                'text': "🔥 Mappa di Calore - Densità Personale nelle Missioni",
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18, 'color': '#2c3e50'}
+            },
             mapbox=dict(
                 style="carto-positron",
                 center=dict(lat=20, lon=0),
-                zoom=1
+                zoom=1.5
             ),
-            height=600
+            height=600,
+            margin=dict(l=0, r=0, t=80, b=0)
         )
         
         return fig
@@ -211,7 +340,7 @@ def create_heatmap_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         return create_world_map_plotly(df, geo_df)
 
 def create_folium_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> Optional[folium.Map]:
-    """Crea una mappa interattiva con Folium"""
+    """Crea una mappa Folium SPETTACOLARE"""
     try:
         # Unisci i dati
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -220,30 +349,75 @@ def create_folium_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> Optional[folium
         if len(df_with_coords) == 0:
             return None
         
-        # Crea la mappa base
+        # Crea la mappa base con stile migliorato
         m = folium.Map(
             location=[20, 0],
             zoom_start=2,
-            tiles='CartoDB positron'
+            tiles='CartoDB positron',
+            control_scale=True
         )
+        
+        # Colori per organizzazione
+        color_map = {
+            'ONU': 'blue',
+            'UE': 'orange',
+            'NATO': 'green', 
+            'ITA': 'red'
+        }
+        
+        # Crea cluster per organizzazione
+        clusters = {}
+        for org in color_map.keys():
+            clusters[org] = MarkerCluster(
+                name=f'🏛️ {org}',
+                overlay=True,
+                control=True
+            ).add_to(m)
         
         # Aggiungi marker per ogni missione
         for _, row in df_with_coords.iterrows():
-            popup_text = f"""
-            <b>{row['nome']}</b><br>
-            Paese: {row['paese']}<br>
-            Regione: {row['regione']}<br>
-            Personale: {row['personale_totale']:,.0f}<br>
-            Tipo: {row['tipo_partecipazione']}<br>
-            Costo: €{row['costo_totale']:,.0f}
+            org = row['tipo_missione']
+            color = color_map.get(org, 'gray')
+            
+            # Popup HTML ricco e bello
+            popup_html = f"""
+            <div style="width: 300px; font-family: Arial, sans-serif;">
+                <div style="background: linear-gradient(135deg, {color}, {color}dd); 
+                            color: white; padding: 10px; border-radius: 5px 5px 0 0; 
+                            margin: -10px -10px 10px -10px;">
+                    <h3 style="margin: 0; font-size: 16px;">🎯 {row['nome']}</h3>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr><td><strong>📍 Paese:</strong></td><td>{row['paese']}</td></tr>
+                    <tr><td><strong>🌍 Regione:</strong></td><td>{row['regione']}</td></tr>
+                    <tr><td><strong>👥 Personale:</strong></td><td>{row['personale_totale']:,.0f}</td></tr>
+                    <tr><td><strong>💰 Costo:</strong></td><td>€{row['costo_totale']:,.0f}</td></tr>
+                    <tr><td><strong>🏛️ Organizzazione:</strong></td><td>{row['tipo_missione']}</td></tr>
+                    <tr><td><strong>📅 Periodo:</strong></td><td>{row['data_inizio'].strftime('%Y')} - {row['data_fine'].strftime('%Y')}</td></tr>
+                    <tr><td><strong>🎖️ Tipo:</strong></td><td>{row['tipo_partecipazione']}</td></tr>
+                </table>
+            </div>
             """
             
-            folium.Marker(
+            # Dimensione marker basata sul personale
+            size = max(8, min(20, np.log(row['personale_totale'] + 1) * 2))
+            
+            folium.CircleMarker(
                 location=[row['lat'], row['lon']],
-                popup=folium.Popup(popup_text, max_width=300),
-                tooltip=row['nome'],
-                icon=folium.Icon(color='red', icon='info-sign')
-            ).add_to(m)
+                radius=size,
+                popup=folium.Popup(popup_html, max_width=350),
+                tooltip=f"🎯 {row['nome']} ({row['paese']})",
+                color=color,
+                fill=True,
+                fillOpacity=0.7,
+                weight=2
+            ).add_to(clusters.get(org, m))
+        
+        # Aggiungi layer control
+        folium.LayerControl(
+            position='topright',
+            collapsed=False
+        ).add_to(m)
         
         return m
         
@@ -252,7 +426,7 @@ def create_folium_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> Optional[folium
         return None
 
 def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
-    """Crea una mappa timeline con Plotly"""
+    """Crea una mappa timeline SPETTACOLARE con Plotly"""
     try:
         # Unisci i dati
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -270,6 +444,14 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         for year in years:
             year_data = df_with_coords[df_with_coords['data_inizio'].dt.year == year]
             
+            # Colori per organizzazione
+            color_map = {
+                'ONU': '#1f77b4',
+                'UE': '#ff7f0e',
+                'NATO': '#2ca02c',
+                'ITA': '#d62728'
+            }
+            
             fig.add_trace(go.Scattergeo(
                 lon=year_data['lon'],
                 lat=year_data['lat'],
@@ -278,8 +460,8 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
                 text=year_data['nome'],
                 hovertemplate="<b>%{text}</b><br>Anno: " + str(year) + "<extra></extra>",
                 marker=dict(
-                    size=np.log(year_data['personale_totale'] + 1) * 5,
-                    color=year_data['personale_totale'],
+                    size=np.log(year_data['personale_totale'] + 1) * 4,
+                    color=[color_map.get(org, '#9467bd') for org in year_data['tipo_missione']],
                     colorscale='Viridis',
                     showscale=True,
                     colorbar=dict(title="Personale")
@@ -291,7 +473,7 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         if len(fig.data) > 0:
             fig.data[0].visible = True
         
-        # Aggiungi slider
+        # Aggiungi slider migliorato
         steps = []
         for i, year in enumerate(years):
             step = dict(
@@ -304,21 +486,36 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         
         sliders = [dict(
             active=0,
-            currentvalue={"prefix": "Anno: "},
+            currentvalue={"prefix": "📅 Anno: "},
             pad={"t": 50},
-            steps=steps
+            steps=steps,
+            bgcolor='rgba(255, 255, 255, 0.8)',
+            bordercolor='rgba(0, 0, 0, 0.2)',
+            borderwidth=1
         )]
         
         fig.update_layout(
-            title="Timeline Geografica - Evoluzione Missioni",
+            title={
+                'text': "⏰ Timeline Geografica - Evoluzione Missioni nel Tempo",
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18, 'color': '#2c3e50'}
+            },
             geo=dict(
                 scope='world',
                 showland=True,
                 landcolor='rgb(243, 243, 243)',
-                coastlinecolor='rgb(204, 204, 204)'
+                coastlinecolor='rgb(204, 204, 204)',
+                showocean=True,
+                oceancolor='rgb(230, 230, 250)',
+                showcountries=True,
+                countrycolor='rgb(255, 255, 255)',
+                showframe=False,
+                projection_type='natural earth'
             ),
             sliders=sliders,
-            height=600
+            height=700,
+            margin=dict(l=0, r=0, t=80, b=80)
         )
         
         return fig
@@ -328,7 +525,7 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
         return create_world_map_plotly(df, geo_df)
 
 def create_mission_clusters_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> Optional[folium.Map]:
-    """Crea una mappa con cluster di missioni"""
+    """Crea una mappa con cluster SPETTACOLARE"""
     try:
         # Unisci i dati
         df_with_coords = df.merge(geo_df, on='paese', how='left')
@@ -341,34 +538,94 @@ def create_mission_clusters_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> Optio
         m = folium.Map(
             location=[20, 0],
             zoom_start=2,
-            tiles='CartoDB positron'
+            tiles='CartoDB positron',
+            control_scale=True
         )
         
         # Crea cluster di marker
-        marker_cluster = MarkerCluster().add_to(m)
+        marker_cluster = MarkerCluster(
+            name='🎯 Tutte le Missioni',
+            overlay=True,
+            control=True,
+            options={
+                'spiderfyOnMaxZoom': True,
+                'disableClusteringAtZoom': 7,
+                'maxClusterRadius': 50
+            }
+        ).add_to(m)
+        
+        # Colori per organizzazione
+        color_map = {
+            'ONU': 'blue',
+            'UE': 'orange',
+            'NATO': 'green',
+            'ITA': 'red'
+        }
         
         # Aggiungi marker per ogni missione
         for _, row in df_with_coords.iterrows():
-            popup_text = f"""
-            <b>{row['nome']}</b><br>
-            Paese: {row['paese']}<br>
-            Regione: {row['regione']}<br>
-            Personale: {row['personale_totale']:,.0f}<br>
-            Tipo: {row['tipo_partecipazione']}<br>
-            Costo: €{row['costo_totale']:,.0f}<br>
-            Periodo: {row['data_inizio'].strftime('%Y')} - {row['data_fine'].strftime('%Y')}
+            org = row['tipo_missione']
+            color = color_map.get(org, 'gray')
+            
+            # Popup HTML ricco
+            popup_html = f"""
+            <div style="width: 320px; font-family: Arial, sans-serif;">
+                <div style="background: linear-gradient(135deg, {color}, {color}dd); 
+                            color: white; padding: 12px; border-radius: 8px 8px 0 0; 
+                            margin: -12px -12px 12px -12px; text-align: center;">
+                    <h3 style="margin: 0; font-size: 18px;">🎯 {row['nome']}</h3>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">🏛️ {row['tipo_missione']}</p>
+                </div>
+                <div style="padding: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 5px 0;"><strong>📍 Paese:</strong></td>
+                            <td style="padding: 5px 0;">{row['paese']}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 5px 0;"><strong>🌍 Regione:</strong></td>
+                            <td style="padding: 5px 0;">{row['regione']}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 5px 0;"><strong>👥 Personale:</strong></td>
+                            <td style="padding: 5px 0;">{row['personale_totale']:,.0f}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 5px 0;"><strong>💰 Costo:</strong></td>
+                            <td style="padding: 5px 0;">€{row['costo_totale']:,.0f}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 5px 0;"><strong>📅 Periodo:</strong></td>
+                            <td style="padding: 5px 0;">{row['data_inizio'].strftime('%Y')} - {row['data_fine'].strftime('%Y')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0;"><strong>🎖️ Tipo:</strong></td>
+                            <td style="padding: 5px 0;">{row['tipo_partecipazione']}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             """
             
-            # Colore basato sul tipo di partecipazione
-            color_map = {'mil': 'red', 'civ': 'blue', 'civmil': 'green'}
-            icon_color = color_map.get(row['tipo_partecipazione'], 'gray')
+            # Dimensione marker basata sul personale
+            size = max(6, min(18, np.log(row['personale_totale'] + 1) * 2))
             
-            folium.Marker(
+            folium.CircleMarker(
                 location=[row['lat'], row['lon']],
-                popup=folium.Popup(popup_text, max_width=300),
-                tooltip=f"{row['nome']} ({row['paese']})",
-                icon=folium.Icon(color=icon_color, icon='info-sign')
+                radius=size,
+                popup=folium.Popup(popup_html, max_width=350),
+                tooltip=f"🎯 {row['nome']} ({row['paese']}) - {row['tipo_missione']}",
+                color=color,
+                fill=True,
+                fillOpacity=0.7,
+                weight=2
             ).add_to(marker_cluster)
+        
+        # Aggiungi layer control
+        folium.LayerControl(
+            position='topright',
+            collapsed=False
+        ).add_to(m)
         
         return m
         
