@@ -1,0 +1,118 @@
+# Configurazione Dashboard MIDA
+dashboard:
+  title: "MIDA - Missioni Internazionali e Dati Analitici"
+  icon: "🌍"
+  layout: "wide"
+  
+# Periodi temporali
+periods:
+  - name: "1991-2001"
+    start_year: 1991
+    end_year: 2001
+    color: "#1f77b4"
+  - name: "2001-2015"
+    start_year: 2001
+    end_year: 2015
+    color: "#ff7f0e"
+  - name: "2015-ad oggi"
+    start_year: 2015
+    end_year: 9999
+    color: "#2ca02c"
+
+# Tipi di partecipazione
+participation_types:
+  mil:
+    name: "Militare"
+    color: "#1f77b4"
+    description: "Solo personale militare"
+  civ:
+    name: "Civile"
+    color: "#ff7f0e"
+    description: "Solo personale civile"
+  civmil:
+    name: "Misto"
+    color: "#2ca02c"
+    description: "Personale civile e militare"
+
+# Regioni geografiche
+regions:
+  Africa:
+    sub_regions:
+      - "Africa Settentrionale"
+      - "Africa Occidentale"
+      - "Africa Centrale"
+      - "Africa Orientale"
+      - "Corno d'Africa"
+      - "Africa Meridionale"
+  Europa:
+    sub_regions:
+      - "Balcani"
+      - "Europa Centrale"
+      - "Europa Orientale"
+      - "Europa Occidentale"
+  Medio Oriente:
+    sub_regions:
+      - "Levante"
+      - "Golfo Persico"
+      - "Peninsula Arabica"
+  Asia:
+    sub_regions:
+      - "Asia Centrale"
+      - "Asia Sudorientale"
+      - "Asia Meridionale"
+      - "Asia Orientale"
+  America:
+    sub_regions:
+      - "Caraibi"
+      - "America Centrale"
+      - "America Meridionale"
+
+# Tipi di missione
+mission_types:
+  ONU:
+    name: "Organizzazione delle Nazioni Unite"
+    color: "#1f77b4"
+  NATO:
+    name: "Organizzazione del Trattato dell'Atlantico del Nord"
+    color: "#ff7f0e"
+  UE:
+    name: "Unione Europea"
+    color: "#2ca02c"
+  ITA:
+    name: "Missione Italiana"
+    color: "#d62728"
+
+# Configurazione grafici
+charts:
+  colors:
+    primary: "#1f77b4"
+    secondary: "#ff7f0e"
+    tertiary: "#2ca02c"
+    quaternary: "#d62728"
+  height:
+    timeline: 600
+    default: 400
+  width:
+    default: "100%"
+
+# Configurazione esportazione
+export:
+  formats:
+    - "csv"
+    - "excel"
+  filename_prefix: "missioni_internazionali"
+  include_timestamp: true
+
+# Configurazione filtri
+filters:
+  default_values:
+    year: "Tutti i periodi"
+    participation: "Tutti"
+    region: "Tutte le regioni"
+    mission_type: "Tutti i tipi"
+  
+# Configurazione metriche
+metrics:
+  currency_format: "euro"
+  number_format: "comma"
+  date_format: "%Y-%m-%d" 

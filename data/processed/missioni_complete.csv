@@ -1,0 +1,46 @@
+nome,paese,regione,sub_regione,tipo_partecipazione,data_inizio,data_fine,personale_militare,personale_civile,personale_totale,costo_totale,tipo_missione
+UNIFIL,Libano,Medio Oriente,Levante,civmil,2006-08-11,2025-12-31,800,400,1200,150000000,ONU
+EUTM Mali,Mali,Africa,Africa Occidentale,mil,2013-02-18,2025-12-31,200,50,250,45000000,UE
+KFOR,Kosovo,Europa,Balcani,mil,1999-06-12,2025-12-31,350,50,400,80000000,NATO
+MINURSO,Sahara Occidentale,Africa,Africa Settentrionale,civ,1991-04-29,2025-12-31,5,10,15,5000000,ONU
+EUBAM Libya,Libia,Africa,Africa Settentrionale,civmil,2013-05-22,2025-12-31,60,40,100,20000000,UE
+MISIN,Niger,Africa,Africa Occidentale,mil,2018-07-01,2025-12-31,400,70,470,90000000,ITA
+ISAF,Afghanistan,Asia,Asia Centrale,mil,2001-10-07,2014-12-31,2500,300,2800,500000000,NATO
+EUFOR,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-02-01,2019-03-15,150,50,200,35000000,UE
+UNMISS,Sudan del Sud,Africa,Africa Orientale,civ,2011-07-09,2025-12-31,20,80,100,25000000,ONU
+EUTM Somalia,Somalia,Africa,Corno d'Africa,mil,2010-04-07,2025-12-31,180,70,250,40000000,UE
+UNPROFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1992-02-21,1995-12-20,1200,100,1300,200000000,ONU
+IFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1995-12-20,1996-12-20,1500,150,1650,250000000,NATO
+SFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1996-12-20,2004-12-02,800,100,900,120000000,NATO
+UNMIK,Kosovo,Europa,Balcani,civmil,1999-06-10,2008-06-15,300,200,500,80000000,ONU
+UNMIL,Liberia,Africa,Africa Occidentale,civmil,2003-09-19,2018-03-30,150,100,250,45000000,ONU
+MONUC,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,1999-11-30,2010-06-30,200,150,350,60000000,ONU
+MONUSCO,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,2010-07-01,2025-12-31,250,200,450,75000000,ONU
+UNOCI,Costa d'Avorio,Africa,Africa Occidentale,civmil,2004-04-04,2017-06-30,180,120,300,55000000,ONU
+UNMIS,Sudan,Africa,Africa Orientale,civ,2005-03-24,2011-07-09,50,100,150,30000000,ONU
+UNAMID,Darfur,Africa,Africa Orientale,civmil,2007-07-31,2020-12-31,300,250,550,90000000,ONU
+UNIFIL,Libano,Medio Oriente,Levante,civmil,1978-03-19,2000-05-31,600,200,800,100000000,ONU
+UNIKOM,Iraq-Kuwait,Medio Oriente,Golfo Persico,mil,1991-04-09,2003-10-06,50,30,80,15000000,ONU
+UNSCOM,Iraq,Medio Oriente,Golfo Persico,civ,1991-04-03,1999-12-17,20,80,100,25000000,ONU
+UNMOVIC,Iraq,Medio Oriente,Golfo Persico,civ,1999-12-17,2003-03-19,15,85,100,20000000,ONU
+UNSMIH,Haiti,America,Caraibi,civmil,1996-07-01,1997-06-30,100,50,150,25000000,ONU
+UNTMIH,Haiti,America,Caraibi,civmil,1997-08-01,1997-11-30,80,40,120,20000000,ONU
+MIPONUH,Haiti,America,Caraibi,civmil,1997-12-01,2000-03-15,90,60,150,30000000,ONU
+MINUSTAH,Haiti,America,Caraibi,civmil,2004-06-01,2017-10-15,200,150,350,60000000,ONU
+MINUJUSTH,Haiti,America,Caraibi,civmil,2017-10-16,2019-10-15,100,100,200,40000000,ONU
+BINUH,Haiti,America,Caraibi,civ,2019-10-16,2025-12-31,30,170,200,35000000,ONU
+UNTAET,Timor Est,Asia,Asia Sudorientale,civmil,1999-10-25,2002-05-20,300,200,500,80000000,ONU
+UNMISET,Timor Est,Asia,Asia Sudorientale,civmil,2002-05-20,2005-05-20,250,150,400,65000000,ONU
+UNMIT,Timor Est,Asia,Asia Sudorientale,civmil,2006-08-25,2012-12-31,200,100,300,50000000,ONU
+UNMEE,Etiopia-Eritrea,Africa,Corno d'Africa,civmil,2000-07-31,2008-07-31,150,100,250,40000000,ONU
+EUTM RCA,Repubblica Centrafricana,Africa,Africa Centrale,mil,2016-07-19,2025-12-31,120,30,150,30000000,UE
+EUCAP Sahel Niger,Niger,Africa,Africa Occidentale,civ,2012-08-15,2025-12-31,15,85,100,25000000,UE
+EUCAP Sahel Mali,Mali,Africa,Africa Occidentale,civ,2014-04-15,2025-12-31,10,90,100,20000000,UE
+EUNAVFOR MED,Mediterraneo,Europa,Mediterraneo,mil,2015-06-22,2025-12-31,300,50,350,60000000,UE
+IRINI,Mediterraneo,Europa,Mediterraneo,mil,2020-03-31,2025-12-31,250,30,280,50000000,UE
+MINUSMA,Mali,Africa,Africa Occidentale,civmil,2013-04-25,2023-12-31,200,150,350,70000000,ONU
+UNSMIL,Libia,Africa,Africa Settentrionale,civ,2011-09-16,2025-12-31,25,175,200,40000000,ONU
+UNSOS,Somalia,Africa,Corno d'Africa,civ,2013-06-03,2025-12-31,30,170,200,35000000,ONU
+MINUSCA,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-04-10,2025-12-31,300,200,500,80000000,ONU
+UNISFA,Abyei,Africa,Africa Orientale,civmil,2011-06-27,2025-12-31,100,50,150,30000000,ONU
+UNMISS,Sudan del Sud,Africa,Africa Orientale,civ,2011-07-09,2025-12-31,20,80,100,25000000,ONU 
