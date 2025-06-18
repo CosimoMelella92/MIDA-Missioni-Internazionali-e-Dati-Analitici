@@ -455,7 +455,7 @@ def main():
                 aspect='auto',
                 color_continuous_scale='Blues'
             )
-            st.plotly_chart(fig_heatmap, use_container_width=True, key="region_heatmap")
+            st.plotly_chart(fig_heatmap, use_container_width=True, key="heatmap_main")
     
     with col2:
         # Grafico per costo per regione
@@ -643,7 +643,7 @@ def main():
             
             # Mappa di calore
             heatmap = create_heatmap_plotly(df_filtered, geo_df)
-            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_improved")
+            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_main")
             
             st.info("""
             **🔥 Mappa di Calore:**

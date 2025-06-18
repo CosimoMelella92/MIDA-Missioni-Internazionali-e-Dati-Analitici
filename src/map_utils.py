@@ -307,7 +307,6 @@ def create_heatmap_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
             ],
             colorbar=dict(
                 title="👥 Personale Totale",
-                titleside="right",
                 thickness=15,
                 len=0.5,
                 x=0.95
