@@ -98,6 +98,9 @@ I documenti PDF vengono elaborati per estrarre:
 - **🛡️ NATO**: 3 missioni (ISAF, IFOR, SFOR)
 - **🇮🇹 ITA**: 1 missione (MISIN)
 
+![Analisi per Organizzazione](docs/images/Analisi%20Organizazone.png)
+*Distribuzione delle missioni per organizzazione internazionale*
+
 ![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
 *Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
 
@@ -134,9 +137,6 @@ I documenti PDF vengono elaborati per estrarre:
 - **Raggruppamento automatico**: Missioni vicine raggruppate
 - **Popup HTML ricchi**: Informazioni complete con styling
 - **Layer control**: Attiva/disattiva organizzazioni
-
-### Mappe Interattive
-![Mappe](docs/images/mappe_interattive.png)
 
 ### Infografiche e Visualizzazioni
 
