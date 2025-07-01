@@ -305,6 +305,11 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ### Mappe Interattive
 ![Mappe](docs/images/mappe_interattive.png)
 
+### Infografiche e Visualizzazioni
+
+![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
+*Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
+
 ---
 
 🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1978 al 2025
