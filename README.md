@@ -132,6 +132,20 @@ I documenti PDF vengono elaborati per estrarre:
 - **Popup HTML ricchi**: Informazioni complete con styling
 - **Layer control**: Attiva/disattiva organizzazioni
 
+### Mappe Interattive
+![Mappe](docs/images/mappe_interattive.png)
+
+### Analisi per Organizzazione
+- **NATO**: Missioni di difesa collettiva e sicurezza
+- **ONU**: Operazioni di mantenimento della pace
+- **UE**: Missioni di politica estera e sicurezza comune
+- **OSCE**: Missioni di diplomazia preventiva
+
+![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
+*Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
+
+### Infografiche e Visualizzazioni
+
 ## 🚀 Installazione e Utilizzo
 
 ### 1. **Installazione Dipendenze**
@@ -305,10 +319,10 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ### Mappe Interattive
 ![Mappe](docs/images/mappe_interattive.png)
 
-### Infografiche e Visualizzazioni
-
 ![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
 *Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
+
+### Infografiche e Visualizzazioni
 
 ---
 
