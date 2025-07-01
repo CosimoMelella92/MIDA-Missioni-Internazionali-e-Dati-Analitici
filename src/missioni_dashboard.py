@@ -112,6 +112,25 @@ def load_data():
     df['data_inizio'] = pd.to_datetime(df['data_inizio'], errors='coerce')
     df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce')
     
+    # Assicurati che la colonna commitment esista
+    if 'commitment' not in df.columns:
+        # Crea una classificazione basata sui dati esistenti
+        def classify_commitment(row):
+            if row['tipo_partecipazione'] == 'civ':
+                return 'Head of Mission'
+            elif row['personale_totale'] > 500:
+                return 'Troops'
+            elif row['tipo_missione'] in ['EUTM', 'EUCAP']:
+                return 'Head of Mission'
+            else:
+                return 'Troops'
+        
+        df['commitment'] = df.apply(classify_commitment, axis=1)
+    
+    # Pulisci i valori della colonna commitment (rimuovi spazi extra)
+    if 'commitment' in df.columns:
+        df['commitment'] = df['commitment'].str.strip()
+    
     # Gestisci date mancanti e aggiorna le date di fine per missioni attive
     current_date = pd.Timestamp.now()
     
@@ -179,6 +198,33 @@ def create_regional_analysis(df):
     
     return regional_stats
 
+def create_commitment_analysis(df):
+    """Analisi per tipo di commitment"""
+    if 'commitment' not in df.columns:
+        # Se la colonna commitment non esiste, crea una classificazione basata sui dati esistenti
+        def classify_commitment(row):
+            if row['tipo_partecipazione'] == 'civ':
+                return 'Head of Mission'
+            elif row['personale_totale'] > 500:
+                return 'Troops'
+            elif row['tipo_missione'] in ['EUTM', 'EUCAP']:
+                return 'Head of Mission'
+            else:
+                return 'Troops'
+        
+        df['commitment'] = df.apply(classify_commitment, axis=1)
+    
+    commitment_stats = df.groupby('commitment').agg({
+        'nome': 'count',
+        'personale_totale': 'sum',
+        'costo_totale': 'sum'
+    }).reset_index()
+    
+    commitment_stats.columns = ['Tipo Commitment', 'Numero Missioni', 
+                               'Personale Totale', 'Costo Totale']
+    
+    return commitment_stats
+
 def format_currency(value):
     """Formatta i valori monetari"""
     if value >= 1e9:
@@ -189,6 +235,35 @@ def format_currency(value):
         return f"€{value/1e3:.1f}K"
     else:
         return f"€{value:,.0f}"
+
+def map_commitment(row):
+    c = str(row['commitment']).lower()
+    n = str(row['nome']).lower()
+    # UNIFIL override
+    if 'unifil' in n:
+        return 'Head of Mission'
+    # Head of Mission
+    if 'head of mission' in c:
+        return 'Head of Mission'
+    # Troops (naval)
+    if 'naval' in c or 'eunavfor' in n or 'irini' in n:
+        return 'Troops (naval)'
+    # Troops (air)
+    if 'air' in c:
+        return 'Troops (air)'
+    # Troops (ground forces)
+    if 'ground' in c or 'isaf' in n or 'kfor' in n or 'inherent resolve' in n:
+        return 'Troops (ground forces)'
+    # Troops (logistical support)
+    if 'logistical' in c or 'support' in c or 'eumm' in n or 'mfo' in n or 'unmogip' in n or 'unficyp' in n or 'unama' in n or 'euam' in n or 'eulex' in n or 'unami' in n:
+        return 'Troops (logistical support)'
+    # Default fallback
+    return 'Troops (logistical support)'
+
+def create_commitment_detailed(df):
+    df = df.copy()
+    df['Commitment Dettagliato'] = df.apply(map_commitment, axis=1)
+    return df[['nome', 'paese', 'tipo_missione', 'personale_totale', 'Commitment Dettagliato']]
 
 def main():
     # Header principale
@@ -213,24 +288,32 @@ def main():
     # Carica dati geografici
     geo_df = load_geo_data()
     
-    # Debug info
-    if st.sidebar.checkbox("🔧 Debug Info"):
-        st.sidebar.write("**Debug Info:**")
-        st.sidebar.write(f"Dati caricati: {len(df)} righe")
-        st.sidebar.write(f"Mappe disponibili: {MAPS_AVAILABLE}")
-        st.sidebar.write(f"Coordinate caricate: {len(geo_df)} paesi")
-        st.sidebar.write(f"Data corrente: {pd.Timestamp.now()}")
-        
-        # Mostra alcune date di fine per debug
-        st.sidebar.write("**Esempi date fine:**")
-        for i, row in df.head(5).iterrows():
-            st.sidebar.write(f"{row['nome']}: {row['data_fine']}")
+    # Debug info sempre visibile in sidebar
+    st.sidebar.markdown('---')
+    st.sidebar.header('🛠️ Debug Dati Missioni')
+    st.sidebar.write(f"Missioni caricate dal CSV: {len(df)}")
+    st.sidebar.write('Nomi missioni caricate:')
+    for nome in df['nome'].unique():
+        st.sidebar.write(f'- {nome}')
+    # Missioni con date non valide
+    invalid_dates = df[df['data_inizio'].isna() | df['data_fine'].isna()]
+    if not invalid_dates.empty:
+        st.sidebar.write('⚠️ Missioni con date non valide:')
+        for _, row in invalid_dates.iterrows():
+            st.sidebar.write(f"- {row['nome']} (inizio: {row['data_inizio']}, fine: {row['data_fine']})")
+    # Missioni con campi chiave mancanti
+    missing_fields = df[df['nome'].isna() | df['paese'].isna() | df['tipo_missione'].isna()]
+    if not missing_fields.empty:
+        st.sidebar.write('⚠️ Missioni con campi chiave mancanti:')
+        for _, row in missing_fields.iterrows():
+            st.sidebar.write(f"- {row['nome']} (paese: {row['paese']}, tipo_missione: {row['tipo_missione']})")
     
     # Sidebar per filtri
     st.sidebar.header("🔍 Filtri")
     
-    # Filtro per periodo
-    periodi = ['Tutti i periodi'] + sorted(df['data_inizio'].dt.year.unique().tolist())
+    # Filtro per periodo - include missioni attive che iniziano prima del 1991
+    anni_disponibili = sorted(df['data_inizio'].dt.year.unique())
+    periodi = ['Tutti i periodi'] + anni_disponibili
     anno_selezionato = st.sidebar.selectbox("Anno di inizio", periodi)
     
     # Filtro per tipo di partecipazione
@@ -249,6 +332,13 @@ def main():
     organizzazioni = ['Tutte le organizzazioni'] + sorted(df['tipo_missione'].unique().tolist())
     organizzazione_selezionata = st.sidebar.selectbox("Organizzazione", organizzazioni)
     
+    # Filtro per commitment
+    if 'commitment' in df.columns:
+        commitments = ['Tutti i commitment'] + sorted(df['commitment'].unique().tolist())
+        commitment_selezionato = st.sidebar.selectbox("Tipo di Commitment", commitments)
+    else:
+        commitment_selezionato = 'Tutti i commitment'
+    
     # Applica filtri
     df_filtered = df.copy()
     if anno_selezionato != 'Tutti i periodi':
@@ -261,6 +351,8 @@ def main():
         df_filtered = df_filtered[df_filtered['tipo_missione'] == tipo_missione_selezionato]
     if organizzazione_selezionata != 'Tutte le organizzazioni':
         df_filtered = df_filtered[df_filtered['tipo_missione'] == organizzazione_selezionata]
+    if commitment_selezionato != 'Tutti i commitment' and 'commitment' in df_filtered.columns:
+        df_filtered = df_filtered[df_filtered['commitment'] == commitment_selezionato]
     
     # Metriche principali
     col1, col2, col3, col4 = st.columns(4)
@@ -592,6 +684,90 @@ def main():
     
     st.markdown("---")
     
+    # 5. ANALISI PER COMMITMENT
+    st.markdown('<h2 class="period-header">🎯 Analisi per Tipo di Commitment</h2>', 
+                unsafe_allow_html=True)
+    
+    commitment_stats = create_commitment_analysis(df_filtered)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Grafico per numero di missioni per commitment
+        fig_commitment_missions = px.bar(
+            commitment_stats,
+            x='Tipo Commitment',
+            y='Numero Missioni',
+            title='Numero di Missioni per Tipo di Commitment',
+            color='Tipo Commitment',
+            color_discrete_map={
+                'Head of Mission': '#1f77b4',
+                'Troops': '#ff7f0e'
+            }
+        )
+        st.plotly_chart(fig_commitment_missions, use_container_width=True, key="commitment_missions")
+        
+        # Grafico a torta per distribuzione commitment
+        fig_commitment_pie = px.pie(
+            commitment_stats,
+            values='Numero Missioni',
+            names='Tipo Commitment',
+            title='Distribuzione Missioni per Tipo di Commitment'
+        )
+        st.plotly_chart(fig_commitment_pie, use_container_width=True, key="commitment_pie")
+    
+    with col2:
+        # Grafico per personale per commitment
+        fig_commitment_personnel = px.bar(
+            commitment_stats,
+            x='Tipo Commitment',
+            y='Personale Totale',
+            title='Personale Totale per Tipo di Commitment',
+            color='Tipo Commitment',
+            color_discrete_map={
+                'Head of Mission': '#1f77b4',
+                'Troops': '#ff7f0e'
+            }
+        )
+        st.plotly_chart(fig_commitment_personnel, use_container_width=True, key="commitment_personnel")
+        
+        # Grafico per costo per commitment
+        fig_commitment_cost = px.bar(
+            commitment_stats,
+            x='Tipo Commitment',
+            y='Costo Totale',
+            title='Costo Totale per Tipo di Commitment',
+            color='Tipo Commitment',
+            color_discrete_map={
+                'Head of Mission': '#1f77b4',
+                'Troops': '#ff7f0e'
+            }
+        )
+        st.plotly_chart(fig_commitment_cost, use_container_width=True, key="commitment_cost")
+    
+    # Tabella dettagliata per commitment
+    st.subheader("📊 Dettagli per Tipo di Commitment")
+    
+    # Formatta i dati
+    commitment_display = commitment_stats.copy()
+    commitment_display['Costo Totale'] = commitment_display['Costo Totale'].apply(format_currency)
+    commitment_display['Personale Totale'] = commitment_display['Personale Totale'].apply(lambda x: f"{x:,.0f}")
+    
+    st.dataframe(commitment_display, use_container_width=True)
+    
+    # Info box per spiegazione commitment
+    st.markdown("""
+    <div class="info-box">
+        <strong>🎯 Classificazione Commitment:</strong><br>
+        • <strong>Head of Mission:</strong> Missioni con personale principalmente civile o di supporto, 
+          spesso missioni di training, monitoraggio o assistenza tecnica<br>
+        • <strong>Troops:</strong> Missioni con significativo dispiegamento di forze militari, 
+          incluse operazioni di peacekeeping, sicurezza e supporto logistico
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
     # 🗺️ SEZIONE MAPPE MIGLIORATA
     st.markdown('<h2 class="period-header">🗺️ Mappe Interattive Avanzate</h2>', 
                 unsafe_allow_html=True)
@@ -795,6 +971,20 @@ def main():
         <p><small>Ultimo aggiornamento: {}</small></p>
     </div>
     """.format(datetime.now().strftime('%d/%m/%Y %H:%M')), unsafe_allow_html=True)
+
+    # --- SEZIONE FINALE: Commitment dettagliato ---
+    st.markdown('<h2 class="period-header">🔎 Commitment dettagliato per missione</h2>', unsafe_allow_html=True)
+    df_commitment = create_commitment_detailed(df_filtered)
+    st.dataframe(df_commitment, use_container_width=True)
+    # Grafico a barre
+    st.markdown('**Distribuzione missioni per tipo di commitment**')
+    fig_commitment_bar = px.bar(
+        df_commitment.groupby('Commitment Dettagliato').size().reset_index(name='Numero Missioni'),
+        x='Commitment Dettagliato', y='Numero Missioni', color='Commitment Dettagliato',
+        title='Numero di missioni per tipo di commitment',
+        color_discrete_sequence=px.colors.qualitative.Set2
+    )
+    st.plotly_chart(fig_commitment_bar, use_container_width=True, key='commitment_detailed_bar')
 
 if __name__ == "__main__":
     main() 
