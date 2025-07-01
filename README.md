@@ -98,6 +98,9 @@ I documenti PDF vengono elaborati per estrarre:
 - **🛡️ NATO**: 3 missioni (ISAF, IFOR, SFOR)
 - **🇮🇹 ITA**: 1 missione (MISIN)
 
+![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
+*Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
+
 ### 🌍 Analisi per Regione e Sub-Regione
 - **Africa**: 25 missioni (Mali, Niger, Somalia, etc.)
 - **Europa**: 8 missioni (Balcani, Mediterraneo)
@@ -134,15 +137,6 @@ I documenti PDF vengono elaborati per estrarre:
 
 ### Mappe Interattive
 ![Mappe](docs/images/mappe_interattive.png)
-
-### Analisi per Organizzazione
-- **NATO**: Missioni di difesa collettiva e sicurezza
-- **ONU**: Operazioni di mantenimento della pace
-- **UE**: Missioni di politica estera e sicurezza comune
-- **OSCE**: Missioni di diplomazia preventiva
-
-![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
-*Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
 
 ### Infografiche e Visualizzazioni
 
