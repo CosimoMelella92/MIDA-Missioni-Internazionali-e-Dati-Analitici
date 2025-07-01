@@ -101,9 +101,6 @@ I documenti PDF vengono elaborati per estrarre:
 ![Analisi per Organizzazione](docs/images/Analisi%20Organizazone.png)
 *Distribuzione delle missioni per organizzazione internazionale*
 
-![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
-*Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
-
 ### 🌍 Analisi per Regione e Sub-Regione
 - **Africa**: 25 missioni (Mali, Niger, Somalia, etc.)
 - **Europa**: 8 missioni (Balcani, Mediterraneo)
