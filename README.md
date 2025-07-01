@@ -98,7 +98,7 @@ I documenti PDF vengono elaborati per estrarre:
 - **🛡️ NATO**: 3 missioni (ISAF, IFOR, SFOR)
 - **🇮🇹 ITA**: 1 missione (MISIN)
 
-![Analisi per Organizzazione](docs/images/Analisi%20Organizazone.png)
+![Analisi per Organizzazione]
 *Distribuzione delle missioni per organizzazione internazionale*
 
 ### 🌍 Analisi per Regione e Sub-Regione
@@ -118,19 +118,16 @@ I documenti PDF vengono elaborati per estrarre:
 - **Legenda integrata**: Visibile e ben posizionata
 
 ### 🔥 Mappa di Calore
-![Mappa di Calore](docs/images/mappa_calore.png)
 - **Densità personale**: Visualizzazione della concentrazione di personale
 - **Scala colori**: Blu (basso) → Rosso (alto)
 - **Radius ottimizzato**: 40px per migliore visualizzazione
 
 ### ⏰ Timeline Geografica
-![Timeline](docs/images/timeline.png)
 - **Slider temporale**: Navigazione anno per anno
 - **Evoluzione missioni**: Come si sono sviluppate nel tempo
 - **Colori mantenuti**: Organizzazioni sempre distinguibili
 
 ### 📍 Mappa Cluster
-![Cluster](docs/images/cluster.png)
 - **Raggruppamento automatico**: Missioni vicine raggruppate
 - **Popup HTML ricchi**: Informazioni complete con styling
 - **Layer control**: Attiva/disattiva organizzazioni
@@ -304,8 +301,6 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ### Dettagli Missioni
 ![Dettagli Missioni](docs/images/dettagli%20missioni.png)
 
-### Analisi per Organizzazione
-![Analisi Organizzazione](docs/images/analisi_organizzazione.png)
 
 ### Mappe Interattive
 ![Mappe](docs/images/mappe_interattive.png)
