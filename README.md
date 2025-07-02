@@ -364,5 +364,5 @@ Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 43 mis
 
 <div align="center">
   <b>Progetto sviluppato presso l'Università degli Studi di Catania</b><br/>
-  <img src="docs/images/logo_unict.jpeg" alt="Logo Università di Catania" width="180"/>
+  <img src="docs/images/logo_unict.jpg" alt="Logo Università di Catania" width="180"/>
 </div> 
