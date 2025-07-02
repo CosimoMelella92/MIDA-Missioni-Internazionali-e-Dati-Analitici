@@ -325,7 +325,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1978 al 2025
 
 📊 Cosa fa questa dashboard
-- Analizza **43 missioni internazionali** italiane (dataset aggiornato, senza duplicati o righe vuote)
+- Analizza **64 missioni internazionali** italiane (dataset aggiornato, senza duplicati o righe vuote)
 - Visualizza dati su periodi, personale, costi, regioni, organizzazioni, tipologia di commitment
 - Mostra una sezione dettagliata "🔎 Commitment dettagliato per missione" con classificazione:
   - Head of Mission
@@ -344,7 +344,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 3. **Controlla la sidebar** per debug e filtri
 
 🗂️ Struttura dati aggiornata
-Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 43 missioni** con i seguenti campi principali:
+Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 64 missioni** con i seguenti campi principali:
 - nome, paese, regione, sub_regione, tipo_partecipazione, data_inizio, data_fine, personale_totale, costo_totale, tipo_missione, commitment
 - Ogni missione è unica (es. UNMISS è presente una sola volta)
 - Commitment classificato secondo la tabella fornita dall'utente
@@ -362,7 +362,7 @@ Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 43 mis
 - Tutti i filtri e le mappe aggiornati al nuovo dataset
 
 🛠️ Debug e supporto
-- Se il numero di missioni caricate non è 43, controlla la sezione debug in sidebar e usa lo script `scripts/clean_missioni_csv.py` per pulire il file
+- Se il numero di missioni caricate non è 64, controlla la sezione debug in sidebar e usa lo script `scripts/clean_missioni_csv.py` per pulire il file
 - Per integrare nuovi dati, aggiungi le missioni al CSV seguendo la struttura e poi lancia lo script di pulizia
 - Per problemi o richieste, apri una issue o contatta il maintainer
 
