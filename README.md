@@ -93,10 +93,20 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ ONU**: 15 missioni (UNIFIL, KFOR, MINURSO, etc.)
-- **🇪🇺 UE**: 8 missioni (EUTM, EUCAP, EUNAVFOR, etc.)
-- **🛡️ NATO**: 3 missioni (ISAF, IFOR, SFOR)
-- **🇮🇹 ITA**: 1 missione (MISIN)
+- **🏛️ ONU:** 32 missioni  
+  Esempi: UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
+
+- **🇪🇺 UE:** 23 missioni  
+  Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
+
+- **🛡️ NATO:** 5 missioni  
+  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq
+
+- **🇮🇹 ITA:** 1 missione  
+  Esempio: MISIN
+
+- **Coalizione:** 2 missioni  
+  Esempi: MFO, Operation Inherent Resolve
 
 ![Analisi per Organizzazione]
 *Distribuzione delle missioni per organizzazione internazionale*
@@ -364,3 +374,10 @@ Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 43 mis
 
 **Progetto sviluppato presso l'Università degli Studi di Catania**  
 <img src="docs/images/logo_unict.jpg" alt="Logo Università di Catania" width="180"/> 
+
+## 🐞 Debug e raccomandazioni sulle date
+
+- Le colonne `data_inizio` e `data_fine` devono essere sempre in formato `YYYY-MM-DD` (esempio: 2024-07-02).
+- La dashboard forza la conversione automatica delle date e segnala nella sidebar quante missioni hanno date non valide.
+- Se vedi missioni mancanti nelle analisi temporali, controlla che tutte le date siano corrette e senza valori vuoti.
+- In caso di errore, correggi il file CSV e ricarica la dashboard.

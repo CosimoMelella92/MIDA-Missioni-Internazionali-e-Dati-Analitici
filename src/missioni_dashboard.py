@@ -285,6 +285,12 @@ def main():
         st.error("Errore nel caricamento dei dati")
         return
     
+    # Forza conversione date e debug
+    df['data_inizio'] = pd.to_datetime(df['data_inizio'], errors='coerce')
+    df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce')
+    st.sidebar.write(f"Missioni con data_inizio non valida: {df['data_inizio'].isna().sum()}")
+    st.sidebar.write(f"Missioni con data_fine non valida: {df['data_fine'].isna().sum()}")
+    
     # Carica dati geografici
     geo_df = load_geo_data()
     
@@ -353,6 +359,9 @@ def main():
         df_filtered = df_filtered[df_filtered['tipo_missione'] == organizzazione_selezionata]
     if commitment_selezionato != 'Tutti i commitment' and 'commitment' in df_filtered.columns:
         df_filtered = df_filtered[df_filtered['commitment'] == commitment_selezionato]
+    
+    # Debug: mostra quante missioni sono nel DataFrame filtrato
+    st.sidebar.write(f"Missioni dopo i filtri: {len(df_filtered)}")
     
     # Metriche principali
     col1, col2, col3, col4 = st.columns(4)
