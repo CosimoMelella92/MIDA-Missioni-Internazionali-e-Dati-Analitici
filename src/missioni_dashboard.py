@@ -474,6 +474,72 @@ def main():
     
     st.markdown("---")
     
+    # === SEZIONE PERIODIZZAZIONE STORICA DETTAGLIATA ===
+    st.markdown('<h2 class="period-header">⏳ Analisi Periodizzata delle Missioni (1991-2001, 2001-2015, 2015-oggi)</h2>', unsafe_allow_html=True)
+
+    # Funzione per assegnare il periodo
+    periodi_definiti = [
+        (1991, 2001, '1991-2001'),
+        (2002, 2015, '2002-2015'),
+        (2016, 2100, '2016-oggi')
+    ]
+    def assegna_periodo(row):
+        anno = row['data_inizio'].year if not pd.isna(row['data_inizio']) else None
+        for start, end, label in periodi_definiti:
+            if anno is not None and start <= anno <= end:
+                return label
+        return 'Pre-1991'
+
+    df_period = df_filtered.copy()
+    df_period['Periodo Storico'] = df_period.apply(assegna_periodo, axis=1)
+
+    # Numero missioni per periodo
+    period_count = df_period['Periodo Storico'].value_counts().sort_index()
+    fig_period_missions = px.bar(
+        x=period_count.index,
+        y=period_count.values,
+        title='Numero di Missioni per Periodo Storico',
+        labels={'x': 'Periodo', 'y': 'Numero Missioni'},
+        color=period_count.index,
+        color_discrete_sequence=px.colors.qualitative.Set2
+    )
+    st.plotly_chart(fig_period_missions, use_container_width=True, key='period_missions')
+
+    # Personale e costi per periodo
+    agg = df_period.groupby('Periodo Storico').agg({
+        'personale_totale': 'sum',
+        'costo_totale': 'sum'
+    }).reset_index()
+
+    col1, col2 = st.columns(2)
+    with col1:
+        fig_pers = px.bar(
+            agg, x='Periodo Storico', y='personale_totale',
+            title='Personale Totale per Periodo',
+            color='Periodo Storico',
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        st.plotly_chart(fig_pers, use_container_width=True, key='period_personale')
+    with col2:
+        fig_cost = px.bar(
+            agg, x='Periodo Storico', y='costo_totale',
+            title='Costo Totale per Periodo',
+            color='Periodo Storico',
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        st.plotly_chart(fig_cost, use_container_width=True, key='period_costi')
+
+    # Tabella riassuntiva
+    agg['costo_totale'] = agg['costo_totale'].apply(format_currency)
+    agg['personale_totale'] = agg['personale_totale'].apply(lambda x: f"{x:,.0f}")
+    st.dataframe(agg.rename(columns={
+        'Periodo Storico': 'Periodo',
+        'personale_totale': 'Personale Totale',
+        'costo_totale': 'Costo Totale'
+    }), use_container_width=True)
+    
+    st.markdown("---")
+    
     # 2. ANALISI PER TIPO DI PARTECIPAZIONE
     st.markdown('<h2 class="period-header">🎯 Analisi per Tipo di Partecipazione</h2>', 
                 unsafe_allow_html=True)

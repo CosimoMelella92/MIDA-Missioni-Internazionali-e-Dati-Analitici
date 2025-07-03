@@ -10,7 +10,7 @@
 **Cosimo Melella**
 
 ## 📊 Panoramica
-MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni. Il sistema analizza **50 missioni internazionali italiane** dal 1978 al 2025, coprendo un arco temporale di quasi 50 anni di impegno internazionale dell'Italia.
+MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni. Il sistema analizza **64 missioni internazionali italiane** dal 1978 al 2025, coprendo un arco temporale di quasi 50 anni di impegno internazionale dell'Italia.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -93,10 +93,10 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ ONU:** 32 missioni  
+- **🏛️ ONU:** 34 missioni  
   Esempi: UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
 
-- **🇪🇺 UE:** 23 missioni  
+- **🇪🇺 UE:** 22 missioni  
   Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
 
 - **🛡️ NATO:** 5 missioni  
