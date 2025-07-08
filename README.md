@@ -10,7 +10,9 @@
 **Cosimo Melella**
 
 ## 📊 Panoramica
-MIDA è un sistema di analisi e visualizzazione delle missioni internazionali che combina l'estrazione di dati da documenti PDF con una dashboard interattiva per l'analisi e il monitoraggio delle missioni. Il sistema analizza **64 missioni internazionali italiane** dal 1978 al 2025, coprendo un arco temporale di quasi 50 anni di impegno internazionale dell'Italia.
+MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
+
+Attualmente il sistema gestisce **~200 missioni** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -51,20 +53,23 @@ graph LR
 
 ## 📁 Struttura dei Dati
 
-### File CSV Principale (`missioni_complete.csv`)
-Il file contiene le seguenti colonne:
-- **nome**: Identificativo univoco della missione
+### File Principale (`missioni_complete.csv`)
+Il dataset strutturato contiene queste colonne obbligatorie:
+- **nome**: Nome univoco della missione
 - **paese**: Paese di destinazione
-- **regione**: Regione geografica (Africa, Europa, Medio Oriente, Asia, America)
+- **regione**: Regione geografica
 - **sub_regione**: Sub-regione specifica
-- **tipo_partecipazione**: Tipo di partecipazione (mil, civ, civmil)
-- **data_inizio**: Data di inizio della missione
-- **data_fine**: Data di fine della missione
-- **personale_militare**: Numero di personale militare
-- **personale_civile**: Numero di personale civile
-- **personale_totale**: Numero totale di persone coinvolte
+- **tipo_partecipazione**: (mil, civ, civmil)
+- **data_inizio**: Data di inizio (YYYY-MM-DD)
+- **data_fine**: Data di fine (YYYY-MM-DD)
+- **personale_militare**: Numero personale militare
+- **personale_civile**: Numero personale civile
+- **personale_totale**: Totale personale
 - **costo_totale**: Budget complessivo
-- **tipo_missione**: Organizzazione (ONU, UE, NATO, ITA)
+- **tipo_missione**: Organizzazione (ONU, UE, NATO, ITA, ecc.)
+- **commitment**: Classificazione impegno (calcolata se mancante)
+
+**Nota:** Il sistema accetta anche file Excel con colonne diverse, purché mappabili su queste. La pipeline normalizza e arricchisce i dati automaticamente.
 
 ### Documenti PDF
 I documenti PDF vengono elaborati per estrarre:
@@ -73,6 +78,24 @@ I documenti PDF vengono elaborati per estrarre:
 - Informazioni sul personale
 - Dettagli finanziari
 - Riferimenti normativi
+
+## 🧹 Pipeline Dati e Deduplicazione
+- **Caricamento**: I dati vengono caricati da `data/processed/missioni_complete.csv` e, se presenti, da nuovi file Excel in `data/raw/Excel/`.
+- **Normalizzazione**: I dati vengono convertiti nel formato standard, con colonne e tipi coerenti.
+- **Deduplicazione automatica**: Missioni con nomi simili (ignorando spazi, trattini, maiuscole/minuscole), stesso paese vengono mantenute una sola volta.
+- **Pulizia colonne**: Vengono rimosse colonne duplicate e valori incoerenti.
+- **Validazione**: Il sistema segnala missioni con dati mancanti, date incoerenti o costi anomali.
+
+## ➕ Come aggiungere nuovi dati
+1. **Aggiungi il file Excel/CSV** in `data/raw/Excel/`.
+2. **Assicurati che le colonne siano mappabili** su quelle richieste (vedi sopra). Se usi nomi diversi, la pipeline li mapperà automaticamente se riconoscibili.
+3. **Evita duplicati**: la pipeline li rimuove automaticamente, ma è buona pratica controllare che i nomi missione siano coerenti.
+4. **Avvia la dashboard**: i dati verranno integrati e puliti automaticamente.
+
+## 🛡️ Qualità e Controlli
+- **Script di controllo duplicati**: `python test_check_duplicates.py` segnala missioni simili e anomalie sui costi.
+- **Controllo qualità dati**: la dashboard segnala missioni con date o campi chiave mancanti.
+- **Best practice**: usa sempre nomi missione chiari e coerenti, verifica i dati prima di aggiungerli.
 
 ## 📈 Dashboard Avanzata
 
@@ -83,6 +106,7 @@ I documenti PDF vengono elaborati per estrarre:
 - **🟢 Missioni Attive**: Missioni attualmente in corso
 
 ### 📅 Analisi per Periodi Temporali
+- **1948-1990**: Guerra Fredda e prime missioni ONU
 - **1991-2001**: Post Guerra Fredda
 - **2001-2015**: Guerra al Terrorismo  
 - **2015-Presente**: Crisi Migratoria e Stabilizzazione
@@ -93,20 +117,20 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ ONU:** 34 missioni  
-  Esempi: UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
+- **🏛️ ONU:** 40+ missioni  
+  Esempi: UNTSO (1948), UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
 
-- **🇪🇺 UE:** 22 missioni  
+- **🇪🇺 UE:** 25+ missioni  
   Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
 
-- **🛡️ NATO:** 5 missioni  
-  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq
+- **🛡️ NATO:** 10+ missioni  
+  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Active Endeavour, Resolute Support, ecc.
 
-- **🇮🇹 ITA:** 1 missione  
-  Esempio: MISIN
+- **🇮🇹 ITA:** Missioni bilaterali e nazionali  
+  Esempi: MISIN, missioni bilaterali in vari paesi
 
-- **Coalizione:** 2 missioni  
-  Esempi: MFO, Operation Inherent Resolve
+- **Coalizione:** Missioni multinazionali  
+  Esempi: MFO, Operation Inherent Resolve, Desert Shield/Storm
 
 ![Analisi per Organizzazione]
 *Distribuzione delle missioni per organizzazione internazionale*

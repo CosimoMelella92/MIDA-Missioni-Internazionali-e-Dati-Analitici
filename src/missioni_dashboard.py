@@ -84,6 +84,26 @@ st.markdown("""
         padding: 1rem;
         margin: 1rem 0;
     }
+    .timeline-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin: 1rem 0;
+        color: white;
+    }
+    .timeline-header {
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 1rem;
+        color: white;
+    }
+    .timeline-stats {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 0.5rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -93,6 +113,10 @@ def load_data():
     try:
         # Prova prima il file completo
         df = pd.read_csv('data/processed/missioni_complete.csv')
+        
+        # Integra nuovi dati Excel se presenti
+        df = integrate_excel_data(df)
+        
     except:
         try:
             # Fallback al file originale
@@ -104,6 +128,10 @@ def load_data():
             df['personale_militare'] = df['personale'] * 0.7
             df['personale_civile'] = df['personale'] * 0.3
             df['personale_totale'] = df['personale']
+            
+            # Integra nuovi dati Excel se presenti
+            df = integrate_excel_data(df)
+            
         except:
             st.error("Impossibile caricare i dati delle missioni")
             return None
@@ -141,25 +169,243 @@ def load_data():
             if (current_date - row['data_inizio']).days < 1825:  # 5 anni
                 df.at[idx, 'data_fine'] = current_date + pd.Timedelta(days=365)  # Estendi di 1 anno
     
+    # Rimuovi colonne duplicate se presenti
+    df = df.loc[:, ~df.columns.duplicated()]
+    
     return df
+
+def integrate_excel_data(df_existing):
+    """Integra i dati dai nuovi file Excel evitando duplicati"""
+    try:
+        # Carica i nuovi dati Excel
+        missions_df = pd.read_excel('data/raw/Excel/missions.xlsx')
+        expenditure_df = pd.read_excel('data/raw/Excel/missions_expenditure_Italy.xlsx')
+        
+        # Converti i dati Excel nel formato compatibile
+        new_missions = []
+        
+        for _, row in missions_df.iterrows():
+            # Normalizza il nome della missione per il confronto
+            mission_name = str(row['mission']).strip()
+            
+            # Controlla se la missione esiste già nei dati attuali
+            existing_mission = df_existing[df_existing['nome'].str.contains(mission_name, case=False, na=False)]
+            
+            if len(existing_mission) == 0:
+                # Missione non esistente, aggiungi
+                new_mission = {
+                    'nome': mission_name,
+                    'paese': str(row['country']).strip(),
+                    'regione': str(row['region']).strip() if pd.notna(row['region']) else 'Non specificata',
+                    'sub_regione': 'Non specificata',
+                    'tipo_partecipazione': 'civmil',  # Default
+                    'data_inizio': pd.to_datetime(row['date_start'], errors='coerce'),
+                    'data_fine': pd.to_datetime(row['date_end'], errors='coerce'),
+                    'personale_militare': 100,  # Valore di default
+                    'personale_civile': 50,     # Valore di default
+                    'personale_totale': 150,    # Valore di default
+                    'costo_totale': 25000000,   # Valore di default
+                    'tipo_missione': str(row['framework']).strip() if pd.notna(row['framework']) else 'ONU',
+                    'commitment': 'Troops'  # Default
+                }
+                new_missions.append(new_mission)
+        
+        # Aggiungi i nuovi dati se ce ne sono
+        if new_missions:
+            new_df = pd.DataFrame(new_missions)
+            df_existing = pd.concat([df_existing, new_df], ignore_index=True)
+            st.success(f"Integrati {len(new_missions)} nuovi record dalle fonti Excel")
+        
+        # Rimozione duplicati: normalizza nome (minuscolo, senza spazi e trattini), paese, data_inizio
+        def normalize_name(name):
+            return str(name).lower().replace(' ', '').replace('-', '').replace('_', '')
+        
+        # Crea colonne normalizzate per il confronto
+        df_existing['__norm_nome'] = df_existing['nome'].apply(normalize_name)
+        df_existing['__norm_paese'] = df_existing['paese'].str.lower().str.strip()
+        df_existing['__norm_data'] = df_existing['data_inizio'].astype(str).str[:10]
+        
+        # Trova e rimuovi duplicati basati su nome normalizzato e paese
+        duplicates_mask = df_existing.duplicated(subset=['__norm_nome', '__norm_paese'], keep='first')
+        if duplicates_mask.any():
+            st.info(f"Rimossi {duplicates_mask.sum()} duplicati basati su nome e paese")
+            df_existing = df_existing[~duplicates_mask]
+        
+        # Rimuovi le colonne temporanee
+        df_existing = df_existing.drop(columns=['__norm_nome', '__norm_paese', '__norm_data'])
+        
+        # Rimuovi colonne duplicate se presenti
+        df_existing = df_existing.loc[:, ~df_existing.columns.duplicated()]
+        
+        return df_existing
+        
+    except Exception as e:
+        st.warning(f"Errore nell'integrazione dei dati Excel: {str(e)}")
+        return df_existing
+
+def normalize_excel_columns(df):
+    """Normalizza le colonne del DataFrame Excel per compatibilità"""
+    # Mappa delle colonne possibili
+    column_mapping = {
+        # Nome missione
+        'nome_missione': 'nome',
+        'missione': 'nome',
+        'Nome Missione': 'nome',
+        'Missione': 'nome',
+        
+        # Paese
+        'paese': 'paese',
+        'Paese': 'paese',
+        'stato': 'paese',
+        'Stato': 'paese',
+        
+        # Regione
+        'regione': 'regione',
+        'Regione': 'regione',
+        'area_geografica': 'regione',
+        'Area Geografica': 'regione',
+        
+        # Sub-regione
+        'sub_regione': 'sub_regione',
+        'Sub Regione': 'sub_regione',
+        'area_specifica': 'sub_regione',
+        'Area Specifica': 'sub_regione',
+        
+        # Tipo partecipazione
+        'tipo_partecipazione': 'tipo_partecipazione',
+        'Tipo Partecipazione': 'tipo_partecipazione',
+        'partecipazione': 'tipo_partecipazione',
+        'Partecipazione': 'tipo_partecipazione',
+        
+        # Date
+        'data_inizio': 'data_inizio',
+        'Data Inizio': 'data_inizio',
+        'inizio': 'data_inizio',
+        'Inizio': 'data_inizio',
+        
+        'data_fine': 'data_fine',
+        'Data Fine': 'data_fine',
+        'fine': 'data_fine',
+        'Fine': 'data_fine',
+        
+        # Personale
+        'personale_militare': 'personale_militare',
+        'Personale Militare': 'personale_militare',
+        'militari': 'personale_militare',
+        'Militari': 'personale_militare',
+        
+        'personale_civile': 'personale_civile',
+        'Personale Civile': 'personale_civile',
+        'civili': 'personale_civile',
+        'Civili': 'personale_civile',
+        
+        'personale_totale': 'personale_totale',
+        'Personale Totale': 'personale_totale',
+        'totale_personale': 'personale_totale',
+        'Totale Personale': 'personale_totale',
+        'personale': 'personale_totale',
+        'Personale': 'personale_totale',
+        
+        # Costo
+        'costo_totale': 'costo_totale',
+        'Costo Totale': 'costo_totale',
+        'costo': 'costo_totale',
+        'Costo': 'costo_totale',
+        
+        # Tipo missione
+        'tipo_missione': 'tipo_missione',
+        'Tipo Missione': 'tipo_missione',
+        'organizzazione': 'tipo_missione',
+        'Organizzazione': 'tipo_missione',
+        
+        # Commitment
+        'commitment': 'commitment',
+        'Commitment': 'commitment',
+        'tipo_commitment': 'commitment',
+        'Tipo Commitment': 'commitment'
+    }
+    
+    # Rinomina le colonne se necessario
+    df = df.rename(columns=column_mapping)
+    
+    # Assicurati che le colonne essenziali esistano
+    required_columns = ['nome', 'paese', 'regione', 'sub_regione', 'tipo_partecipazione', 
+                       'data_inizio', 'data_fine', 'personale_militare', 'personale_civile', 
+                       'personale_totale', 'costo_totale', 'tipo_missione', 'commitment']
+    
+    for col in required_columns:
+        if col not in df.columns:
+            if col == 'regione':
+                df[col] = 'Non specificata'
+            elif col == 'sub_regione':
+                df[col] = 'Non specificata'
+            elif col == 'tipo_partecipazione':
+                df[col] = 'civmil'
+            elif col == 'personale_militare':
+                df[col] = df.get('personale_totale', 0) * 0.7
+            elif col == 'personale_civile':
+                df[col] = df.get('personale_totale', 0) * 0.3
+            elif col == 'personale_totale':
+                df[col] = df.get('personale_militare', 0) + df.get('personale_civile', 0)
+            elif col == 'costo_totale':
+                df[col] = 0
+            elif col == 'tipo_missione':
+                df[col] = 'Non specificato'
+            elif col == 'commitment':
+                df[col] = 'Troops'
+    
+    return df
+
+def merge_mission_data(df_existing, df_new):
+    """Unisce i dati esistenti con i nuovi dati evitando duplicati"""
+    # Combina i DataFrame
+    df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+    
+    # Rimuovi duplicati basati sul nome della missione
+    df_combined = df_combined.drop_duplicates(subset=['nome'], keep='first')
+    
+    return df_combined
 
 def create_period_analysis(df):
     """Crea l'analisi per periodi temporali"""
     
+    # Crea una copia del DataFrame per evitare modifiche al DataFrame originale
+    df_analysis = df.copy()
+    
+    # Rimuovi colonne duplicate se presenti
+    df_analysis = df_analysis.loc[:, ~df_analysis.columns.duplicated()]
+    
+    # Verifica che la colonna data_inizio esista e sia nel formato corretto
+    if 'data_inizio' not in df_analysis.columns:
+        st.error("Colonna 'data_inizio' non trovata nel DataFrame")
+        return pd.DataFrame()
+    
+    # Assicurati che data_inizio sia datetime
+    df_analysis['data_inizio'] = pd.to_datetime(df_analysis['data_inizio'], errors='coerce')
+    
+    # Rimuovi righe con date non valide
+    df_analysis = df_analysis.dropna(subset=['data_inizio'])
+    
     # Definisci i periodi
     def get_period(row):
-        start_year = row['data_inizio'].year
-        if start_year < 2001:
-            return "1991-2001"
-        elif start_year < 2015:
-            return "2001-2015"
-        else:
+        try:
+            start_year = row['data_inizio'].year
+            if start_year < 1991:
+                return "1948-1990"
+            elif start_year < 2001:
+                return "1991-2001"
+            elif start_year < 2015:
+                return "2001-2015"
+            else:
+                return "2015-ad oggi"
+        except:
             return "2015-ad oggi"
     
-    df['periodo'] = df.apply(get_period, axis=1)
+    # Applica la funzione periodo in modo sicuro
+    df_analysis['periodo'] = df_analysis.apply(get_period, axis=1)
     
     # Analisi per periodo
-    period_stats = df.groupby('periodo').agg({
+    period_stats = df_analysis.groupby('periodo').agg({
         'nome': 'count',
         'personale_militare': 'sum',
         'personale_civile': 'sum',
@@ -474,11 +720,199 @@ def main():
     
     st.markdown("---")
     
-    # === SEZIONE PERIODIZZAZIONE STORICA DETTAGLIATA ===
-    st.markdown('<h2 class="period-header">⏳ Analisi Periodizzata delle Missioni (1991-2001, 2001-2015, 2015-oggi)</h2>', unsafe_allow_html=True)
-
+    # === SEZIONE TIMELINE INTERATTIVA AVANZATA ===
+    st.markdown('<h2 class="period-header">⏳ Timeline Interattiva delle Missioni (1948-oggi)</h2>', unsafe_allow_html=True)
+    
+    # Timeline interattiva con slider
+    st.markdown("### 🎛️ Controllo Timeline")
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # Slider per selezionare il range temporale
+        min_year = int(df_filtered['data_inizio'].dt.year.min())
+        max_year = int(df_filtered['data_inizio'].dt.year.max())
+        selected_years = st.slider(
+            "Seleziona Range Temporale",
+            min_value=min_year,
+            max_value=max_year,
+            value=(min_year, max_year),
+            step=1
+        )
+    
+    with col2:
+        # Pulsante per reset
+        if st.button("🔄 Reset Timeline"):
+            selected_years = (min_year, max_year)
+    
+    # Filtra i dati per il periodo selezionato
+    df_timeline = df_filtered[
+        (df_filtered['data_inizio'].dt.year >= selected_years[0]) &
+        (df_filtered['data_inizio'].dt.year <= selected_years[1])
+    ].copy()
+    
+    # Statistiche temporali
+    st.markdown("### 📈 Statistiche Temporali")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            label="📅 Periodo Analizzato",
+            value=f"{selected_years[0]} - {selected_years[1]}",
+            delta=f"{selected_years[1] - selected_years[0]} anni"
+        )
+    
+    with col2:
+        st.metric(
+            label="🎯 Missioni nel Periodo",
+            value=len(df_timeline),
+            delta=f"{len(df_timeline) - len(df_filtered)} vs totale"
+        )
+    
+    with col3:
+        avg_personnel = df_timeline['personale_totale'].mean()
+        st.metric(
+            label="👥 Personale Medio",
+            value=f"{avg_personnel:.0f}",
+            delta=f"±{df_timeline['personale_totale'].std():.0f}"
+        )
+    
+    with col4:
+        total_cost = df_timeline['costo_totale'].sum()
+        st.metric(
+            label="💰 Costo Totale",
+            value=format_currency(total_cost),
+            delta=f"{len(df_timeline)} missioni"
+        )
+    
+    # Timeline interattiva con Plotly
+    st.markdown("### 📊 Timeline Interattiva")
+    
+    # Prepara i dati per la timeline
+    timeline_data = df_timeline.copy()
+    timeline_data['anno'] = timeline_data['data_inizio'].dt.year
+    timeline_data['durata_mesi'] = ((timeline_data['data_fine'] - timeline_data['data_inizio']).dt.days / 30).fillna(12)
+    
+    # Colori per tipo di missione
+    mission_colors = {
+        'ONU': '#1f77b4',
+        'NATO': '#ff7f0e',
+        'EU': '#2ca02c',
+        'OSCE': '#d62728',
+        'Altri': '#9467bd'
+    }
+    
+    # Crea la timeline interattiva
+    fig_timeline = go.Figure()
+    
+    for mission_type in timeline_data['tipo_missione'].unique():
+        missions = timeline_data[timeline_data['tipo_missione'] == mission_type]
+        color = mission_colors.get(mission_type, '#9467bd')
+        
+        fig_timeline.add_trace(go.Scatter(
+            x=missions['data_inizio'],
+            y=missions['personale_totale'],
+            mode='markers+lines',
+            name=mission_type,
+            text=missions['nome'],
+            hovertemplate='<b>%{text}</b><br>' +
+                         'Data: %{x}<br>' +
+                         'Personale: %{y}<br>' +
+                         'Tipo: ' + mission_type + '<br>' +
+                         '<extra></extra>',
+            marker=dict(
+                size=missions['personale_totale'] / 50 + 5,
+                color=color,
+                opacity=0.7
+            ),
+            line=dict(width=2, color=color)
+        ))
+    
+    fig_timeline.update_layout(
+        title='Timeline Interattiva delle Missioni',
+        xaxis_title='Anno',
+        yaxis_title='Personale Totale',
+        hovermode='closest',
+        showlegend=True,
+        height=500
+    )
+    
+    st.plotly_chart(fig_timeline, use_container_width=True, key='timeline_interactive')
+    
+    # Timeline animata per anni
+    st.markdown("### 🎬 Timeline Animata per Anni")
+    
+    # Crea timeline animata
+    fig_animated = px.scatter(
+        timeline_data,
+        x='data_inizio',
+        y='personale_totale',
+        size='personale_totale',
+        color='tipo_missione',
+        hover_name='nome',
+        animation_frame='anno',
+        range_x=[timeline_data['data_inizio'].min(), timeline_data['data_inizio'].max()],
+        range_y=[0, timeline_data['personale_totale'].max() * 1.1],
+        title='Evoluzione delle Missioni nel Tempo',
+        labels={'data_inizio': 'Data Inizio', 'personale_totale': 'Personale Totale'},
+        color_discrete_map=mission_colors
+    )
+    
+    fig_animated.update_layout(
+        height=600,
+        showlegend=True
+    )
+    
+    st.plotly_chart(fig_animated, use_container_width=True, key='timeline_animated')
+    
+    # Timeline con barre temporali
+    st.markdown("### 📊 Timeline con Durata Missioni")
+    
+    # Crea timeline con barre
+    fig_gantt = go.Figure()
+    
+    # Ordina le missioni per data di inizio
+    timeline_data_sorted = timeline_data.sort_values('data_inizio')
+    
+    for i, (_, mission) in enumerate(timeline_data_sorted.iterrows()):
+        start_date = mission['data_inizio']
+        end_date = mission['data_fine'] if pd.notna(mission['data_fine']) else start_date + pd.Timedelta(days=365)
+        
+        # Colore basato sul tipo di missione
+        color = mission_colors.get(mission['tipo_missione'], '#9467bd')
+        
+        fig_gantt.add_trace(go.Scatter(
+            x=[start_date, end_date],
+            y=[mission['nome'], mission['nome']],
+            mode='lines+markers',
+            name=mission['tipo_missione'],
+            line=dict(color=color, width=8),
+            marker=dict(size=10, color=color),
+            hovertemplate='<b>%{y}</b><br>' +
+                         'Inizio: %{x}<br>' +
+                         'Tipo: ' + mission['tipo_missione'] + '<br>' +
+                         'Personale: ' + str(mission['personale_totale']) + '<br>' +
+                         '<extra></extra>',
+            showlegend=False
+        ))
+    
+    fig_gantt.update_layout(
+        title='Timeline delle Missioni con Durata',
+        xaxis_title='Anno',
+        yaxis_title='Missione',
+        height=400 + len(timeline_data_sorted) * 20,  # Altezza dinamica
+        showlegend=False,
+        hovermode='closest'
+    )
+    
+    st.plotly_chart(fig_gantt, use_container_width=True, key='timeline_gantt')
+    
+    # Timeline per periodi storici
+    st.markdown("### 📅 Timeline per Periodi Storici")
+    
     # Funzione per assegnare il periodo
     periodi_definiti = [
+        (1948, 1990, '1948-1990'),
         (1991, 2001, '1991-2001'),
         (2002, 2015, '2002-2015'),
         (2016, 2100, '2016-oggi')
@@ -488,9 +922,21 @@ def main():
         for start, end, label in periodi_definiti:
             if anno is not None and start <= anno <= end:
                 return label
-        return 'Pre-1991'
+        return 'Pre-1948'
 
+    # Crea una copia sicura del DataFrame
     df_period = df_filtered.copy()
+    
+    # Rimuovi colonne duplicate se presenti
+    df_period = df_period.loc[:, ~df_period.columns.duplicated()]
+    
+    # Assicurati che data_inizio sia datetime
+    df_period['data_inizio'] = pd.to_datetime(df_period['data_inizio'], errors='coerce')
+    
+    # Rimuovi righe con date non valide
+    df_period = df_period.dropna(subset=['data_inizio'])
+    
+    # Applica la funzione periodo in modo sicuro
     df_period['Periodo Storico'] = df_period.apply(assegna_periodo, axis=1)
 
     # Numero missioni per periodo
