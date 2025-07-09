@@ -54,12 +54,12 @@ EUTM Mozambique,Mozambico,Africa,Mozambico,civmil,2021-07-01,2025-12-31,,,200,10
 UNAMI,Iraq,Medio Oriente,Iraq,civmil,2003-01-01,2025-12-31,,,1200,150000000,ONU,Logistical support
 EULEX Kosovo,Kosovo,Europa,Balcani occidentali,civmil,2008-02-01,2025-12-31,,,1600,60000000,UE,Logistical support
 UNMOGIP,India/Pakistan,Asia,India-Pakistan,civ,1949-01-01,2025-12-31,,40.0,40,8000000,ONU,Logistical support
-EUCAP Somalia,Somalia,Africa,Corno d'Africa,civ,2012-07-16,2027-02-28,,169,169,110000000,UE,Head of Mission
-EUAM Ukraine,Ucraina,Europa,Est Europa,civ,2014-12-01,2025-12-31,,300,300,65000000,UE,Head of Mission
-EUMA Armenia,Armenia,Eurasia,Caucaso,civ,2023-02-20,2027-02-19,,225,225,44000000,UE,Head of Mission
-EUPM Moldova,Moldova,Europa,Europa Orientale,civ,2023-04-24,2025-12-31,,90,90,20000000,UE,Head of Mission
-EUBAM Moldova-Ukraine,"Moldova/Ucraina",Europa,Europa Orientale,civ,2005-12-01,2025-12-31,,130,130,30000000,UE,Head of Mission
-EUBAM Rafah,Palestina,Medio Oriente,Territori Palestinesi,civ,2005-11-25,2025-12-31,,80,80,18000000,UE,Head of Mission
-EUPOL COPPS,Territori Palestinesi,Medio Oriente,Palestina,civ,2006-01-01,2025-12-31,,100,100,20000000,UE,Head of Mission
-EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120,120,30000000,UE,CivMil (Advisory/Training)
-EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180,,180,55000000,UE,Troops (naval)
+EUCAP Somalia,Somalia,Africa,Corno d'Africa,civ,2012-07-16,2027-02-28,,169.0,169,110000000,UE,Head of Mission
+EUAM Ukraine,Ucraina,Europa,Est Europa,civ,2014-12-01,2025-12-31,,300.0,300,65000000,UE,Head of Mission
+EUMA Armenia,Armenia,Eurasia,Caucaso,civ,2023-02-20,2027-02-19,,225.0,225,44000000,UE,Head of Mission
+EUPM Moldova,Moldova,Europa,Europa Orientale,civ,2023-04-24,2025-12-31,,90.0,90,20000000,UE,Head of Mission
+EUBAM Moldova-Ukraine,Moldova/Ucraina,Europa,Europa Orientale,civ,2005-12-01,2025-12-31,,130.0,130,30000000,UE,Head of Mission
+EUBAM Rafah,Palestina,Medio Oriente,Territori Palestinesi,civ,2005-11-25,2025-12-31,,80.0,80,18000000,UE,Head of Mission
+EUPOL COPPS,Territori Palestinesi,Medio Oriente,Palestina,civ,2006-01-01,2025-12-31,,100.0,100,20000000,UE,Head of Mission
+EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120.0,120,30000000,UE,CivMil (Advisory/Training)
+EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180.0,,180,55000000,UE,Troops (naval)

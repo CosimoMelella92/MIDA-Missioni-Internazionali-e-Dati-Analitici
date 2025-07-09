@@ -6,6 +6,7 @@ from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime
 import warnings
+import os
 warnings.filterwarnings('ignore')
 
 # Importa le funzioni delle mappe
@@ -49,9 +50,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS personalizzato
+# CSS personalizzato con responsive design
 st.markdown("""
 <style>
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .main-header {
+            font-size: 2rem !important;
+        }
+        .period-header {
+            font-size: 1.2rem !important;
+        }
+        .metric-card {
+            padding: 0.5rem !important;
+        }
+        .info-box {
+            padding: 0.5rem !important;
+        }
+    }
+    
     .main-header {
         font-size: 3rem;
         font-weight: bold;
@@ -103,6 +120,20 @@ st.markdown("""
         padding: 1rem;
         border-radius: 0.5rem;
         margin: 0.5rem 0;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 480px) {
+        .stButton > button {
+            width: 100% !important;
+            margin: 0.5rem 0 !important;
+        }
+        .stDataFrame {
+            font-size: 0.8rem !important;
+        }
+        .stPlotlyChart {
+            height: 300px !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -175,7 +206,7 @@ def load_data():
     return df
 
 def integrate_excel_data(df_existing):
-    """Integra i dati dai nuovi file Excel evitando duplicati"""
+    """Integra i dati dai nuovi file Excel evitando duplicati e normalizzando organizzazioni"""
     try:
         # Carica i nuovi dati Excel
         missions_df = pd.read_excel('data/raw/Excel/missions.xlsx')
@@ -192,6 +223,10 @@ def integrate_excel_data(df_existing):
             existing_mission = df_existing[df_existing['nome'].str.contains(mission_name, case=False, na=False)]
             
             if len(existing_mission) == 0:
+                # Normalizza l'organizzazione
+                framework = str(row['framework']).strip() if pd.notna(row['framework']) else 'ONU'
+                normalized_org = normalize_organization(mission_name, framework)
+                
                 # Missione non esistente, aggiungi
                 new_mission = {
                     'nome': mission_name,
@@ -205,7 +240,7 @@ def integrate_excel_data(df_existing):
                     'personale_civile': 50,     # Valore di default
                     'personale_totale': 150,    # Valore di default
                     'costo_totale': 25000000,   # Valore di default
-                    'tipo_missione': str(row['framework']).strip() if pd.notna(row['framework']) else 'ONU',
+                    'tipo_missione': normalized_org,
                     'commitment': 'Troops'  # Default
                 }
                 new_missions.append(new_mission)
@@ -215,6 +250,9 @@ def integrate_excel_data(df_existing):
             new_df = pd.DataFrame(new_missions)
             df_existing = pd.concat([df_existing, new_df], ignore_index=True)
             st.success(f"Integrati {len(new_missions)} nuovi record dalle fonti Excel")
+        
+        # Normalizza tutte le organizzazioni nel dataset
+        df_existing = normalize_all_organizations(df_existing)
         
         # Rimozione duplicati: normalizza nome (minuscolo, senza spazi e trattini), paese, data_inizio
         def normalize_name(name):
@@ -242,6 +280,71 @@ def integrate_excel_data(df_existing):
     except Exception as e:
         st.warning(f"Errore nell'integrazione dei dati Excel: {str(e)}")
         return df_existing
+
+def normalize_organization(mission_name, framework):
+    """Normalizza l'organizzazione di una missione"""
+    import re
+    
+    # Lista di pattern per identificare missioni ONU
+    onu_patterns = [
+        r'^UN[A-Z]',  # UNIFIL, UNMISS, UNPROFOR, etc.
+        r'^MINU',     # MINURSO, MINUSTAH, etc.
+        r'^UNAM',     # UNAMA, UNAMID, etc.
+        r'^UNS',      # UNSCOM, UNSMIL, etc.
+        r'^UNT',      # UNTAET, UNTMIH, etc.
+        r'^UNM',      # UNMIK, UNMIL, etc.
+        r'^UNI',      # UNISFA, etc.
+        r'^UNF',      # UNFICYP, etc.
+        r'^UNO',      # UNOCI, etc.
+        r'^UNMOG',    # UNMOGIP
+        r'^UNTSO',    # UNTSO
+        r'peacekeeping',
+        r'peace\s*keeping',
+        r'united\s*nations',
+        r'nazioni\s*unite'
+    ]
+    
+    # Controlla se è una missione ONU
+    mission_lower = str(mission_name).lower()
+    framework_lower = str(framework).lower()
+    
+    for pattern in onu_patterns:
+        if re.search(pattern, mission_lower, re.IGNORECASE):
+            return 'ONU'
+        if re.search(pattern, framework_lower, re.IGNORECASE):
+            return 'ONU'
+    
+    # Controlla se il framework è già ONU o UN
+    if framework_lower in ['onu', 'un', 'united nations', 'nazioni unite']:
+        return 'ONU'
+    
+    # Altre organizzazioni
+    if framework_lower in ['nato', 'north atlantic treaty organization']:
+        return 'NATO'
+    elif framework_lower in ['ue', 'eu', 'european union', 'unione europea']:
+        return 'UE'
+    elif framework_lower in ['ita', 'italia', 'italian']:
+        return 'ITA'
+    elif framework_lower in ['coalizione', 'coalition', 'multinational', 'multinazionale']:
+        return 'Multinational'
+    elif framework_lower in ['bilaterale', 'bilateral', 'bilaterale', 'bilateral']:
+        return 'Bilateral'
+    
+    # Default
+    return framework if framework != 'nan' else 'ONU'
+
+def normalize_all_organizations(df):
+    """Normalizza tutte le organizzazioni nel dataset"""
+    for idx, row in df.iterrows():
+        nome = row['nome']
+        tipo_missione = row['tipo_missione']
+        
+        # Normalizza l'organizzazione
+        normalized_org = normalize_organization(nome, tipo_missione)
+        if normalized_org != tipo_missione:
+            df.at[idx, 'tipo_missione'] = normalized_org
+    
+    return df
 
 def normalize_excel_columns(df):
     """Normalizza le colonne del DataFrame Excel per compatibilità"""
@@ -511,6 +614,345 @@ def create_commitment_detailed(df):
     df['Commitment Dettagliato'] = df.apply(map_commitment, axis=1)
     return df[['nome', 'paese', 'tipo_missione', 'personale_totale', 'Commitment Dettagliato']]
 
+def create_timeline_by_organization(df):
+    """Crea timeline raggruppata per organizzazione con visualizzazione migliorata"""
+    # Raggruppa per organizzazione e anno
+    df_timeline = df.copy()
+    df_timeline['anno'] = df_timeline['data_inizio'].dt.year
+    
+    # Calcola statistiche per organizzazione e anno
+    org_year_stats = df_timeline.groupby(['tipo_missione', 'anno']).agg({
+        'nome': 'count',
+        'personale_totale': 'sum',
+        'costo_totale': 'sum'
+    }).reset_index()
+    
+    # Colori per organizzazione
+    color_map = {
+        'ONU': '#1f77b4',
+        'UE': '#ff7f0e',
+        'NATO': '#2ca02c',
+        'ITA': '#d62728',
+        'Multinational': '#9467bd',
+        'Bilateral': '#8c564b',
+        'Coalizione': '#e377c2'
+    }
+    
+    fig = go.Figure()
+    
+    # Crea subplot per ogni organizzazione
+    organizations = df_timeline['tipo_missione'].unique()
+    fig = make_subplots(
+        rows=len(organizations), 
+        cols=1,
+        subplot_titles=[f'🏛️ {org}' for org in organizations],
+        vertical_spacing=0.05,
+        specs=[[{"secondary_y": True}] for _ in organizations]
+    )
+    
+    for i, org in enumerate(organizations, 1):
+        org_data = org_year_stats[org_year_stats['tipo_missione'] == org]
+        color = color_map.get(org, '#7f7f7f')
+        
+        # Barre per numero di missioni
+        fig.add_trace(
+            go.Bar(
+                x=org_data['anno'],
+                y=org_data['nome'],
+                name=f'{org} - Missioni',
+                marker_color=color,
+                opacity=0.8,
+                hovertemplate=f"<b>{org}</b><br>" +
+                             f"Anno: %{{x}}<br>" +
+                             f"Missioni: %{{y}}<br>" +
+                             "<extra></extra>"
+            ),
+            row=i, col=1
+        )
+        
+        # Linea per personale totale
+        fig.add_trace(
+            go.Scatter(
+                x=org_data['anno'],
+                y=org_data['personale_totale'],
+                name=f'{org} - Personale',
+                mode='lines+markers',
+                line=dict(color=color, width=3),
+                marker=dict(size=8),
+                yaxis='y2',
+                hovertemplate=f"<b>{org}</b><br>" +
+                             f"Anno: %{{x}}<br>" +
+                             f"Personale: %{{y:,.0f}}<br>" +
+                             "<extra></extra>"
+            ),
+            row=i, col=1,
+            secondary_y=True
+        )
+    
+    fig.update_layout(
+        title='Timeline Missioni per Organizzazione (1948-2025)',
+        height=300 * len(organizations),
+        showlegend=False,
+        hovermode='closest'
+    )
+    
+    # Aggiorna layout per ogni subplot
+    for i in range(len(organizations)):
+        fig.update_xaxes(title_text="Anno", row=i+1, col=1)
+        fig.update_yaxes(title_text="Numero Missioni", row=i+1, col=1)
+        fig.update_yaxes(title_text="Personale Totale", row=i+1, col=1, secondary_y=True)
+    
+    return fig
+
+def create_timeline_by_region(df):
+    """Crea timeline raggruppata per regione con visualizzazione migliorata"""
+    # Raggruppa per regione e anno
+    df_timeline = df.copy()
+    df_timeline['anno'] = df_timeline['data_inizio'].dt.year
+    
+    # Calcola statistiche per regione e anno
+    region_year_stats = df_timeline.groupby(['regione', 'anno']).agg({
+        'nome': 'count',
+        'personale_totale': 'sum',
+        'costo_totale': 'sum'
+    }).reset_index()
+    
+    # Colori per regione
+    region_colors = {
+        'Africa': '#e74c3c',
+        'Europa': '#3498db',
+        'Medio Oriente': '#f39c12',
+        'Asia': '#9b59b6',
+        'America': '#2ecc71'
+    }
+    
+    # Crea subplot per ogni regione
+    regions = df_timeline['regione'].unique()
+    fig = make_subplots(
+        rows=len(regions), 
+        cols=1,
+        subplot_titles=[f'🌍 {region}' for region in regions],
+        vertical_spacing=0.05,
+        specs=[[{"secondary_y": True}] for _ in regions]
+    )
+    
+    for i, region in enumerate(regions, 1):
+        region_data = region_year_stats[region_year_stats['regione'] == region]
+        color = region_colors.get(region, '#95a5a6')
+        
+        # Barre per numero di missioni
+        fig.add_trace(
+            go.Bar(
+                x=region_data['anno'],
+                y=region_data['nome'],
+                name=f'{region} - Missioni',
+                marker_color=color,
+                opacity=0.8,
+                hovertemplate=f"<b>{region}</b><br>" +
+                             f"Anno: %{{x}}<br>" +
+                             f"Missioni: %{{y}}<br>" +
+                             "<extra></extra>"
+            ),
+            row=i, col=1
+        )
+        
+        # Linea per personale totale
+        fig.add_trace(
+            go.Scatter(
+                x=region_data['anno'],
+                y=region_data['personale_totale'],
+                name=f'{region} - Personale',
+                mode='lines+markers',
+                line=dict(color=color, width=3),
+                marker=dict(size=8),
+                yaxis='y2',
+                hovertemplate=f"<b>{region}</b><br>" +
+                             f"Anno: %{{x}}<br>" +
+                             f"Personale: %{{y:,.0f}}<br>" +
+                             "<extra></extra>"
+            ),
+            row=i, col=1,
+            secondary_y=True
+        )
+    
+    fig.update_layout(
+        title='Timeline Missioni per Regione (1948-2025)',
+        height=300 * len(regions),
+        showlegend=False,
+        hovermode='closest'
+    )
+    
+    # Aggiorna layout per ogni subplot
+    for i in range(len(regions)):
+        fig.update_xaxes(title_text="Anno", row=i+1, col=1)
+        fig.update_yaxes(title_text="Numero Missioni", row=i+1, col=1)
+        fig.update_yaxes(title_text="Personale Totale", row=i+1, col=1, secondary_y=True)
+    
+    return fig
+
+def create_timeline_with_duration(df):
+    """Crea timeline con durata delle missioni usando barre orizzontali migliorate"""
+    # Calcola durata in giorni
+    df_duration = df.copy()
+    df_duration['durata_giorni'] = (df_duration['data_fine'] - df_duration['data_inizio']).dt.days
+    df_duration['durata_anni'] = df_duration['durata_giorni'] / 365.25
+    
+    # Filtra solo missioni con durata > 30 giorni per evitare rumore
+    df_duration = df_duration[df_duration['durata_giorni'] > 30]
+    
+    # Raggruppa per organizzazione e mostra top 15 per durata
+    top_missions = df_duration.nlargest(15, 'durata_giorni')
+    
+    # Colori per organizzazione
+    color_map = {
+        'ONU': '#1f77b4',
+        'UE': '#ff7f0e',
+        'NATO': '#2ca02c',
+        'ITA': '#d62728',
+        'Multinational': '#9467bd',
+        'Bilateral': '#8c564b',
+        'Coalizione': '#e377c2'
+    }
+    
+    # Crea figura con subplot per organizzazione
+    organizations = top_missions['tipo_missione'].unique()
+    fig = make_subplots(
+        rows=len(organizations), 
+        cols=1,
+        subplot_titles=[f'🏛️ {org} - Missioni più longeve' for org in organizations],
+        vertical_spacing=0.08,
+        specs=[[{"secondary_y": False}] for _ in organizations]
+    )
+    
+    for i, org in enumerate(organizations, 1):
+        org_missions = top_missions[top_missions['tipo_missione'] == org]
+        color = color_map.get(org, '#7f7f7f')
+        
+        # Ordina per durata (più lunghe in alto)
+        org_missions = org_missions.sort_values('durata_anni', ascending=True)
+        
+        for _, row in org_missions.iterrows():
+            # Crea etichetta compatta
+            label = f"{row['nome'][:20]}... ({row['durata_anni']:.1f}a)"
+            
+            # Barra orizzontale per durata
+            fig.add_trace(
+                go.Bar(
+                    x=[row['durata_anni']],
+                    y=[label],
+                    orientation='h',
+                    name=org,
+                    marker_color=color,
+                    opacity=0.8,
+                    hovertemplate=f"<b>{row['nome']}</b><br>" +
+                                 f"Paese: {row['paese']}<br>" +
+                                 f"Durata: {row['durata_anni']:.1f} anni ({row['durata_giorni']} giorni)<br>" +
+                                 f"Personale: {row['personale_totale']:,.0f}<br>" +
+                                 f"Costo: €{row['costo_totale']:,.0f}<br>" +
+                                 f"Inizio: {row['data_inizio'].strftime('%Y-%m-%d')}<br>" +
+                                 f"Fine: {row['data_fine'].strftime('%Y-%m-%d')}<br>" +
+                                 "<extra></extra>"
+                ),
+                row=i, col=1
+            )
+    
+    fig.update_layout(
+        title='Timeline con Durata delle Missioni (Top 15 per organizzazione)',
+        height=200 * len(organizations),
+        showlegend=False,
+        hovermode='closest'
+    )
+    
+    # Aggiorna layout per ogni subplot
+    for i in range(len(organizations)):
+        fig.update_xaxes(title_text="Durata (anni)", row=i+1, col=1)
+        fig.update_yaxes(title_text="Missione", row=i+1, col=1)
+    
+    return fig
+
+def create_interactive_timeline(df, selected_years):
+    """Crea una timeline interattiva per il periodo selezionato"""
+    # Raggruppa per mese e organizzazione
+    df_timeline = df.copy()
+    df_timeline['anno_mese'] = df_timeline['data_inizio'].dt.to_period('M')
+    
+    # Calcola statistiche mensili
+    monthly_stats = df_timeline.groupby(['anno_mese', 'tipo_missione']).agg({
+        'nome': 'count',
+        'personale_totale': 'sum'
+    }).reset_index()
+    
+    # Converti periodo in datetime per il plotting
+    monthly_stats['data'] = monthly_stats['anno_mese'].dt.to_timestamp()
+    
+    # Colori per organizzazione
+    color_map = {
+        'ONU': '#1f77b4',
+        'UE': '#ff7f0e',
+        'NATO': '#2ca02c',
+        'ITA': '#d62728',
+        'Multinational': '#9467bd',
+        'Bilateral': '#8c564b',
+        'Coalizione': '#e377c2'
+    }
+    
+    fig = go.Figure()
+    
+    # Aggiungi tracce per ogni organizzazione
+    for org in monthly_stats['tipo_missione'].unique():
+        org_data = monthly_stats[monthly_stats['tipo_missione'] == org]
+        color = color_map.get(org, '#7f7f7f')
+        
+        # Linea per numero di missioni
+        fig.add_trace(go.Scatter(
+            x=org_data['data'],
+            y=org_data['nome'],
+            mode='lines+markers',
+            name=f'🏛️ {org}',
+            line=dict(color=color, width=3),
+            marker=dict(size=8),
+            hovertemplate=f"<b>{org}</b><br>" +
+                         f"Data: %{{x|%B %Y}}<br>" +
+                         f"Nuove missioni: %{{y}}<br>" +
+                         "<extra></extra>"
+        ))
+    
+    # Aggiungi area per personale totale
+    total_personnel = monthly_stats.groupby('data')['personale_totale'].sum().reset_index()
+    fig.add_trace(go.Scatter(
+        x=total_personnel['data'],
+        y=total_personnel['personale_totale'],
+        mode='lines',
+        name='👥 Personale Totale',
+        line=dict(color='#2ecc71', width=4, dash='dash'),
+        yaxis='y2',
+        hovertemplate=f"<b>Personale Totale</b><br>" +
+                     f"Data: %{{x|%B %Y}}<br>" +
+                     f"Personale: %{{y:,.0f}}<br>" +
+                     "<extra></extra>"
+    ))
+    
+    fig.update_layout(
+        title=f'Timeline Interattiva ({selected_years[0]}-{selected_years[1]})',
+        xaxis_title='Data',
+        yaxis_title='Nuove Missioni',
+        height=500,
+        hovermode='closest',
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01
+        ),
+        yaxis2=dict(
+            title="Personale Totale",
+            overlaying="y",
+            side="right"
+        )
+    )
+    
+    return fig
+
 def main():
     # Header principale
     st.markdown('<h1 class="main-header">🌍 MIDA - Missioni Internazionali e Dati Analitici</h1>', 
@@ -540,6 +982,9 @@ def main():
     # Carica dati geografici
     geo_df = load_geo_data()
     
+    # Salva i dati in session_state per le notifiche
+    st.session_state['df'] = df
+    
     # Debug info sempre visibile in sidebar
     st.sidebar.markdown('---')
     st.sidebar.header('🛠️ Debug Dati Missioni')
@@ -559,6 +1004,13 @@ def main():
         st.sidebar.write('⚠️ Missioni con campi chiave mancanti:')
         for _, row in missing_fields.iterrows():
             st.sidebar.write(f"- {row['nome']} (paese: {row['paese']}, tipo_missione: {row['tipo_missione']})")
+    
+    # Sistema di notifiche
+    try:
+        from scripts.notification_system import display_notifications
+        display_notifications()
+    except ImportError:
+        st.sidebar.info("Sistema di notifiche non disponibile")
     
     # Sidebar per filtri
     st.sidebar.header("🔍 Filtri")
@@ -1135,7 +1587,10 @@ def main():
                 'ONU': '#1f77b4',
                 'UE': '#ff7f0e',
                 'NATO': '#2ca02c',
-                'ITA': '#d62728'
+                'ITA': '#d62728',
+                'Multinational': '#9467bd',
+                'Bilateral': '#8c564b',
+                'Coalizione': '#e377c2'
             }
         )
         st.plotly_chart(fig_org_missions, use_container_width=True, key="org_missions")
@@ -1186,7 +1641,10 @@ def main():
                 'ONU': '#1f77b4',
                 'UE': '#ff7f0e',
                 'NATO': '#2ca02c',
-                'ITA': '#d62728'
+                'ITA': '#d62728',
+                'Multinational': '#9467bd',
+                'Bilateral': '#8c564b',
+                'Coalizione': '#e377c2'
             }
         )
         st.plotly_chart(fig_org_cost, use_container_width=True, key="org_cost")
@@ -1327,12 +1785,10 @@ def main():
             # Informazioni sulla mappa
             st.info("""
             **🎯 Legenda Mappa:**
-            - **🔵 Blu:** Missioni ONU
-            - **🟠 Arancione:** Missioni UE  
-            - **🟢 Verde:** Missioni NATO
-            - **🔴 Rosso:** Missioni Italiane
+            - **Colori:** Ogni organizzazione ha un colore distintivo
             - **Dimensioni:** Basate sul numero di personale
             - **Hover:** Mostra dettagli completi della missione
+            - **Legenda:** Mostra tutte le organizzazioni con il numero di missioni
             """)
         
         with map_tab2:
@@ -1389,38 +1845,106 @@ def main():
     
     st.markdown("---")
     
-    # 5. TIMELINE DELLE MISSIONI
+    # 5. TIMELINE DELLE MISSIONI MIGLIORATA
     st.markdown('<h2 class="period-header">⏰ Timeline delle Missioni</h2>', 
                 unsafe_allow_html=True)
     
-    # Crea timeline
-    fig_timeline = go.Figure()
+    # Tab per diverse visualizzazioni timeline
+    timeline_tab1, timeline_tab2, timeline_tab3 = st.tabs([
+        "📊 Timeline per Organizzazione", 
+        "🌍 Timeline per Regione", 
+        "📈 Timeline con Durata"
+    ])
     
-    for _, row in df_filtered.iterrows():
-        fig_timeline.add_trace(go.Scatter(
-            x=[row['data_inizio'], row['data_fine']],
-            y=[row['nome'], row['nome']],
-            mode='lines+markers',
-            name=row['nome'],
-            line=dict(width=3),
-            marker=dict(size=8),
-            hovertemplate=f"<b>{row['nome']}</b><br>" +
-                         f"Paese: {row['paese']}<br>" +
-                         f"Tipo: {row['tipo_partecipazione']}<br>" +
-                         f"Personale: {row['personale_totale']}<br>" +
-                         f"Costo: {format_currency(row['costo_totale'])}<br>" +
-                         "<extra></extra>"
-        ))
+    with timeline_tab1:
+        st.subheader("📊 Timeline per Organizzazione")
+        
+        # Timeline raggruppata per organizzazione
+        fig_timeline_org = create_timeline_by_organization(df_filtered)
+        st.plotly_chart(fig_timeline_org, use_container_width=True, key="timeline_organization")
+        
+        st.info("""
+        **📊 Timeline per Organizzazione:**
+        - Subplot separati per ogni organizzazione
+        - Barre per numero di missioni per anno
+        - Linee per personale totale nel tempo
+        - Visualizzazione ottimizzata per 200+ missioni
+        """)
     
-    fig_timeline.update_layout(
-        title='Timeline delle Missioni',
-        xaxis_title='Data',
-        yaxis_title='Missione',
-        height=600,
-        showlegend=False
-    )
+    with timeline_tab2:
+        st.subheader("🌍 Timeline per Regione")
+        
+        # Timeline raggruppata per regione
+        fig_timeline_region = create_timeline_by_region(df_filtered)
+        st.plotly_chart(fig_timeline_region, use_container_width=True, key="timeline_region")
+        
+        st.info("""
+        **🌍 Timeline per Regione:**
+        - Subplot separati per ogni regione geografica
+        - Evoluzione temporale delle missioni per area
+        - Analisi dell'espansione geografica dell'impegno italiano
+        """)
     
-    st.plotly_chart(fig_timeline, use_container_width=True, key="mission_timeline")
+    with timeline_tab3:
+        st.subheader("📈 Timeline con Durata Missioni")
+        
+        # Timeline con durata delle missioni
+        fig_timeline_duration = create_timeline_with_duration(df_filtered)
+        st.plotly_chart(fig_timeline_duration, use_container_width=True, key="timeline_duration")
+        
+        st.info("""
+        **📈 Timeline con Durata:**
+        - Barre orizzontali per durata delle missioni
+        - Subplot separati per ogni organizzazione
+        - Top 15 missioni più longeve per organizzazione
+        - Durata espressa in anni per maggiore chiarezza
+        - Visualizzazione ottimizzata per confrontare la longevità delle missioni
+        """)
+    
+    # Nuova timeline interattiva con slider
+    st.markdown("---")
+    st.markdown('<h3 class="period-header">🎛️ Timeline Interattiva</h3>', unsafe_allow_html=True)
+    
+    # Slider per selezionare il periodo
+    min_year = int(df_filtered['data_inizio'].dt.year.min())
+    max_year = int(df_filtered['data_fine'].dt.year.max())
+    
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        selected_years = st.slider(
+            "Seleziona periodo temporale",
+            min_value=min_year,
+            max_value=max_year,
+            value=(min_year, max_year),
+            step=1
+        )
+    
+    with col2:
+        st.metric("Anni selezionati", f"{selected_years[1] - selected_years[0] + 1}")
+    
+    # Filtra dati per il periodo selezionato
+    df_period = df_filtered[
+        (df_filtered['data_inizio'].dt.year >= selected_years[0]) &
+        (df_filtered['data_fine'].dt.year <= selected_years[1])
+    ]
+    
+    if len(df_period) > 0:
+        # Timeline interattiva per il periodo selezionato
+        fig_interactive = create_interactive_timeline(df_period, selected_years)
+        st.plotly_chart(fig_interactive, use_container_width=True, key="interactive_timeline")
+        
+        # Statistiche del periodo
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Missioni nel periodo", len(df_period))
+        with col2:
+            st.metric("Personale totale", f"{df_period['personale_totale'].sum():,.0f}")
+        with col3:
+            st.metric("Costo totale", format_currency(df_period['costo_totale'].sum()))
+        with col4:
+            st.metric("Organizzazioni", len(df_period['tipo_missione'].unique()))
+    else:
+        st.warning("Nessuna missione trovata per il periodo selezionato")
     
     st.markdown("---")
     
@@ -1450,7 +1974,7 @@ def main():
     st.markdown("---")
     st.markdown('<h3 class="period-header">📥 Esportazione Dati</h3>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         # Download CSV
@@ -1482,6 +2006,40 @@ def main():
             )
         except ImportError:
             st.warning("Per l'esportazione Excel, installa: pip install openpyxl")
+    
+    with col3:
+        # Genera PDF Report
+        if st.button("📋 Genera Report PDF", type="primary"):
+            try:
+                from scripts.pdf_report_generator import create_pdf_report
+                import tempfile
+                
+                with st.spinner("Generando report PDF..."):
+                    # Crea file temporaneo
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+                        report_path = create_pdf_report(df_filtered, tmp_file.name)
+                        
+                        # Leggi il file PDF
+                        with open(report_path, 'rb') as f:
+                            pdf_data = f.read()
+                        
+                        # Pulisci il file temporaneo
+                        os.unlink(report_path)
+                
+                # Download del PDF
+                st.download_button(
+                    label="📋 Scarica Report PDF",
+                    data=pdf_data,
+                    file_name=f"report_missioni_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                    mime="application/pdf"
+                )
+                
+                st.success("✅ Report PDF generato con successo!")
+                
+            except ImportError:
+                st.error("❌ Per generare PDF, installa: pip install reportlab")
+            except Exception as e:
+                st.error(f"❌ Errore nella generazione PDF: {str(e)}")
     
     # Footer
     st.markdown("---")

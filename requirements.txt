@@ -37,6 +37,9 @@ python-dateutil>=2.8.2
 # Excel export
 openpyxl>=3.0.0
 
+# PDF generation
+reportlab>=4.0.0
+
 # Mapping dependencies
 folium>=0.14.0
 geopandas>=0.12.0

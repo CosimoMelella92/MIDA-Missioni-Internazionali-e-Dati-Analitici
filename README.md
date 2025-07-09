@@ -12,7 +12,7 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **~200 missioni** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **200 missioni** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -117,19 +117,25 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ ONU:** 40+ missioni  
+- **🏛️ ONU:** 60+ missioni  
   Esempi: UNTSO (1948), UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
 
-- **🇪🇺 UE:** 25+ missioni  
+- **🇪🇺 UE:** 49+ missioni  
   Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
 
-- **🛡️ NATO:** 10+ missioni  
+- **🛡️ NATO:** 47+ missioni  
   Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Active Endeavour, Resolute Support, ecc.
 
-- **🇮🇹 ITA:** Missioni bilaterali e nazionali  
-  Esempi: MISIN, missioni bilaterali in vari paesi
+- **🤝 Multinational:** 18+ missioni  
+  Esempi: Operazioni multinazionali, coalizioni internazionali
 
-- **Coalizione:** Missioni multinazionali  
+- **🤝 Bilateral:** 25+ missioni  
+  Esempi: Missioni bilaterali con paesi partner
+
+- **🇮🇹 ITA:** Missioni italiane nazionali  
+  Esempi: MISIN, missioni nazionali specifiche
+
+- **Coalizione:** Missioni di coalizione  
   Esempi: MFO, Operation Inherent Resolve, Desert Shield/Storm
 
 ![Analisi per Organizzazione]
@@ -269,12 +275,19 @@ python -m streamlit run src/missioni_dashboard.py
 - [x] ✅ Analisi per organizzazione
 - [x] ✅ Filtri avanzati
 - [x] ✅ Timeline geografica
+- [x] ✅ Timeline completamente ristrutturate
+- [x] ✅ Dashboard mobile responsive
+- [x] ✅ Export PDF dei report
+- [x] ✅ Notifiche in tempo reale
+- [x] ✅ Mappe del mondo dinamiche con tutte le organizzazioni
+- [x] ✅ Timeline interattiva con slider temporale
+- [x] ✅ Mappe di calore e cluster avanzate
+- [x] ✅ Commitment dettagliato per ogni missione
+- [x] ✅ Sistema di debug integrato
+- [x] ✅ Banner di sponsorship
 - [ ] 🔄 Integrazione con API esterne
 - [ ] 🔄 Analisi predittive
 - [ ] 🔄 Machine Learning per estrazione dati
-- [ ] 🔄 Dashboard mobile responsive
-- [ ] 🔄 Export PDF dei report
-- [ ] 🔄 Notifiche in tempo reale
 
 ## 🐛 Risoluzione Problemi
 
@@ -346,10 +359,10 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 
 ---
 
-🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1978 al 2025
+🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1948 al 2025
 
 📊 Cosa fa questa dashboard
-- Analizza **64 missioni internazionali** italiane (dataset aggiornato, senza duplicati o righe vuote)
+- Analizza **200 missioni internazionali** italiane (dataset integrato, con normalizzazione organizzazioni)
 - Visualizza dati su periodi, personale, costi, regioni, organizzazioni, tipologia di commitment
 - Mostra una sezione dettagliata "🔎 Commitment dettagliato per missione" con classificazione:
   - Head of Mission
@@ -368,25 +381,44 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 3. **Controlla la sidebar** per debug e filtri
 
 🗂️ Struttura dati aggiornata
-Il file `data/processed/missioni_complete.csv` contiene ora **esattamente 64 missioni** con i seguenti campi principali:
+Il file `data/processed/missioni_complete.csv` contiene **64 missioni principali** integrate con **136 missioni aggiuntive** da fonti Excel, per un totale di **200 missioni** con i seguenti campi principali:
 - nome, paese, regione, sub_regione, tipo_partecipazione, data_inizio, data_fine, personale_totale, costo_totale, tipo_missione, commitment
 - Ogni missione è unica (es. UNMISS è presente una sola volta)
 - Commitment classificato secondo la tabella fornita dall'utente
 - Nessuna riga vuota o missione senza nome
 
 🆕 Novità principali
-- **Dataset pulito e coerente** con la tabella fornita
+- **Dataset integrato** con 200 missioni da multiple fonti
+- **Normalizzazione organizzazioni** con supporto per ONU, UE, NATO, Multinational, Bilateral, ITA, Coalizione
+- **Timeline completamente ristrutturate** con subplot per organizzazione e regione, barre orizzontali per durata
+- **Timeline interattiva** con slider temporale e statistiche dinamiche
+- **Mappe interattive migliorate** con controlli avanzati, laghi, fiumi e UI ottimizzata
+- **Mappa del mondo dinamica** che mostra tutte le organizzazioni con colori distintivi
+- **Dashboard mobile responsive** con CSS ottimizzato per dispositivi mobili
+- **Sistema di notifiche in tempo reale** per anomalie e aggiornamenti
+- **Export PDF dei report** con statistiche complete e tabelle formattate
 - **Commitment dettagliato** per ogni missione, con override per UNIFIL e logica di mapping custom
 - **Sezione debug** sempre visibile in sidebar
 - **Banner di sponsorship** visibile anche su GitHub
 
 📈 Grafici e analisi
 - Analisi per periodo, personale, costi, regione, organizzazione
+- **Timeline completamente ristrutturate**:
+  - Subplot per organizzazione con barre e linee
+  - Subplot per regione geografica
+  - Barre orizzontali per durata missioni (Top 15 per organizzazione)
+  - Timeline interattiva con slider temporale
+- **Mappe interattive migliorate**:
+  - Mappa del mondo con laghi, fiumi e controlli avanzati
+  - Mappa di calore con UI ottimizzata
+  - Timeline geografica con slider migliorato
+  - Mappa cluster con popup ricchi
 - Grafici e tabella per commitment dettagliato
-- Tutti i filtri e le mappe aggiornati al nuovo dataset
+- Mappa del mondo con tutte le organizzazioni (ONU, UE, NATO, Multinational, Bilateral, ITA, Coalizione)
+- Tutti i filtri e le mappe aggiornati al dataset integrato
 
 🛠️ Debug e supporto
-- Se il numero di missioni caricate non è 64, controlla la sezione debug in sidebar e usa lo script `scripts/clean_missioni_csv.py` per pulire il file
+- Se il numero di missioni caricate non è 200, controlla la sezione debug in sidebar e usa lo script `scripts/clean_missioni_csv.py` per pulire il file
 - Per integrare nuovi dati, aggiungi le missioni al CSV seguendo la struttura e poi lancia lo script di pulizia
 - Per problemi o richieste, apri una issue o contatta il maintainer
 

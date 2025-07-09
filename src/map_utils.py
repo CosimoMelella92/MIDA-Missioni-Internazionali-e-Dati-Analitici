@@ -79,13 +79,36 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
             )
             return fig
         
-        # Colori per organizzazione
+        # Colori per organizzazione - dinamici basati sui dati
+        organizations = df_with_coords['tipo_missione'].unique()
+        
+        # Palette di colori estesa con organizzazioni specifiche
         color_map = {
-            'ONU': '#1f77b4',      # Blu
-            'UE': '#ff7f0e',       # Arancione  
-            'NATO': '#2ca02c',     # Verde
-            'ITA': '#d62728'       # Rosso
+            'ONU': '#1f77b4',           # Blu
+            'UE': '#ff7f0e',            # Arancione
+            'NATO': '#2ca02c',          # Verde
+            'ITA': '#d62728',           # Rosso
+            'Multinational': '#9467bd', # Viola
+            'Bilateral': '#8c564b',     # Marrone
+            'Coalizione': '#e377c2',    # Rosa
         }
+        
+        # Aggiungi colori per organizzazioni non mappate
+        color_palette = [
+            '#bcbd22',  # Giallo verde
+            '#17becf',  # Ciano
+            '#ff9896',  # Rosa chiaro
+            '#98df8a',  # Verde chiaro
+            '#ffbb78',  # Arancione chiaro
+            '#aec7e8',  # Blu chiaro
+            '#c5b0d5',  # Viola chiaro
+            '#7f7f7f',  # Grigio
+        ]
+        
+        # Assegna colori alle organizzazioni non mappate
+        for org in organizations:
+            if org not in color_map:
+                color_map[org] = color_palette[len(color_map) % len(color_palette)]
         
         # Crea la mappa
         fig = go.Figure()
@@ -129,11 +152,13 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
         
         # Aggiungi legenda per organizzazioni
         for org, color in color_map.items():
+            # Conta quante missioni per questa organizzazione
+            org_count = len(df_with_coords[df_with_coords['tipo_missione'] == org])
             fig.add_trace(go.Scattergeo(
                 lon=[None],
                 lat=[None],
                 mode='markers',
-                name=f'🏛️ {org}',
+                name=f'🏛️ {org} ({org_count})',
                 marker=dict(size=10, color=color),
                 showlegend=True
             ))
@@ -149,7 +174,6 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
                 scope='world',
                 showland=True,
                 landcolor='rgb(243, 243, 243)',
-                coastlinecolor='rgb(204, 204, 204)',
                 showocean=True,
                 oceancolor='rgb(230, 230, 250)',
                 showcountries=True,
@@ -157,7 +181,19 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
                 showframe=False,
                 projection_type='natural earth',
                 center=dict(lat=20, lon=0),
-                projection_scale=1.2
+                projection_scale=1.2,
+                # Miglioramenti interattivi
+                showlakes=True,
+                lakecolor='rgb(230, 230, 250)',
+                showrivers=True,
+                rivercolor='rgb(230, 230, 250)',
+                coastlinewidth=1,
+                countrywidth=0.5,
+                # Controlli interattivi
+                showcoastlines=True,
+                coastlinecolor='rgb(100, 100, 100)',
+                # Zoom e pan migliorati
+                uirevision='constant'
             ),
             height=700,
             margin=dict(l=0, r=0, t=80, b=0),
@@ -166,11 +202,15 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
                 y=0.99,
                 xanchor="left",
                 x=0.01,
-                bgcolor='rgba(255, 255, 255, 0.8)',
-                bordercolor='rgba(0, 0, 0, 0.2)',
-                borderwidth=1
+                bgcolor='rgba(255, 255, 255, 0.9)',
+                bordercolor='rgba(0, 0, 0, 0.3)',
+                borderwidth=2,
+                font=dict(size=12)
             ),
-            hovermode='closest'
+            hovermode='closest',
+            # Miglioramenti UI
+            dragmode='pan',
+            selectdirection='any'
         )
         
         return fig
@@ -326,10 +366,18 @@ def create_heatmap_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
             mapbox=dict(
                 style="carto-positron",
                 center=dict(lat=20, lon=0),
-                zoom=1.5
+                zoom=1.5,
+                # Miglioramenti interattivi
+                bearing=0,
+                pitch=0,
+                # Controlli migliorati
+                uirevision='constant'
             ),
             height=600,
-            margin=dict(l=0, r=0, t=80, b=0)
+            margin=dict(l=0, r=0, t=80, b=0),
+            # Miglioramenti UI
+            dragmode='pan',
+            selectdirection='any'
         )
         
         return fig
@@ -504,17 +552,33 @@ def create_timeline_map(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure:
                 scope='world',
                 showland=True,
                 landcolor='rgb(243, 243, 243)',
-                coastlinecolor='rgb(204, 204, 204)',
                 showocean=True,
                 oceancolor='rgb(230, 230, 250)',
                 showcountries=True,
                 countrycolor='rgb(255, 255, 255)',
                 showframe=False,
-                projection_type='natural earth'
+                projection_type='natural earth',
+                center=dict(lat=20, lon=0),
+                projection_scale=1.2,
+                # Miglioramenti interattivi
+                showlakes=True,
+                lakecolor='rgb(230, 230, 250)',
+                showrivers=True,
+                rivercolor='rgb(230, 230, 250)',
+                coastlinewidth=1,
+                countrywidth=0.5,
+                # Controlli interattivi
+                showcoastlines=True,
+                coastlinecolor='rgb(100, 100, 100)',
+                # Zoom e pan migliorati
+                uirevision='constant'
             ),
             sliders=sliders,
             height=700,
-            margin=dict(l=0, r=0, t=80, b=80)
+            margin=dict(l=0, r=0, t=80, b=80),
+            # Miglioramenti UI
+            dragmode='pan',
+            selectdirection='any'
         )
         
         return fig

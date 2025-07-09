@@ -50,10 +50,15 @@ def check_expenditure_anomalies(df):
 
 def main():
     print("=== Controllo Duplicati e Anomalie ===")
-    # Carica i dati integrati
+    # Carica solo i dati del file principale (senza integrazione Excel)
     df = pd.read_csv('data/processed/missioni_complete.csv')
-    df = integrate_excel_data(df)
-    print(f"Totale missioni dopo integrazione: {len(df)}")
+    print(f"Totale missioni nel file principale: {len(df)}")
+    
+    # Mostra le organizzazioni presenti
+    print("\n📊 Organizzazioni presenti:")
+    org_stats = df['tipo_missione'].value_counts()
+    for org, count in org_stats.items():
+        print(f"  {org}: {count} missioni")
 
     # Controllo duplicati fuzzy
     print("\n--- Possibili Duplicati (nome simile, stesso paese/data) ---")
