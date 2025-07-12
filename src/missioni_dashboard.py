@@ -198,7 +198,8 @@ def load_data():
         if pd.isna(row['data_fine']) or row['data_fine'] <= current_date:
             # Se la missione è iniziata negli ultimi 5 anni, considera attiva
             if (current_date - row['data_inizio']).days < 1825:  # 5 anni
-                df.at[idx, 'data_fine'] = current_date + pd.Timedelta(days=365)  # Estendi di 1 anno
+                # Estendi fino al 2025 per le missioni attive
+                df.at[idx, 'data_fine'] = pd.Timestamp('2025-12-31')
     
     # Rimuovi colonne duplicate se presenti
     df = df.loc[:, ~df.columns.duplicated()]
@@ -1188,7 +1189,10 @@ def main():
     with col1:
         # Slider per selezionare il range temporale
         min_year = int(df_filtered['data_inizio'].dt.year.min())
-        max_year = int(df_filtered['data_inizio'].dt.year.max())
+        max_year = int(df_filtered['data_fine'].dt.year.max())
+        
+        # Forza il range fino al 2025 per le missioni attive
+        max_year = max(max_year, 2025)
         
         # Controllo per evitare min_value = max_value
         if min_year == max_year:
@@ -1921,6 +1925,9 @@ def main():
     # Slider per selezionare il periodo
     min_year = int(df_filtered['data_inizio'].dt.year.min())
     max_year = int(df_filtered['data_fine'].dt.year.max())
+    
+    # Forza il range fino al 2025 per le missioni attive
+    max_year = max(max_year, 2025)
     
     col1, col2 = st.columns([3, 1])
     with col1:

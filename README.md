@@ -10,9 +10,9 @@
 **Cosimo Melella**
 
 ## 📊 Panoramica
-MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
+MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **202 missioni uniche** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **208 missioni uniche** dal **1948 al 2025**, coprendo un arco temporale di **77 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -44,11 +44,12 @@ MIDA/
 graph LR
     A[Documenti PDF] --> B[Document Processor]
     C[File Excel] --> D[Data Processor]
-    B --> E[Data Enrichment]
-    D --> E
-    E --> F[Dashboard Interattiva]
-    F --> G[Mappe Avanzate]
-    F --> H[Analisi Organizzazioni]
+    E[Fonti parlamentari 2025] --> D
+    B --> F[Data Enrichment]
+    D --> F
+    F --> G[Dashboard Interattiva]
+    G --> H[Mappe Avanzate]
+    G --> I[Analisi Organizzazioni]
 ```
 
 ## 📁 Struttura dei Dati
@@ -80,7 +81,7 @@ I documenti PDF vengono elaborati per estrarre:
 - Riferimenti normativi
 
 ## 🧹 Pipeline Dati e Deduplicazione
-- **Caricamento**: I dati vengono caricati da `data/processed/missioni_complete.csv` e, se presenti, da nuovi file Excel in `data/raw/Excel/`.
+- **Caricamento**: I dati vengono caricati da `data/processed/missioni_complete.csv` e, se presenti, da nuovi file Excel in `data/raw/Excel/` e dalle fonti parlamentari 2025.
 - **Normalizzazione**: I dati vengono convertiti nel formato standard, con colonne e tipi coerenti.
 - **Deduplicazione automatica**: Missioni con nomi simili (ignorando spazi, trattini, maiuscole/minuscole), stesso paese vengono mantenute una sola volta.
 - **Pulizia colonne**: Vengono rimosse colonne duplicate e valori incoerenti.
@@ -100,7 +101,7 @@ I documenti PDF vengono elaborati per estrarre:
 ## 📈 Dashboard Avanzata
 
 ### 🎯 Metriche Principali
-- **📊 Missioni Totali**: Numero complessivo di missioni (202 uniche)
+- **📊 Missioni Totali**: Numero complessivo di missioni (**208 uniche**)
 - **👥 Personale Totale**: Somma di tutto il personale impiegato
 - **💰 Costo Totale**: Budget complessivo investito
 - **🟢 Missioni Attive**: Missioni attualmente in corso
@@ -117,36 +118,46 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ NATO:** 48 missioni  
-  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Active Endeavour, Resolute Support, ecc.
+- **🏛️ ONU:** 60 missioni  
+  Esempi: UNIFIL, MINURSO, UNMISS, UNPROFOR, UNMIK, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNFICYP, ecc.
+- **🇪🇺 UE:** 51 missioni  
+  Esempi: EUTM Mali, EUBAM Libya, EUFOR ALTHEA, EUTM Somalia, EUTM RCA, EUNAVFOR ATALANTA, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, MPCC UE, CRRTs UE, ecc.
+- **🏛️ NATO:** 50 missioni  
+  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, ecc.
+- **🤝 Bilateral:** 28 missioni  
+  Esempi: MIBIL, MIADIT, MIASIT, Cooperazione tecnica Angola, ecc.
+- **🤝 Multinational:** 18 missioni  
+  Esempi: (vedi dashboard per elenco completo)
+- **🇮🇹 ITA:** 1 missione  
+  Esempi: MISIN
 
-- **🇪🇺 UE:** 27 missioni  
-  Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
-
-- **🏛️ ONU:** 34 missioni  
-  Esempi: UNIFIL, UNMISS, UNPROFOR, MINURSO, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
-
-- **🤝 Bilateral:** 27 missioni  
-  Esempi: Missioni bilaterali con paesi partner
-
-- **🤝 Multinational:** 16 missioni  
-  Esempi: Operazioni multinazionali, coalizioni internazionali
-
-- **🇮🇹 ITA:** Missioni italiane nazionali  
-  Esempi: MISIN, missioni nazionali specifiche
-
-- **Coalizione:** Missioni di coalizione  
-  Esempi: MFO, Operation Inherent Resolve, Desert Shield/Storm
-
-![Analisi per Organizzazione]
 *Distribuzione delle missioni per organizzazione internazionale*
 
 ### 🌍 Analisi per Regione e Sub-Regione
-- **Africa**: 25 missioni (Mali, Niger, Somalia, etc.)
-- **Europa**: 8 missioni (Balcani, Mediterraneo)
-- **Medio Oriente**: 8 missioni (Libano, Iraq, Kuwait)
-- **Asia**: 4 missioni (Afghanistan, Timor Est)
-- **America**: 5 missioni (Haiti)
+- **Balkans**: 32 missioni (KFOR, EUFOR ALTHEA, IFOR, SFOR, ecc.)
+- **Sub-Saharan Africa**: 29 missioni (MISIN, EUTM Mali, MINUSMA, ecc.)
+- **Africa**: 26 missioni (MONUSCO, MINURSO, MINUSCA, ecc.)
+- **Middle East**: 23 missioni (UNIFIL, MIBIL, MIADIT, Operation Inherent Resolve, ecc.)
+- **Rest of Europe**: 22 missioni (EUMM Georgia, MPCC UE, ecc.)
+- **Europa**: 18 missioni (EULEX Kosovo, EUBAM Moldova-Ukraine, ecc.)
+- **Medio Oriente**: 15 missioni (UNSMIL, EUAM Iraq, ecc.)
+- **Asia**: 14 missioni (ISAF, UNAMA, UNTAET, ecc.)
+- **Northern Africa and Meditterranean**: 13 missioni (EUBAM Libya, MIASIT, ecc.)
+- **America**: 6 missioni (MINUSTAH, MINUJUSTH, BINUH, ecc.)
+- **Americas**: 4 missioni (MIPONUH, UNTMIH, ecc.)
+- **Eurasia**: 2 missioni (EUMA Armenia, ecc.)
+- **Mediterraneo**: 1 missione (IRINI)
+- **Africa/Asia**: 1 missione (EUNAVFOR Aspides)
+- **Nord Africa**: 1 missione (Cooperazione tecnica Angola)
+- **Africa Sub-sahariana**: 1 missione (Cooperazione tecnica Angola)
+
+---
+
+### 🆕 Note aggiornate
+
+- **Copertura temporale:** la dashboard ora copre missioni dal 1948 al 2025, incluse tutte le missioni attive e pianificate per il 2025 secondo i dati parlamentari più recenti.
+- **Nuove missioni 2025:** integrate e visibili nella dashboard (es. EUFOR ALTHEA, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, MPCC UE, CRRTs UE, ecc.).
+- **Deduplicazione e qualità:** il dataset è stato deduplicato e validato, senza anomalie o doppioni.
 
 ## 🗺️ Mappe Interattive Avanzate
 
@@ -397,13 +408,13 @@ Il sistema integra automaticamente:
 - **Sistema di debug** integrato nella sidebar
 
 🛠️ **Debug e supporto**
-- Se il numero di missioni non è 202, usa il pulsante "🔄 Ricarica Dati"
+- Se il numero di missioni non è 208, usa il pulsante "🔄 Ricarica Dati"
 - Per integrare nuovi dati, aggiungi file Excel in `data/raw/Excel/`
 - Per problemi, controlla la sezione debug nella sidebar
 
 ---
 
-> Ultimo aggiornamento: gennaio 2025
+> Ultimo aggiornamento: luglio 2025
 
 ---
 
