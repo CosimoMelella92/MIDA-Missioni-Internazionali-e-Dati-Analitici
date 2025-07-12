@@ -222,5 +222,533 @@
     "type": "success",
     "timestamp": "2025-07-09T10:30:21.196473",
     "read": false
+  },
+  {
+    "id": 29,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:17:51.876974",
+    "read": false
+  },
+  {
+    "id": 30,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:17:51.882971",
+    "read": false
+  },
+  {
+    "id": 31,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:17:53.608656",
+    "read": false
+  },
+  {
+    "id": 32,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:17:53.610619",
+    "read": false
+  },
+  {
+    "id": 33,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:39:54.453675",
+    "read": false
+  },
+  {
+    "id": 34,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:39:54.456674",
+    "read": false
+  },
+  {
+    "id": 35,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:41:28.054184",
+    "read": false
+  },
+  {
+    "id": 36,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:41:28.057186",
+    "read": false
+  },
+  {
+    "id": 37,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:41:35.681316",
+    "read": false
+  },
+  {
+    "id": 38,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:41:35.683316",
+    "read": false
+  },
+  {
+    "id": 39,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:41:40.050785",
+    "read": false
+  },
+  {
+    "id": 40,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:41:40.053784",
+    "read": false
+  },
+  {
+    "id": 41,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:42:41.791624",
+    "read": false
+  },
+  {
+    "id": 42,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:42:41.796623",
+    "read": false
+  },
+  {
+    "id": 43,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:43:08.047640",
+    "read": false
+  },
+  {
+    "id": 44,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:43:08.049640",
+    "read": false
+  },
+  {
+    "id": 45,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:43:14.885034",
+    "read": false
+  },
+  {
+    "id": 46,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:43:14.888030",
+    "read": false
+  },
+  {
+    "id": 47,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-09T11:43:33.522562",
+    "read": false
+  },
+  {
+    "id": 48,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-09T11:43:33.524566",
+    "read": true
+  },
+  {
+    "id": 49,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:22.989229",
+    "read": false
+  },
+  {
+    "id": 50,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:22.992224",
+    "read": false
+  },
+  {
+    "id": 51,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:43.600624",
+    "read": false
+  },
+  {
+    "id": 52,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:43.603625",
+    "read": true
+  },
+  {
+    "id": 53,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:43.835700",
+    "read": false
+  },
+  {
+    "id": 54,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:43.843698",
+    "read": false
+  },
+  {
+    "id": 55,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:46.170162",
+    "read": false
+  },
+  {
+    "id": 56,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:46.172172",
+    "read": false
+  },
+  {
+    "id": 57,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:46.340823",
+    "read": false
+  },
+  {
+    "id": 58,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:46.343818",
+    "read": false
+  },
+  {
+    "id": 59,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:18:58.072440",
+    "read": false
+  },
+  {
+    "id": 60,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:18:58.076440",
+    "read": false
+  },
+  {
+    "id": 61,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:32:49.818153",
+    "read": false
+  },
+  {
+    "id": 62,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:32:49.854174",
+    "read": false
+  },
+  {
+    "id": 63,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:33:10.537913",
+    "read": false
+  },
+  {
+    "id": 64,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:33:10.544906",
+    "read": false
+  },
+  {
+    "id": 65,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:33:36.609944",
+    "read": false
+  },
+  {
+    "id": 66,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:33:36.615951",
+    "read": false
+  },
+  {
+    "id": 67,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:35:34.950072",
+    "read": false
+  },
+  {
+    "id": 68,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:35:34.955514",
+    "read": false
+  },
+  {
+    "id": 69,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:41:22.603879",
+    "read": false
+  },
+  {
+    "id": 70,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:41:22.608906",
+    "read": false
+  },
+  {
+    "id": 71,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:41:29.686046",
+    "read": false
+  },
+  {
+    "id": 72,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:41:29.694066",
+    "read": false
+  },
+  {
+    "id": 73,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:41:55.117193",
+    "read": false
+  },
+  {
+    "id": 74,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:41:55.123201",
+    "read": false
+  },
+  {
+    "id": 75,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:49:23.195615",
+    "read": false
+  },
+  {
+    "id": 76,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:49:23.201647",
+    "read": false
+  },
+  {
+    "id": 77,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:49:54.544424",
+    "read": false
+  },
+  {
+    "id": 78,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:49:54.548428",
+    "read": false
+  },
+  {
+    "id": 79,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:50:32.531297",
+    "read": false
+  },
+  {
+    "id": 80,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:50:32.536296",
+    "read": false
+  },
+  {
+    "id": 81,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:52:07.612653",
+    "read": false
+  },
+  {
+    "id": 82,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:52:07.617617",
+    "read": false
+  },
+  {
+    "id": 83,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:53:23.083610",
+    "read": false
+  },
+  {
+    "id": 84,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:53:23.086608",
+    "read": false
+  },
+  {
+    "id": 85,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:56:22.370105",
+    "read": false
+  },
+  {
+    "id": 86,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:56:22.376092",
+    "read": false
+  },
+  {
+    "id": 87,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:56:37.733799",
+    "read": false
+  },
+  {
+    "id": 88,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:56:37.739790",
+    "read": false
+  },
+  {
+    "id": 89,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:57:25.723883",
+    "read": false
+  },
+  {
+    "id": 90,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:57:25.729850",
+    "read": false
+  },
+  {
+    "id": 91,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:58:54.011212",
+    "read": false
+  },
+  {
+    "id": 92,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:58:54.013213",
+    "read": false
+  },
+  {
+    "id": 93,
+    "title": "💰 Costi Anomali",
+    "message": "Trovate 1 missioni con costi anomali",
+    "type": "warning",
+    "timestamp": "2025-07-12T14:59:36.558678",
+    "read": false
+  },
+  {
+    "id": 94,
+    "title": "🟢 Missioni Attive",
+    "message": "Attualmente ci sono 54 missioni attive",
+    "type": "success",
+    "timestamp": "2025-07-12T14:59:36.561680",
+    "read": false
   }
 ]

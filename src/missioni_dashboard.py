@@ -138,7 +138,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-@st.cache_data
+@st.cache_data(ttl=60)  # Cache per 60 secondi per permettere aggiornamenti
 def load_data():
     """Carica e prepara i dati delle missioni"""
     try:
@@ -988,6 +988,12 @@ def main():
     # Debug info sempre visibile in sidebar
     st.sidebar.markdown('---')
     st.sidebar.header('🛠️ Debug Dati Missioni')
+    
+    # Pulsante per ricaricare i dati
+    if st.sidebar.button("🔄 Ricarica Dati"):
+        st.cache_data.clear()
+        st.rerun()
+    
     st.sidebar.write(f"Missioni caricate dal CSV: {len(df)}")
     st.sidebar.write('Nomi missioni caricate:')
     for nome in df['nome'].unique():
@@ -1183,6 +1189,13 @@ def main():
         # Slider per selezionare il range temporale
         min_year = int(df_filtered['data_inizio'].dt.year.min())
         max_year = int(df_filtered['data_inizio'].dt.year.max())
+        
+        # Controllo per evitare min_value = max_value
+        if min_year == max_year:
+            # Se tutti i dati sono dello stesso anno, usa un range più ampio
+            min_year = max(1948, min_year - 1)
+            max_year = min(2025, max_year + 1)
+        
         selected_years = st.slider(
             "Seleziona Range Temporale",
             min_value=min_year,
@@ -2013,6 +2026,7 @@ def main():
             try:
                 from scripts.pdf_report_generator import create_pdf_report
                 import tempfile
+                import time
                 
                 with st.spinner("Generando report PDF..."):
                     # Crea file temporaneo
@@ -2023,8 +2037,16 @@ def main():
                         with open(report_path, 'rb') as f:
                             pdf_data = f.read()
                         
-                        # Pulisci il file temporaneo
-                        os.unlink(report_path)
+                        # Chiudi il file prima di eliminarlo
+                        f.close()
+                        
+                        # Aspetta un momento e poi elimina il file temporaneo
+                        time.sleep(0.1)
+                        try:
+                            os.unlink(report_path)
+                        except OSError:
+                            # Se non riesce a eliminare il file, non è un problema critico
+                            pass
                 
                 # Download del PDF
                 st.download_button(

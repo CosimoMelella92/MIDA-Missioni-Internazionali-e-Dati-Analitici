@@ -42,18 +42,18 @@ UNSMIL,Libia,Africa,Africa Settentrionale,civ,2011-09-16,2025-12-31,25.0,175.0,2
 UNSOS,Somalia,Africa,Corno d'Africa,civ,2013-06-03,2025-12-31,30.0,170.0,200,35000000,ONU,Head of Mission
 MINUSCA,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-04-10,2025-12-31,300.0,200.0,500,80000000,ONU,Troops
 UNISFA,Abyei,Africa,Africa Orientale,civmil,2011-06-27,2025-12-31,100.0,50.0,150,30000000,ONU,Troops
-MFO,Egitto,Medio Oriente,Sinai,civmil,1982-01-01,2025-12-31,,,1200,40000000,Coalizione,Logistical support
-EUMM,Georgia,Eurasia,Caucaso,civ,2009-04-01,2025-12-31,,200.0,200,10000000,UE,Logistical support
-UNTSO,Israele,Medio Oriente,Israele,civ,1948-01-01,2025-12-31,,100.0,100,20000000,ONU,Logistical support
-UNAMA,Afghanistan,Asia,Afghanistan,civmil,2002-01-01,2021-12-31,,,10000,250000000,ONU,Logistical support
-EUAM Iraq,Iraq,Medio Oriente,Iraq,civ,2017-06-01,2025-12-31,,40.0,40,10000000,UE,Logistical support
-Operation Inherent Resolve,Iraq,Medio Oriente,Iraq-Siria,mil,2014-10-01,2025-12-31,5200.0,,5200,12000000000,Coalizione,Troops (ground forces)
-NATO Mission Iraq,Iraq,Medio Oriente,Iraq,mil,2020-01-01,2025-12-31,50.0,,50,5000000,NATO,Logistical support
-UNFICYP,Cipro,Mediterraneo,Cipro,civmil,1964-01-01,2025-12-31,,,880,60000000,ONU,Logistical support
-EUTM Mozambique,Mozambico,Africa,Mozambico,civmil,2021-07-01,2025-12-31,,,200,10000000,UE,Logistical support
-UNAMI,Iraq,Medio Oriente,Iraq,civmil,2003-01-01,2025-12-31,,,1200,150000000,ONU,Logistical support
-EULEX Kosovo,Kosovo,Europa,Balcani occidentali,civmil,2008-02-01,2025-12-31,,,1600,60000000,UE,Logistical support
-UNMOGIP,India/Pakistan,Asia,India-Pakistan,civ,1949-01-01,2025-12-31,,40.0,40,8000000,ONU,Logistical support
+MFO,Egitto,Medio Oriente,Sinai,civmil,1982-01-01,2025-12-31,,,1200,40000000,Coalizione,Logistical Support & Advisory
+EUMM,Georgia,Eurasia,Caucaso,civ,2009-04-01,2025-12-31,,200.0,200,10000000,UE,Logistical Support & Advisory
+UNTSO,Israele,Medio Oriente,Israele,civ,1948-01-01,2025-12-31,,100.0,100,20000000,ONU,Logistical Support & Advisory
+UNAMA,Afghanistan,Asia,Afghanistan,civmil,2002-01-01,2021-12-31,,,10000,250000000,ONU,Logistical Support & Advisory
+EUAM Iraq,Iraq,Medio Oriente,Iraq,civ,2017-06-01,2025-12-31,,40.0,40,10000000,UE,Logistical Support & Advisory
+Operation Inherent Resolve,Iraq,Medio Oriente,Iraq-Siria,mil,2014-10-01,2025-12-31,5200.0,,5200,12000000000,Coalizione,Troops (Ground Forces)
+NATO Mission Iraq,Iraq,Medio Oriente,Iraq,mil,2020-01-01,2025-12-31,50.0,,50,5000000,NATO,Logistical Support & Advisory
+UNFICYP,Cipro,Mediterraneo,Cipro,civmil,1964-01-01,2025-12-31,,,880,60000000,ONU,Logistical Support & Advisory
+EUTM Mozambique,Mozambico,Africa,Mozambico,civmil,2021-07-01,2025-12-31,,,200,10000000,UE,Logistical Support & Advisory
+UNAMI,Iraq,Medio Oriente,Iraq,civmil,2003-01-01,2025-12-31,,,1200,150000000,ONU,Logistical Support & Advisory
+EULEX Kosovo,Kosovo,Europa,Balcani occidentali,civmil,2008-02-01,2025-12-31,,,1600,60000000,UE,Logistical Support & Advisory
+UNMOGIP,India/Pakistan,Asia,India-Pakistan,civ,1949-01-01,2025-12-31,,40.0,40,8000000,ONU,Logistical Support & Advisory
 EUCAP Somalia,Somalia,Africa,Corno d'Africa,civ,2012-07-16,2027-02-28,,169.0,169,110000000,UE,Head of Mission
 EUAM Ukraine,Ucraina,Europa,Est Europa,civ,2014-12-01,2025-12-31,,300.0,300,65000000,UE,Head of Mission
 EUMA Armenia,Armenia,Eurasia,Caucaso,civ,2023-02-20,2027-02-19,,225.0,225,44000000,UE,Head of Mission
@@ -61,5 +61,9 @@ EUPM Moldova,Moldova,Europa,Europa Orientale,civ,2023-04-24,2025-12-31,,90.0,90,
 EUBAM Moldova-Ukraine,Moldova/Ucraina,Europa,Europa Orientale,civ,2005-12-01,2025-12-31,,130.0,130,30000000,UE,Head of Mission
 EUBAM Rafah,Palestina,Medio Oriente,Territori Palestinesi,civ,2005-11-25,2025-12-31,,80.0,80,18000000,UE,Head of Mission
 EUPOL COPPS,Territori Palestinesi,Medio Oriente,Palestina,civ,2006-01-01,2025-12-31,,100.0,100,20000000,UE,Head of Mission
-EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120.0,120,30000000,UE,CivMil (Advisory/Training)
-EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180.0,,180,55000000,UE,Troops (naval)
+EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120.0,120,30000000,UE,Advisory/Training
+EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180.0,,180,55000000,UE,Troops (Naval)
+Italcon,Libano,Medio Oriente,Levant,mil,1982-08-24,1984-03-20,8200.0,0.0,8200,25000000,Bilaterale,Troops (Ground Forces)
+MIBIL,Libano,Medio Oriente,Levant,civmil,2015-01-28,2024-12-31,100.0,50.0,150,25000000,Bilaterale,Advisory/Training
+MIASIT,Libia,Nord Africa,Nord Africa e Mediterraneo,civmil,2018-01-01,2024-12-31,100.0,50.0,150,25000000,Bilaterale,Logistical Support & Advisory
+Cooperazione tecnica Angola,Angola,Africa Sub-sahariana,Africa Australe,mil,2017-01-01,2024-12-31,50.0,0.0,50,25000000,Bilaterale,Advisory/Training
