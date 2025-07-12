@@ -12,7 +12,7 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **200 missioni** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **202 missioni uniche** dal **1948 al 2025**, coprendo un arco temporale di oltre 75 anni di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -100,7 +100,7 @@ I documenti PDF vengono elaborati per estrarre:
 ## 📈 Dashboard Avanzata
 
 ### 🎯 Metriche Principali
-- **📊 Missioni Totali**: Numero complessivo di missioni
+- **📊 Missioni Totali**: Numero complessivo di missioni (202 uniche)
 - **👥 Personale Totale**: Somma di tutto il personale impiegato
 - **💰 Costo Totale**: Budget complessivo investito
 - **🟢 Missioni Attive**: Missioni attualmente in corso
@@ -117,20 +117,20 @@ I documenti PDF vengono elaborati per estrarre:
 - **🎖️👔 Mista (civmil)**: Operazioni di pace, stabilizzazione
 
 ### 🏛️ Analisi per Organizzazione
-- **🏛️ ONU:** 60+ missioni  
-  Esempi: UNTSO (1948), UNIFIL, MINURSO, UNMISS, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
-
-- **🇪🇺 UE:** 49+ missioni  
-  Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
-
-- **🛡️ NATO:** 47+ missioni  
+- **🏛️ NATO:** 48 missioni  
   Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Active Endeavour, Resolute Support, ecc.
 
-- **🤝 Multinational:** 18+ missioni  
-  Esempi: Operazioni multinazionali, coalizioni internazionali
+- **🇪🇺 UE:** 27 missioni  
+  Esempi: EUTM Mali, EUBAM Libya, EUTM Somalia, EUTM RCA, EUCAP Sahel Niger, EUNAVFOR MED, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, ecc.
 
-- **🤝 Bilateral:** 25+ missioni  
+- **🏛️ ONU:** 34 missioni  
+  Esempi: UNIFIL, UNMISS, UNPROFOR, MINURSO, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNMIK, UNFICYP, ecc.
+
+- **🤝 Bilateral:** 27 missioni  
   Esempi: Missioni bilaterali con paesi partner
+
+- **🤝 Multinational:** 16 missioni  
+  Esempi: Operazioni multinazionali, coalizioni internazionali
 
 - **🇮🇹 ITA:** Missioni italiane nazionali  
   Esempi: MISIN, missioni nazionali specifiche
@@ -172,20 +172,57 @@ I documenti PDF vengono elaborati per estrarre:
 - **Popup HTML ricchi**: Informazioni complete con styling
 - **Layer control**: Attiva/disattiva organizzazioni
 
-### Infografiche e Visualizzazioni
-
 ## 🚀 Installazione e Utilizzo
 
-### 1. **Installazione Dipendenze**
-```bash
-# Dipendenze base
+### 📋 Prerequisiti
+- **Python 3.11+** installato
+- **Git** per clonare il repository
+- **Browser web** moderno
+
+### 🔧 Installazione Dipendenze
+
+#### Windows
+```powershell
+# Installa Python (se non già installato)
+# Scarica da https://www.python.org/downloads/
+
+# Clona il repository
+git clone https://github.com/username/MIDA-Missioni-Internazionali-e-Dati-Analitici.git
+cd MIDA-Missioni-Internazionali-e-Dati-Analitici
+
+# Crea ambiente virtuale (opzionale ma consigliato)
+python -m venv venv
+venv\Scripts\activate
+
+# Installa dipendenze
 pip install -r requirements.txt
 
-# Dipendenze per le mappe (se non incluse)
+# Dipendenze aggiuntive per le mappe
 pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0
 ```
 
-### 2. **Configurazione**
+#### Linux/macOS
+```bash
+# Installa Python (se non già installato)
+# Ubuntu/Debian: sudo apt install python3 python3-pip
+# macOS: brew install python3
+
+# Clona il repository
+git clone https://github.com/username/MIDA-Missioni-Internazionali-e-Dati-Analitici.git
+cd MIDA-Missioni-Internazionali-e-Dati-Analitici
+
+# Crea ambiente virtuale (opzionale ma consigliato)
+python3 -m venv venv
+source venv/bin/activate
+
+# Installa dipendenze
+pip install -r requirements.txt
+
+# Dipendenze aggiuntive per le mappe
+pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0
+```
+
+### ⚙️ Configurazione
 ```yaml
 # config/config.yaml
 configurazione:
@@ -194,23 +231,35 @@ configurazione:
   processed_data: "data/processed"
 ```
 
-### 3. **Elaborazione Dati**
-```bash
-python src/main.py
-```
+### 🚀 Avvio Dashboard
 
-### 4. **Avvio Dashboard**
+#### Metodo 1 (Consigliato)
 ```bash
-# Metodo 1 (consigliato)
+# Windows
 python run_dashboard.py
 
-# Metodo 2 (alternativo)
-python -m streamlit run src/missioni_dashboard.py
+# Linux/macOS
+python3 run_dashboard.py
 ```
 
-### 5. **Accesso Dashboard**
+#### Metodo 2 (Alternativo)
+```bash
+# Windows
+python -m streamlit run src/missioni_dashboard.py
+
+# Linux/macOS
+python3 -m streamlit run src/missioni_dashboard.py
+```
+
+### 🌐 Accesso Dashboard
 - **URL**: http://localhost:8501
 - **Porta**: 8501 (configurabile)
+- **Browser**: Apri il link nel tuo browser preferito
+
+### 🔄 Ricaricamento Dati
+- **Pulsante "🔄 Ricarica Dati"** nella sidebar per forzare l'aggiornamento
+- **Cache automatica**: I dati si aggiornano ogni 60 secondi
+- **Debug info**: Controlla la sidebar per informazioni tecniche
 
 ## 🛠️ Tecnologie Utilizzate
 
@@ -253,41 +302,8 @@ python -m streamlit run src/missioni_dashboard.py
 ### 📥 Esportazione Dati
 - **CSV**: Download dati filtrati
 - **Excel**: Export completo con multiple sheet
+- **PDF**: Report completi con statistiche
 - **Formattazione**: Valori monetari e numerici formattati
-
-## 📝 Documentazione Missioni
-
-### Tipologie di Missioni Analizzate
-- **🏛️ Missioni ONU**: UNIFIL, KFOR, MINURSO, UNMISS, MONUSCO, etc.
-- **🇪🇺 Missioni UE**: EUTM Mali/Somalia/RCA, EUCAP Sahel, EUNAVFOR MED, IRINI
-- **🛡️ Missioni NATO**: ISAF, IFOR, SFOR
-- **🇮🇹 Missioni Italiane**: MISIN (Niger)
-
-### Distribuzione Geografica
-- **Africa**: 25 missioni (Mali, Niger, Somalia, Repubblica Centrafricana, etc.)
-- **Europa**: 8 missioni (Bosnia, Kosovo, Mediterraneo)
-- **Medio Oriente**: 8 missioni (Libano, Iraq, Kuwait)
-- **Asia**: 4 missioni (Afghanistan, Timor Est)
-- **America**: 5 missioni (Haiti)
-
-## 🔜 Sviluppi Futuri
-- [x] ✅ Mappe interattive avanzate
-- [x] ✅ Analisi per organizzazione
-- [x] ✅ Filtri avanzati
-- [x] ✅ Timeline geografica
-- [x] ✅ Timeline completamente ristrutturate
-- [x] ✅ Dashboard mobile responsive
-- [x] ✅ Export PDF dei report
-- [x] ✅ Notifiche in tempo reale
-- [x] ✅ Mappe del mondo dinamiche con tutte le organizzazioni
-- [x] ✅ Timeline interattiva con slider temporale
-- [x] ✅ Mappe di calore e cluster avanzate
-- [x] ✅ Commitment dettagliato per ogni missione
-- [x] ✅ Sistema di debug integrato
-- [x] ✅ Banner di sponsorship
-- [ ] 🔄 Integrazione con API esterne
-- [ ] 🔄 Analisi predittive
-- [ ] 🔄 Machine Learning per estrazione dati
 
 ## 🐛 Risoluzione Problemi
 
@@ -299,7 +315,7 @@ python -m streamlit run src/missioni_dashboard.py
 netstat -ano | findstr :8501
 taskkill /PID <PID> /F
 
-# Linux/Mac
+# Linux/macOS
 lsof -i :8501
 kill -9 <PID>
 ```
@@ -348,83 +364,46 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ### Dettagli Missioni
 ![Dettagli Missioni](docs/images/dettagli%20missioni.png)
 
-
 ### Mappe Interattive
 ![Mappe](docs/images/mappe_interattive.png)
 
 ![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
 *Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
 
-### Infografiche e Visualizzazioni
-
 ---
 
 🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1948 al 2025
 
-📊 Cosa fa questa dashboard
-- Analizza **200 missioni internazionali** italiane (dataset integrato, con normalizzazione organizzazioni)
-- Visualizza dati su periodi, personale, costi, regioni, organizzazioni, tipologia di commitment
-- Mostra una sezione dettagliata "🔎 Commitment dettagliato per missione" con classificazione:
-  - Head of Mission
-  - Troops (naval)
-  - Troops (air)
-  - Troops (ground forces)
-  - Troops (logistical support)
-- Include una sezione debug in sidebar per vedere tutte le missioni caricate e diagnosticare eventuali problemi
+📊 **Dataset integrato con 202 missioni uniche** dal 1948 al 2025, con normalizzazione organizzazioni e deduplicazione automatica.
 
-🚀 Come si usa
-1. **Avvia la dashboard**:
-   ```bash
-   python -m streamlit run src/missioni_dashboard.py
-   ```
-2. **Apri il browser su** [http://localhost:8501](http://localhost:8501)
-3. **Controlla la sidebar** per debug e filtri
+🚀 **Come si usa**
+1. **Avvia la dashboard**: `python run_dashboard.py`
+2. **Apri il browser su**: http://localhost:8501
+3. **Usa i filtri** nella sidebar per personalizzare l'analisi
+4. **Clicca "🔄 Ricarica Dati"** per aggiornamenti
 
-🗂️ Struttura dati aggiornata
-Il file `data/processed/missioni_complete.csv` contiene **64 missioni principali** integrate con **136 missioni aggiuntive** da fonti Excel, per un totale di **200 missioni** con i seguenti campi principali:
-- nome, paese, regione, sub_regione, tipo_partecipazione, data_inizio, data_fine, personale_totale, costo_totale, tipo_missione, commitment
-- Ogni missione è unica (es. UNMISS è presente una sola volta)
-- Commitment classificato secondo la tabella fornita dall'utente
-- Nessuna riga vuota o missione senza nome
+🗂️ **Struttura dati aggiornata**
+Il sistema integra automaticamente:
+- **68 missioni** dal CSV principale
+- **134 missioni** da fonti Excel aggiuntive
+- **202 missioni uniche** dopo deduplicazione
 
-🆕 Novità principali
-- **Dataset integrato** con 200 missioni da multiple fonti
-- **Normalizzazione organizzazioni** con supporto per ONU, UE, NATO, Multinational, Bilateral, ITA, Coalizione
-- **Timeline completamente ristrutturate** con subplot per organizzazione e regione, barre orizzontali per durata
-- **Timeline interattiva** con slider temporale e statistiche dinamiche
-- **Mappe interattive migliorate** con controlli avanzati, laghi, fiumi e UI ottimizzata
-- **Mappa del mondo dinamica** che mostra tutte le organizzazioni con colori distintivi
-- **Dashboard mobile responsive** con CSS ottimizzato per dispositivi mobili
-- **Sistema di notifiche in tempo reale** per anomalie e aggiornamenti
-- **Export PDF dei report** con statistiche complete e tabelle formattate
-- **Commitment dettagliato** per ogni missione, con override per UNIFIL e logica di mapping custom
-- **Sezione debug** sempre visibile in sidebar
-- **Banner di sponsorship** visibile anche su GitHub
+🆕 **Funzionalità principali**
+- **Dashboard interattiva** con 202 missioni integrate
+- **Mappe avanzate** con 4 tipologie diverse
+- **Timeline temporali** con slider interattivi
+- **Analisi per organizzazione** (NATO: 48, ONU: 34, UE: 27, Bilateral: 27, Multinational: 16)
+- **Export dati** in CSV, Excel e PDF
+- **Sistema di debug** integrato nella sidebar
 
-📈 Grafici e analisi
-- Analisi per periodo, personale, costi, regione, organizzazione
-- **Timeline completamente ristrutturate**:
-  - Subplot per organizzazione con barre e linee
-  - Subplot per regione geografica
-  - Barre orizzontali per durata missioni (Top 15 per organizzazione)
-  - Timeline interattiva con slider temporale
-- **Mappe interattive migliorate**:
-  - Mappa del mondo con laghi, fiumi e controlli avanzati
-  - Mappa di calore con UI ottimizzata
-  - Timeline geografica con slider migliorato
-  - Mappa cluster con popup ricchi
-- Grafici e tabella per commitment dettagliato
-- Mappa del mondo con tutte le organizzazioni (ONU, UE, NATO, Multinational, Bilateral, ITA, Coalizione)
-- Tutti i filtri e le mappe aggiornati al dataset integrato
-
-🛠️ Debug e supporto
-- Se il numero di missioni caricate non è 200, controlla la sezione debug in sidebar e usa lo script `scripts/clean_missioni_csv.py` per pulire il file
-- Per integrare nuovi dati, aggiungi le missioni al CSV seguendo la struttura e poi lancia lo script di pulizia
-- Per problemi o richieste, apri una issue o contatta il maintainer
+🛠️ **Debug e supporto**
+- Se il numero di missioni non è 202, usa il pulsante "🔄 Ricarica Dati"
+- Per integrare nuovi dati, aggiungi file Excel in `data/raw/Excel/`
+- Per problemi, controlla la sezione debug nella sidebar
 
 ---
 
-> Ultimo aggiornamento: luglio 2025 
+> Ultimo aggiornamento: gennaio 2025
 
 ---
 
