@@ -12,7 +12,7 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **208 missioni uniche** dal **1948 al 2025**, coprendo un arco temporale di **77 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **208 missioni uniche** dal **1948 al 2027**, coprendo un arco temporale di **79 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -155,15 +155,16 @@ I documenti PDF vengono elaborati per estrarre:
 
 ### 🆕 Note aggiornate
 
-- **Copertura temporale:** la dashboard ora copre missioni dal 1948 al 2025, incluse tutte le missioni attive e pianificate per il 2025 secondo i dati parlamentari più recenti.
+- **Copertura temporale:** la dashboard ora copre missioni dal 1948 al 2027, incluse tutte le missioni attive e pianificate per il 2025 secondo i dati parlamentari più recenti, con alcune missioni UE estese fino al 2027 (EUCAP Somalia, EUMA Armenia).
 - **Nuove missioni 2025:** integrate e visibili nella dashboard (es. EUFOR ALTHEA, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, MPCC UE, CRRTs UE, ecc.).
+- **Missioni estese:** alcune missioni UE sono state estese oltre il 2025 per riflettere gli impegni a lungo termine.
 - **Deduplicazione e qualità:** il dataset è stato deduplicato e validato, senza anomalie o doppioni.
 
 ## 🗺️ Mappe Interattive Avanzate
 
 ### 🌍 Mappa del Mondo
 ![Mappa del Mondo](docs/images/mappa_mondo.png)
-- **Colori per organizzazione**: 🔵 ONU, 🟠 UE, 🟢 NATO, 🔴 ITA
+- **Colori per organizzazione**: 🔵 ONU, 🟠 UE, 🟢 NATO, 🔴 ITA, 🟡 Bilateral, 🟣 Multinational
 - **Marker intelligenti**: Dimensioni basate sul personale
 - **Hover ricchi**: Tutti i dettagli della missione con emoji
 - **Legenda integrata**: Visibile e ben posizionata
@@ -172,16 +173,17 @@ I documenti PDF vengono elaborati per estrarre:
 - **Densità personale**: Visualizzazione della concentrazione di personale
 - **Scala colori**: Blu (basso) → Rosso (alto)
 - **Radius ottimizzato**: 40px per migliore visualizzazione
+- **Organizzazioni**: Tutte le 6 organizzazioni rappresentate (ONU, UE, NATO, ITA, Bilateral, Multinational)
 
 ### ⏰ Timeline Geografica
 - **Slider temporale**: Navigazione anno per anno
 - **Evoluzione missioni**: Come si sono sviluppate nel tempo
-- **Colori mantenuti**: Organizzazioni sempre distinguibili
+- **Colori mantenuti**: Organizzazioni sempre distinguibili (ONU, UE, NATO, ITA, Bilateral, Multinational)
 
 ### 📍 Mappa Cluster
 - **Raggruppamento automatico**: Missioni vicine raggruppate
 - **Popup HTML ricchi**: Informazioni complete con styling
-- **Layer control**: Attiva/disattiva organizzazioni
+- **Layer control**: Attiva/disattiva organizzazioni (ONU, UE, NATO, ITA, Bilateral, Multinational)
 
 ## 🚀 Installazione e Utilizzo
 
@@ -297,18 +299,18 @@ python3 -m streamlit run src/missioni_dashboard.py
 ## 📊 Funzionalità Dashboard
 
 ### 🔍 Filtri Avanzati
-- **Anno di inizio**: Dal 1978 al 2025
+- **Anno di inizio**: Dal 1948 al 2027
 - **Tipo di partecipazione**: Militare, Civile, Misto
 - **Regione**: Africa, Europa, Medio Oriente, Asia, America
-- **Tipo missione**: ONU, UE, NATO, ITA
+- **Tipo missione**: ONU, UE, NATO, ITA, Bilateral, Multinational
 - **Organizzazione**: Filtro specifico per organizzazione
 
 ### 📈 Visualizzazioni
-- **Grafici a barre**: Missioni per periodo/organizzazione
+- **Grafici a barre**: Missioni per periodo/organizzazione (208 missioni totali)
 - **Grafici a torta**: Distribuzione budget e personale
-- **Timeline**: Evoluzione temporale delle missioni
+- **Timeline**: Evoluzione temporale delle missioni (1948-2027)
 - **Tabelle interattive**: Dati completi con formattazione
-- **Mappe interattive**: 4 tipi di mappe avanzate
+- **Mappe interattive**: 4 tipi di mappe avanzate con 6 organizzazioni
 
 ### 📥 Esportazione Dati
 - **CSV**: Download dati filtrati
@@ -383,9 +385,9 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 
 ---
 
-🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1948 al 2025
+🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1948 al 2027
 
-📊 **Dataset integrato con 202 missioni uniche** dal 1948 al 2025, con normalizzazione organizzazioni e deduplicazione automatica.
+📊 **Dataset integrato con 208 missioni uniche** dal 1948 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
 
 🚀 **Come si usa**
 1. **Avvia la dashboard**: `python run_dashboard.py`
@@ -397,10 +399,10 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 Il sistema integra automaticamente:
 - **68 missioni** dal CSV principale
 - **134 missioni** da fonti Excel aggiuntive
-- **202 missioni uniche** dopo deduplicazione
+- **208 missioni uniche** dopo deduplicazione
 
 🆕 **Funzionalità principali**
-- **Dashboard interattiva** con 202 missioni integrate
+- **Dashboard interattiva** con 208 missioni integrate
 - **Mappe avanzate** con 4 tipologie diverse
 - **Timeline temporali** con slider interattivi
 - **Analisi per organizzazione** (NATO: 48, ONU: 34, UE: 27, Bilateral: 27, Multinational: 16)
