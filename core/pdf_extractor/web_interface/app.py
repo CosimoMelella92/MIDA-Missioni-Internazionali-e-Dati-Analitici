@@ -246,6 +246,11 @@ def extract_documents():
                         logger.warning(f"Text too large ({len(text)} chars), truncating for processing")
                         text = text[:2000000]  # Truncate to 2M chars
                     
+                    # Debug: Show first 500 characters of extracted text
+                    logger.info(f"Text preview for {result.get('filename', result.get('file', 'unknown'))}:")
+                    logger.info(f"Text length: {len(text)} characters")
+                    logger.info(f"First 500 chars: {text[:500]}...")
+                    
                     try:
                         structured_data = data_extractor.extract_structured_data(text)
                         
@@ -305,13 +310,19 @@ def extract_documents():
         # Aggregate results
         extraction_progress['current_step'] = 'Aggregazione risultati...'
         try:
-            aggregated_data = data_extractor.process_pdf_results(pdf_results + docx_results)
+            # Use the processed results instead of raw PDF results
+            aggregated_data = data_extractor.process_pdf_results(all_results)
         except Exception as e:
             logger.error(f"Error aggregating results: {str(e)}")
+            # Calculate totals from processed results
+            total_missions = sum(len(result.get('structured_data', {}).get('missions', [])) for result in all_results)
+            total_personnel = sum(sum(p.get('number', 0) for p in result.get('structured_data', {}).get('personnel', [])) for result in all_results)
+            total_costs = sum(sum(c.get('amount', 0) for c in result.get('structured_data', {}).get('costs', [])) for result in all_results)
+            
             aggregated_data = {
-                'total_missions': 0,
-                'total_personnel': 0,
-                'total_costs': 0,
+                'total_missions': total_missions,
+                'total_personnel': total_personnel,
+                'total_costs': total_costs,
                 'countries': [],
                 'mission_types': []
             }
@@ -320,7 +331,7 @@ def extract_documents():
         extraction_progress['current_step'] = 'Generazione report...'
         logger.info("Generating comprehensive report...")
         try:
-            report_data = report_generator.generate_comprehensive_report(extraction_results)
+            report_data = report_generator.generate_comprehensive_report(all_results)
         except Exception as e:
             logger.error(f"Error generating report: {str(e)}")
             report_data = {}
