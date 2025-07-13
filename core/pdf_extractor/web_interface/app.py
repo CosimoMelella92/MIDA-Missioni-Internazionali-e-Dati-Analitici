@@ -399,7 +399,13 @@ def upload_file():
                     error = 'Formato non supportato. Usa PDF o DOCX.'
                     return render_template('upload.html', result=None, error=error, preview=None, num_pdfs=num_pdfs, num_docxs=num_docxs, file_list=file_list)
                 # Estrazione testo
-                text = parsed['extracted_data']['full_text']
+                if 'full_text' in parsed:
+                    text = parsed['full_text']
+                elif 'extracted_data' in parsed and 'full_text' in parsed['extracted_data']:
+                    text = parsed['extracted_data']['full_text']
+                else:
+                    text = parsed.get('text', '') or parsed.get('content', '') or ''
+                
                 preview = text[:2000] + ('...' if len(text) > 2000 else '')
                 # Estrazione strutturata
                 extractor = IntelligentDataExtractor()

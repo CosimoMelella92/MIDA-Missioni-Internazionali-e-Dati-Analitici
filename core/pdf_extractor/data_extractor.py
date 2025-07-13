@@ -439,9 +439,19 @@ class IntelligentDataExtractor:
             aggregated_data['successful_extractions'] += 1
             
             # Extract structured data
-            structured_data = self.extract_structured_data(
-                result['extracted_data']['full_text']
-            )
+            # Handle different result structures
+            if 'full_text' in result:
+                text = result['full_text']
+            elif 'extracted_data' in result and 'full_text' in result['extracted_data']:
+                text = result['extracted_data']['full_text']
+            else:
+                # Try to find text in the result structure
+                text = result.get('text', '') or result.get('content', '') or ''
+                if not text and 'pages' in result:
+                    # Combine text from all pages
+                    text = '\n'.join([page.get('text', '') for page in result['pages']])
+            
+            structured_data = self.extract_structured_data(text)
             
             # Aggregate data
             aggregated_data['total_missions'] += len(structured_data.get('missions', []))
