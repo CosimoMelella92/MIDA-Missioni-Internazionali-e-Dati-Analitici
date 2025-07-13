@@ -40,6 +40,12 @@ openpyxl>=3.0.0
 # PDF generation
 reportlab>=4.0.0
 
+# PDF extraction dependencies
+PyMuPDF>=1.23.0
+pytesseract>=0.3.10
+spacy>=3.5.0
+flask>=2.3.0
+
 # Mapping dependencies
 folium>=0.14.0
 geopandas>=0.12.0

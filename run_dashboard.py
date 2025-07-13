@@ -13,7 +13,7 @@ def main():
     
     # Verifica che siamo nella directory corretta
     current_dir = Path.cwd()
-    dashboard_file = current_dir / "src" / "missioni_dashboard.py"
+    dashboard_file = current_dir / "dashboard" / "missioni_dashboard.py"
     
     if not dashboard_file.exists():
         print(f"❌ File dashboard non trovato: {dashboard_file}")

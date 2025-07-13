@@ -20,23 +20,32 @@ MIDA/
 ├── config/
 │   └── config.yaml           # Configurazione del sistema
 ├── data/
-│   ├── raw/                  # Dati grezzi
-│   │   ├── Excel/           # File Excel originali
-│   │   └── PDF/             # Documenti PDF originali
-│   ├── documents/           # Documenti PDF processati
-│   └── processed/           # Dati elaborati
-│       └── missioni_complete.csv  # Dataset completo aggiornato
-├── src/
-│   ├── main.py              # Script principale
-│   ├── document_processor.py # Elaborazione documenti
-│   ├── data_processor.py    # Elaborazione dati
+│   ├── raw/                  # Dati grezzi (Excel, PDF, JSON)
+│   ├── documents/            # Documenti PDF processati
+│   ├── processed/            # Dati elaborati intermedi
+│   └── final/                # Output finali (CSV, XLSX)
+├── core/
+│   ├── scrapers/             # Tutti gli scraper e data collectors
+│   ├── processors/           # Processamento e normalizzazione dati
+│   ├── validators/           # Validazione dati
+│   ├── mergers/              # Unione dati da fonti diverse
+│   ├── classifiers/          # Classificazione missioni
+│   └── main.py               # Script principale di orchestrazione
+├── dashboard/
 │   ├── missioni_dashboard.py # Dashboard Streamlit principale
-│   ├── map_utils.py         # Funzioni per le mappe interattive
-│   └── run_dashboard.py     # Script di avvio dashboard
+│   ├── dashboard_old.py      # Versione precedente della dashboard
+│   └── altri file dashboard  # Componenti e utility dashboard
+├── reports/
+│   └── report_generator.py   # Generazione report e template
+├── utils/
+│   └── notification_system.py, map_utils.py, ecc.
+├── tests/
+│   └── Tutti i test automatici
 ├── docs/
-│   ├── images/              # Screenshot e immagini
-│   └── missioni_analizzate.md # Documentazione missioni
-└── requirements.txt         # Dipendenze Python
+│   └── images/, missioni_analizzate.md, ecc.
+├── requirements.txt
+├── run_dashboard.py
+└── README.md
 ```
 
 ## 🔄 Flusso dei Dati
@@ -244,24 +253,16 @@ configurazione:
   processed_data: "data/processed"
 ```
 
-### 🚀 Avvio Dashboard
+## 🚀 Avvio Dashboard
 
 #### Metodo 1 (Consigliato)
 ```bash
-# Windows
 python run_dashboard.py
-
-# Linux/macOS
-python3 run_dashboard.py
 ```
 
 #### Metodo 2 (Alternativo)
 ```bash
-# Windows
-python -m streamlit run src/missioni_dashboard.py
-
-# Linux/macOS
-python3 -m streamlit run src/missioni_dashboard.py
+python -m streamlit run dashboard/missioni_dashboard.py
 ```
 
 ### 🌐 Accesso Dashboard
