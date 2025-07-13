@@ -45,13 +45,33 @@ extraction_progress = {
     'error_message': ''
 }
 
+# AI extraction settings
+ai_settings = {
+    'use_ai': False,
+    'api_key': None,
+    'model': 'gpt-3.5-turbo'
+}
+
 @app.route('/')
 def index():
-    """Main page showing extraction overview"""
-    return render_template('index.html', 
-                         results=extraction_results,
-                         aggregated=aggregated_data,
-                         report_data=report_data)
+    """Main page with extraction interface"""
+    return render_template('index.html')
+
+@app.route('/api/settings', methods=['GET', 'POST'])
+def handle_settings():
+    """Handle AI extraction settings"""
+    global ai_settings
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        ai_settings.update({
+            'use_ai': data.get('use_ai', False),
+            'api_key': data.get('api_key', ''),
+            'model': data.get('model', 'gpt-3.5-turbo')
+        })
+        return jsonify({'status': 'success'})
+    
+    return jsonify(ai_settings)
 
 @app.route('/api/progress')
 def get_progress():
@@ -75,9 +95,30 @@ def get_progress():
 @app.route('/extract', methods=['POST'])
 def extract_documents():
     """Extract data from PDFs and DOCX in documents folder"""
-    global extraction_results, aggregated_data, report_data, extraction_progress
+    global extraction_results, aggregated_data, report_data, extraction_progress, ai_settings
     
     try:
+        # Get extraction settings with robust JSON handling
+        data = {}
+        try:
+            if request.is_json:
+                data = request.get_json() or {}
+            elif request.form:
+                # Handle form data
+                data = {
+                    'use_ai': request.form.get('use_ai', 'false').lower() == 'true',
+                    'api_key': request.form.get('api_key', '')
+                }
+            else:
+                # Default to empty dict if no data
+                data = {}
+        except Exception as e:
+            logger.warning(f"Could not parse request data: {str(e)}, using defaults")
+            data = {}
+        
+        use_ai = data.get('use_ai', ai_settings['use_ai'])
+        api_key = data.get('api_key', ai_settings['api_key'])
+        
         # Initialize progress
         extraction_progress.update({
             'status': 'running',
@@ -97,16 +138,34 @@ def extract_documents():
         if not docs_dir.exists():
             extraction_progress.update({
                 'status': 'error',
-                'error_message': 'Documents directory not found'
+                'error_message': 'Directory documents non trovata'
             })
-            return jsonify({'error': 'Documents directory not found'}), 404
+            return jsonify({'error': 'Directory documents non trovata'}), 400
         
         # Initialize extractors
-        extraction_progress['current_step'] = 'Caricamento modelli NLP...'
+        extraction_progress['current_step'] = 'Caricamento modelli...'
+        
+        # Initialize parsers
         pdf_parser = PDFParser()
         docx_parser = DOCXParser()
-        data_extractor = IntelligentDataExtractor()
+        
+        # Initialize report generator
         report_generator = AdvancedReportGenerator()
+        
+        # Initialize data extractor with AI if requested
+        try:
+            if use_ai:
+                data_extractor = IntelligentDataExtractor(use_ai=True, ai_api_key=api_key)
+                extraction_progress['current_step'] = 'AI Extraction abilitata'
+            else:
+                data_extractor = IntelligentDataExtractor()
+        except Exception as e:
+            logger.error(f"Error initializing extractor: {str(e)}")
+            extraction_progress.update({
+                'status': 'error',
+                'error_message': f'Errore inizializzazione: {str(e)}'
+            })
+            return jsonify({'error': f'Errore inizializzazione: {str(e)}'}), 500
         
         # Count total files
         pdf_files = list(docs_dir.glob('*.pdf'))

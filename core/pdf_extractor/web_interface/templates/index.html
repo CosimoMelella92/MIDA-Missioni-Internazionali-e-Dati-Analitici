@@ -297,7 +297,8 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                body: JSON.stringify({}) // Send empty object instead of nothing
             })
             .then(response => response.json())
             .then(data => {

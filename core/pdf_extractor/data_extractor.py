@@ -7,10 +7,18 @@ import logging
 import re
 import json
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime, date
 import spacy
 from pathlib import Path
+
+# Import AI extractor
+try:
+    from .ai_extractor import AIExtractor
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+    AIExtractor = None
 
 class IntelligentDataExtractor:
     """Advanced data extractor using NLP techniques"""
