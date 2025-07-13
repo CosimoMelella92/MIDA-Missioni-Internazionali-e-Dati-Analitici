@@ -11,35 +11,12 @@ warnings.filterwarnings('ignore')
 
 # Importa le funzioni delle mappe
 try:
-    from map_utils import (
-        load_geo_data, create_world_map_plotly, create_region_map_plotly,
-        create_heatmap_plotly, create_folium_map, create_timeline_map,
-        create_mission_clusters_map
+    from maps import (
+        render_world_map, render_heatmap, render_timeline_map, render_cluster_map,
+        add_coordinates_to_dataframe
     )
     MAPS_AVAILABLE = True
 except ImportError:
-    # Fallback se il modulo non è disponibile
-    def load_geo_data():
-        return pd.DataFrame()
-    
-    def create_world_map_plotly(df, geo_df):
-        return go.Figure()
-    
-    def create_region_map_plotly(df, geo_df):
-        return go.Figure()
-    
-    def create_heatmap_plotly(df, geo_df):
-        return go.Figure()
-    
-    def create_folium_map(df, geo_df):
-        return None
-    
-    def create_timeline_map(df, geo_df):
-        return go.Figure()
-    
-    def create_mission_clusters_map(df, geo_df):
-        return None
-    
     MAPS_AVAILABLE = False
 
 # Configurazione pagina
@@ -980,8 +957,8 @@ def main():
     st.sidebar.write(f"Missioni con data_inizio non valida: {df['data_inizio'].isna().sum()}")
     st.sidebar.write(f"Missioni con data_fine non valida: {df['data_fine'].isna().sum()}")
     
-    # Carica dati geografici
-    geo_df = load_geo_data()
+    # Dati geografici non più necessari con le nuove mappe
+    # geo_df = load_geo_data()
     
     # Salva i dati in session_state per le notifiche
     st.session_state['df'] = df
@@ -1764,103 +1741,7 @@ def main():
     
     st.markdown("---")
     
-    # 🗺️ SEZIONE MAPPE MIGLIORATA
-    st.markdown('<h2 class="period-header">🗺️ Mappe Interattive Avanzate</h2>', 
-                unsafe_allow_html=True)
-    
-    # Info box per le mappe
-    st.markdown("""
-    <div class="info-box">
-        <strong>🗺️ Guida alle Mappe</strong><br>
-        • <strong>Mappa del Mondo:</strong> Visualizzazione completa con colori per organizzazione<br>
-        • <strong>Mappa di Calore:</strong> Densità del personale impiegato nelle missioni<br>
-        • <strong>Timeline:</strong> Evoluzione temporale delle missioni (usa lo slider)<br>
-        • <strong>Cluster:</strong> Mappa interattiva con raggruppamento automatico
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if not MAPS_AVAILABLE:
-        st.warning("⚠️ Le funzioni delle mappe non sono disponibili. Installa le dipendenze con: pip install folium geopandas pydeck geopy")
-        st.info("📦 Dipendenze mancanti per le mappe:")
-        st.code("pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0")
-    else:
-        # Tab per diverse tipologie di mappe
-        map_tab1, map_tab2, map_tab3, map_tab4 = st.tabs([
-            "🌍 Mappa del Mondo", 
-            "🔥 Mappa di Calore", 
-            "⏰ Timeline", 
-            "📍 Cluster"
-        ])
-        
-        with map_tab1:
-            st.subheader("🌍 Mappa del Mondo - Distribuzione Missioni")
-            
-            # Mappa del mondo con Plotly
-            world_map = create_world_map_plotly(df_filtered, geo_df)
-            st.plotly_chart(world_map, use_container_width=True, key="world_map_improved")
-            
-            # Informazioni sulla mappa
-            st.info("""
-            **🎯 Legenda Mappa:**
-            - **Colori:** Ogni organizzazione ha un colore distintivo
-            - **Dimensioni:** Basate sul numero di personale
-            - **Hover:** Mostra dettagli completi della missione
-            - **Legenda:** Mostra tutte le organizzazioni con il numero di missioni
-            """)
-        
-        with map_tab2:
-            st.subheader("🔥 Mappa di Calore - Densità Personale")
-            
-            # Mappa di calore
-            heatmap = create_heatmap_plotly(df_filtered, geo_df)
-            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_interactive")
-            
-            st.info("""
-            **🔥 Mappa di Calore:**
-            - Mostra la densità del personale impiegato
-            - Zone più scure = più personale
-            - Utile per identificare aree di maggiore impegno
-            - Scala colori: Blu (basso) → Rosso (alto)
-            """)
-        
-        with map_tab3:
-            st.subheader("⏰ Timeline Geografica - Evoluzione Temporale")
-            
-            # Mappa timeline
-            timeline_map = create_timeline_map(df_filtered, geo_df)
-            st.plotly_chart(timeline_map, use_container_width=True, key="timeline_improved")
-            
-            st.info("""
-            **⏰ Timeline Interattiva:**
-            - Mostra l'evoluzione delle missioni nel tempo
-            - Usa i controlli per navigare tra gli anni
-            - Visualizza come si sono sviluppate le missioni geograficamente
-            - Colori per organizzazione mantenuti nel tempo
-            """)
-        
-        with map_tab4:
-            st.subheader("📍 Mappa con Cluster - Raggruppamento Missioni")
-            
-            # Mappa con cluster (Folium)
-            try:
-                import folium
-                cluster_map = create_mission_clusters_map(df_filtered, geo_df)
-                if cluster_map:
-                    st.components.v1.html(cluster_map._repr_html_(), height=600)
-                else:
-                    st.warning("Mappa cluster non disponibile")
-            except ImportError:
-                st.warning("Folium non installato. Installa con: pip install folium")
-            
-            st.info("""
-            **📍 Mappa Cluster:**
-            - Raggruppa missioni vicine per una migliore visualizzazione
-            - Zoom per vedere i dettagli
-            - Clicca sui marker per informazioni complete
-            - Layer control per attivare/disattivare organizzazioni
-            """)
-    
-    st.markdown("---")
+
     
     # 5. TIMELINE DELLE MISSIONI MIGLIORATA
     st.markdown('<h2 class="period-header">⏰ Timeline delle Missioni</h2>', 
@@ -2093,6 +1974,61 @@ def main():
         color_discrete_sequence=px.colors.qualitative.Set2
     )
     st.plotly_chart(fig_commitment_bar, use_container_width=True, key='commitment_detailed_bar')
+
+    # 🗺️ MAPPE INTERATTIVE AVANZATE (SPOSTATE ALLA FINE)
+    st.markdown("---")
+    st.markdown('<h2 class="period-header">🗺️ Mappe Interattive Avanzate</h2>', 
+                unsafe_allow_html=True)
+    
+    if MAPS_AVAILABLE:
+        st.subheader("🗺️ Mappe delle Missioni per Organizzazione")
+        
+        # Prepara dati geografici (lat/lon) usando geocoding corretto
+        if 'lat' not in df_filtered.columns or 'lon' not in df_filtered.columns:
+            df_filtered = add_coordinates_to_dataframe(df_filtered)
+
+        # Filtro per organizzazione
+        organizzazioni_disponibili = sorted(df_filtered['tipo_missione'].unique())
+        organizzazione_selezionata = st.selectbox(
+            'Seleziona organizzazione per visualizzare le mappe:',
+            ['Tutte le organizzazioni'] + organizzazioni_disponibili
+        )
+        
+        # Filtra i dati per l'organizzazione selezionata
+        if organizzazione_selezionata != 'Tutte le organizzazioni':
+            df_mappa = df_filtered[df_filtered['tipo_missione'] == organizzazione_selezionata]
+            st.info(f"Mostrando {len(df_mappa)} missioni dell'organizzazione: {organizzazione_selezionata}")
+        else:
+            df_mappa = df_filtered
+            st.info(f"Mostrando tutte le {len(df_mappa)} missioni")
+        
+        # Tab per diverse tipologie di mappe
+        map_tab1, map_tab2, map_tab3, map_tab4 = st.tabs([
+            "🌍 Mappa del Mondo", 
+            "🔥 Mappa di Calore", 
+            "⏰ Timeline", 
+            "🔗 Cluster"
+        ])
+        
+        with map_tab1:
+            st.subheader(f"🌍 Mappa del Mondo - {organizzazione_selezionata}")
+            render_world_map(df_mappa)
+            
+        with map_tab2:
+            st.subheader(f"🔥 Mappa di Calore - {organizzazione_selezionata}")
+            render_heatmap(df_mappa)
+            
+        with map_tab3:
+            st.subheader(f"⏰ Timeline - {organizzazione_selezionata}")
+            render_timeline_map(df_mappa)
+            
+        with map_tab4:
+            st.subheader(f"🔗 Cluster - {organizzazione_selezionata}")
+            render_cluster_map(df_mappa)
+    else:
+        st.warning("⚠️ Le funzioni delle mappe non sono disponibili. Installa le dipendenze con: pip install folium geopandas pydeck geopy")
+        st.info("📦 Dipendenze mancanti per le mappe:")
+        st.code("pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0")
 
 if __name__ == "__main__":
     main() 
