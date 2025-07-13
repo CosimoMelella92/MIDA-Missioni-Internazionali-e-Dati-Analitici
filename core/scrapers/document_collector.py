@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from .base_collector import BaseCollector
 import pandas as pd
+from pathlib import Path
 
 class DocumentCollector(BaseCollector):
     """Collector specializzato per documenti PDF e DOC da siti istituzionali"""
@@ -27,6 +28,11 @@ class DocumentCollector(BaseCollector):
             'esercito.difesa.it',
             'aeronautica.difesa.it'
         ]
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.output_path = Path('data/documents')
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -46,12 +52,26 @@ class DocumentCollector(BaseCollector):
         """Verifica se l'URL punta a un documento consentito"""
         return any(url.lower().endswith(ext) for ext in self.allowed_extensions)
         
-    def _generate_filename(self, content: bytes, original_url: str) -> str:
-        """Genera un nome file univoco basato sul contenuto"""
-        ext = os.path.splitext(original_url)[1].lower()
-        content_hash = hashlib.sha256(content).hexdigest()[:12]
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        return f"{content_hash}_{timestamp}{ext}"
+    def _generate_filename(self, original_url: str) -> str:
+        """Genera un nome file descrittivo basato sull'URL originale"""
+        original_filename = os.path.basename(urlparse(original_url).path)
+        if not original_filename or original_filename == '':
+            original_filename = 'document'
+        
+        # Rimuovi caratteri problematici dal nome file
+        safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+        
+        # Se il file esiste già, aggiungi un suffisso
+        base_name = os.path.splitext(safe_filename)[0]
+        counter = 1
+        final_filename = safe_filename
+        
+        while (self.output_path / final_filename).exists():
+            name, ext_part = os.path.splitext(safe_filename)
+            final_filename = f"{name}_{counter}{ext_part}"
+            counter += 1
+        
+        return final_filename
         
     def _download_file(self, url: str, session: httpx.Client) -> Optional[Dict[str, Any]]:
         """Scarica un file con gestione errori e validazione"""
@@ -63,10 +83,10 @@ class DocumentCollector(BaseCollector):
                 return None
                 
             content = response.content
-            filename = self._generate_filename(content, url)
-            filepath = os.path.join(self.output_path, filename)
+            filename = self._generate_filename(url)
+            filepath = self.output_path / filename
             
-            # Salva il file
+            # Salva il file nella cartella centralizzata
             with open(filepath, 'wb') as f:
                 f.write(content)
                 
@@ -77,10 +97,11 @@ class DocumentCollector(BaseCollector):
                 'download_date': datetime.now().isoformat(),
                 'file_size': len(content),
                 'content_type': response.headers.get('content-type', ''),
-                'source_domain': urlparse(url).netloc
+                'source_domain': urlparse(url).netloc,
+                'local_path': str(filepath)
             }
             
-            self.logger.info(f"Scaricato: {filename} da {url}")
+            self.logger.info(f"Scaricato in data/documents/: {filename} da {url}")
             return metadata
             
         except Exception as e:
@@ -130,13 +151,11 @@ class DocumentCollector(BaseCollector):
             
         df = pd.DataFrame(all_metadata)
         
-        # Salva metadata
-        metadata_file = os.path.join(
-            self.output_path,
-            f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        )
+        # Salva metadata nella cartella documents
+        metadata_file = self.output_path / f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         df.to_csv(metadata_file, index=False, encoding='utf-8')
         
+        self.logger.info(f"Scaricati {len(df)} documenti in data/documents/")
         return df
         
     def validate(self, data: pd.DataFrame) -> bool:

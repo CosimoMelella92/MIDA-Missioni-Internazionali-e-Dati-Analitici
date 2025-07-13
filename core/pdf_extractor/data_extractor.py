@@ -6,6 +6,7 @@ Advanced NLP-based data extraction from PDF text
 import logging
 import re
 import json
+import os
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime, date
 import spacy
@@ -23,26 +24,36 @@ class IntelligentDataExtractor:
         """
         self.logger = logging.getLogger(__name__)
         
-        try:
-            # Load spaCy model
-            self.nlp = spacy.load(language_model)
-            self.logger.info(f"Loaded spaCy model: {language_model}")
-        except OSError:
-            self.logger.warning(f"Model {language_model} not found, using basic extraction")
+        # Check if spaCy should be disabled for performance
+        if os.environ.get('DISABLE_SPACY', 'false').lower() == 'true':
+            self.logger.info("spaCy disabled for performance")
             self.nlp = None
+        else:
+            try:
+                # Load spaCy model
+                self.nlp = spacy.load(language_model)
+                # Increase max length for large documents
+                self.nlp.max_length = 5000000  # 5M characters
+                self.logger.info(f"Loaded spaCy model: {language_model}")
+            except OSError:
+                self.logger.warning(f"Model {language_model} not found, using basic extraction")
+                self.nlp = None
         
         # Enhanced patterns for mission data
         self.enhanced_patterns = {
             'mission_names': [
-                r'(?:missione|mission|operazione|operation)\s+([A-Z][A-Z\s\-]+)',
-                r'([A-Z][A-Z\s\-]+)\s+(?:mission|operazione)',
-                r'(?:UNIFIL|KFOR|ISAF|EUTM|EUNAVFOR|EUBAM|EULEX|MINURSO|UNSMIS)',
-                r'(?:EUFOR\s+ALTHEA|Enhanced\s+Vigilance|Forward\s+Land\s+Forces)'
+                # Specific mission names only
+                r'\b(?:UNIFIL|KFOR|ISAF|EUTM|EUNAVFOR|EUBAM|EULEX|MINURSO|UNSMIS|EUFOR\s+ALTHEA)\b',
+                # Mission patterns with context
+                r'(?:missione|mission)\s+(?:in|a|presso)\s+([A-Z][a-z\s]+)',
+                r'(?:operazione|operation)\s+(?:in|a|presso)\s+([A-Z][a-z\s]+)'
             ],
             'countries': [
-                r'(?:in|a|presso)\s+([A-Z][a-z\s]+)',
-                r'(?:paese|country|stato|state)\s*[:\-]?\s*([A-Z][a-z\s]+)',
-                r'(?:Libano|Kosovo|Afghanistan|Mali|Somalia|RCA|Bosnia|Serbia)'
+                # Specific countries mentioned in Italian missions
+                r'\b(?:Libano|Kosovo|Afghanistan|Mali|Somalia|RCA|Bosnia|Serbia|Iraq|Libia|Sudan|Ciad)\b',
+                # Country with context
+                r'(?:in|a|presso)\s+(?:il\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)',
+                r'(?:paese|country|stato|state)\s*[:\-]?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)'
             ],
             'personnel_numbers': [
                 r'(\d+)\s+(?:militari|soldati|personale|personnel)',
@@ -93,6 +104,15 @@ class IntelligentDataExtractor:
         # Clean text
         cleaned_text = self._clean_text(text)
         
+        # Check for fast mode
+        fast_mode = os.environ.get('FAST_MODE', 'false').lower() == 'true'
+        
+        # Handle very long texts by chunking (reduced threshold in fast mode)
+        chunk_threshold = 500000 if fast_mode else 2000000  # 500K vs 2M
+        if len(cleaned_text) > chunk_threshold:
+            self.logger.info(f"Text too long ({len(cleaned_text)} chars), using chunking")
+            return self._extract_from_chunks(cleaned_text)
+        
         # Extract data using different methods
         extracted_data = {
             'missions': self._extract_missions(cleaned_text),
@@ -108,6 +128,12 @@ class IntelligentDataExtractor:
         
         # Calculate overall confidence
         extracted_data['confidence'] = self._calculate_confidence(extracted_data)
+        
+        # Log extraction results for debugging
+        self.logger.info(f"Extraction results: {len(extracted_data.get('missions', []))} missions, "
+                        f"{len(extracted_data.get('countries', []))} countries, "
+                        f"{len(extracted_data.get('personnel', []))} personnel entries, "
+                        f"confidence: {extracted_data['confidence']:.2f}")
         
         return extracted_data
     
@@ -128,22 +154,36 @@ class IntelligentDataExtractor:
         """Extract mission information"""
         missions = []
         
+        # Known mission keywords for validation
+        mission_keywords = ['missione', 'operazione', 'peacekeeping', 'stabilizzazione', 'addestramento']
+        
         for pattern in self.enhanced_patterns['mission_names']:
             matches = re.finditer(pattern, text, re.IGNORECASE)
             for match in matches:
                 mission_name = match.group(1) if match.groups() else match.group(0)
-                missions.append({
-                    'name': mission_name.strip(),
-                    'confidence': 0.8,
-                    'position': match.start()
-                })
+                mission_name = mission_name.strip()
+                
+                # Validate mission name
+                if len(mission_name) < 3 or len(mission_name) > 50:
+                    continue
+                
+                # Check if it's a real mission (contains mission keywords or is a known acronym)
+                is_valid = any(keyword in text[max(0, match.start()-50):match.end()+50].lower() 
+                             for keyword in mission_keywords)
+                
+                if is_valid or any(acronym in mission_name.upper() for acronym in ['UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS']):
+                    missions.append({
+                        'name': mission_name,
+                        'confidence': 0.9 if any(acronym in mission_name.upper() for acronym in ['UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS']) else 0.7,
+                        'position': match.start()
+                    })
         
-        # Remove duplicates and sort by confidence
+        # Remove duplicates and limit results
         unique_missions = []
         seen_names = set()
         
         for mission in sorted(missions, key=lambda x: x['confidence'], reverse=True):
-            if mission['name'] not in seen_names:
+            if mission['name'] not in seen_names and len(unique_missions) < 20:  # Limit to 20 missions max
                 unique_missions.append(mission)
                 seen_names.add(mission['name'])
         
@@ -153,17 +193,37 @@ class IntelligentDataExtractor:
         """Extract country information"""
         countries = []
         
+        # Known countries for Italian missions
+        known_countries = {
+            'libano', 'kosovo', 'afghanistan', 'mali', 'somalia', 'rca', 'bosnia', 'serbia',
+            'iraq', 'libia', 'sudan', 'ciad', 'somalia', 'yemen', 'siria', 'niger'
+        }
+        
         for pattern in self.enhanced_patterns['countries']:
             matches = re.finditer(pattern, text, re.IGNORECASE)
             for match in matches:
                 country_name = match.group(1) if match.groups() else match.group(0)
-                countries.append({
-                    'name': country_name.strip(),
-                    'confidence': 0.7,
-                    'position': match.start()
-                })
+                country_name = country_name.strip().lower()
+                
+                # Validate country name
+                if len(country_name) < 3 or len(country_name) > 30:
+                    continue
+                
+                # Check if it's a known country or has mission context
+                is_known = country_name in known_countries
+                has_context = any(keyword in text[max(0, match.start()-50):match.end()+50].lower() 
+                                for keyword in ['missione', 'operazione', 'paese', 'stato'])
+                
+                if is_known or has_context:
+                    countries.append({
+                        'name': country_name.title(),
+                        'confidence': 0.9 if is_known else 0.6,
+                        'position': match.start()
+                    })
         
-        return self._remove_duplicates(countries, 'name')
+        # Remove duplicates and limit results
+        unique_countries = self._remove_duplicates(countries, 'name')
+        return unique_countries[:15]  # Limit to 15 countries max
     
     def _extract_personnel(self, text: str) -> List[Dict]:
         """Extract personnel numbers"""
@@ -198,12 +258,12 @@ class IntelligentDataExtractor:
                     cost = float(cost_str)
                     costs.append({
                         'amount': cost,
-                        'currency': 'EUR',
                         'confidence': 0.8,
                         'context': match.group(0),
                         'position': match.start()
                     })
-                except (ValueError, IndexError):
+                except (ValueError, IndexError, AttributeError):
+                    # Skip invalid cost entries
                     continue
         
         return costs
@@ -268,6 +328,11 @@ class IntelligentDataExtractor:
         if not self.nlp:
             return []
         
+        # Skip entity extraction in fast mode
+        fast_mode = os.environ.get('FAST_MODE', 'false').lower() == 'true'
+        if fast_mode:
+            return []
+        
         doc = self.nlp(text)
         entities = []
         
@@ -318,20 +383,32 @@ class IntelligentDataExtractor:
         total_items = 0
         total_confidence = 0.0
         
+        # Weight different types of data
+        weights = {
+            'missions': 0.3,
+            'countries': 0.2,
+            'personnel': 0.2,
+            'costs': 0.15,
+            'organizations': 0.15
+        }
+        
         for key, value in data.items():
             if key == 'confidence':
                 continue
             
-            if isinstance(value, list):
-                for item in value:
-                    if isinstance(item, dict) and 'confidence' in item:
-                        total_confidence += item['confidence']
-                        total_items += 1
-            elif isinstance(value, (int, float)):
+            if isinstance(value, list) and value:
+                weight = weights.get(key, 0.1)
+                avg_confidence = sum(item.get('confidence', 0) for item in value) / len(value)
+                total_confidence += avg_confidence * weight
                 total_items += 1
-                total_confidence += 0.5  # Default confidence for simple values
+            elif isinstance(value, (int, float)) and value > 0:
+                total_items += 1
+                total_confidence += 0.3  # Lower default confidence
         
-        return total_confidence / total_items if total_items > 0 else 0.0
+        confidence = total_confidence / total_items if total_items > 0 else 0.0
+        
+        # Cap confidence at realistic levels
+        return min(confidence, 0.85)  # Maximum 85% confidence
     
     def process_pdf_results(self, pdf_results: List[Dict]) -> Dict[str, any]:
         """
@@ -369,24 +446,27 @@ class IntelligentDataExtractor:
             # Aggregate data
             aggregated_data['total_missions'] += len(structured_data.get('missions', []))
             aggregated_data['total_personnel'] += sum(
-                p['number'] for p in structured_data.get('personnel', [])
+                p.get('number', 0) for p in structured_data.get('personnel', [])
             )
             aggregated_data['total_costs'] += sum(
-                c['amount'] for c in structured_data.get('costs', [])
+                c.get('amount', 0) for c in structured_data.get('costs', [])
             )
             
             # Collect unique countries and organizations
             for country in structured_data.get('countries', []):
-                aggregated_data['countries_found'].add(country['name'])
+                if 'name' in country:
+                    aggregated_data['countries_found'].add(country['name'])
             
             for org in structured_data.get('organizations', []):
-                aggregated_data['organizations_found'].add(org['name'])
+                if 'name' in org:
+                    aggregated_data['organizations_found'].add(org['name'])
             
             # Count mission types
             for mission_type in structured_data.get('mission_types', []):
-                mission_type_name = mission_type['type']
-                aggregated_data['mission_types'][mission_type_name] = \
-                    aggregated_data['mission_types'].get(mission_type_name, 0) + 1
+                if 'type' in mission_type:
+                    mission_type_name = mission_type['type']
+                    aggregated_data['mission_types'][mission_type_name] = \
+                        aggregated_data['mission_types'].get(mission_type_name, 0) + 1
             
             # Store file details
             aggregated_data['file_details'].append({
@@ -402,3 +482,96 @@ class IntelligentDataExtractor:
         aggregated_data['organizations_found'] = list(aggregated_data['organizations_found'])
         
         return aggregated_data 
+    
+    def _extract_from_chunks(self, text: str) -> Dict[str, any]:
+        """Extract data from long text by processing in chunks"""
+        # Use smaller chunks in fast mode
+        fast_mode = os.environ.get('FAST_MODE', 'false').lower() == 'true'
+        chunk_size = 500000 if fast_mode else 1000000  # 500K vs 1M characters per chunk
+        chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+        
+        self.logger.info(f"Processing {len(chunks)} chunks of ~{chunk_size} characters each")
+        
+        # Extract from each chunk
+        all_missions = []
+        all_countries = []
+        all_personnel = []
+        all_costs = []
+        all_dates = []
+        all_organizations = []
+        all_mission_types = []
+        all_entities = []
+        
+        for i, chunk in enumerate(chunks):
+            self.logger.info(f"Processing chunk {i+1}/{len(chunks)}")
+            
+            # Extract from this chunk
+            missions = self._extract_missions(chunk)
+            countries = self._extract_countries(chunk)
+            personnel = self._extract_personnel(chunk)
+            costs = self._extract_costs(chunk)
+            dates = self._extract_dates(chunk)
+            organizations = self._extract_organizations(chunk)
+            mission_types = self._classify_mission_types(chunk)
+            entities = self._extract_entities(chunk) if self.nlp else []
+            
+            # Merge results
+            all_missions.extend(missions)
+            all_countries.extend(countries)
+            all_personnel.extend(personnel)
+            all_costs.extend(costs)
+            all_dates.extend(dates)
+            all_organizations.extend(organizations)
+            all_mission_types.extend(mission_types)
+            all_entities.extend(entities)
+        
+        # Remove duplicates
+        all_missions = self._remove_duplicates(all_missions, 'name')
+        all_countries = self._remove_duplicates(all_countries, 'name')
+        all_organizations = self._remove_duplicates(all_organizations, 'name')
+        all_mission_types = self._remove_duplicates(all_mission_types, 'type')
+        
+        # Merge personnel and costs (sum values)
+        merged_personnel = self._merge_numerical_data(all_personnel, 'number')
+        merged_costs = self._merge_numerical_data(all_costs, 'amount')
+        
+        extracted_data = {
+            'missions': all_missions,
+            'countries': all_countries,
+            'personnel': merged_personnel,
+            'costs': merged_costs,
+            'dates': all_dates,
+            'organizations': all_organizations,
+            'mission_types': all_mission_types,
+            'entities': all_entities,
+            'confidence': 0.0
+        }
+        
+        # Calculate overall confidence
+        extracted_data['confidence'] = self._calculate_confidence(extracted_data)
+        
+        return extracted_data
+    
+    def _merge_numerical_data(self, data_list: List[Dict], key: str) -> List[Dict]:
+        """Merge numerical data by summing values"""
+        if not data_list:
+            return []
+        
+        merged = {}
+        for item in data_list:
+            value = item.get(key, 0)
+            context = item.get('context', '')
+            
+            if context not in merged:
+                merged[context] = {'value': value, 'confidence': item.get('confidence', 0)}
+            else:
+                merged[context]['value'] += value
+                merged[context]['confidence'] = max(merged[context]['confidence'], item.get('confidence', 0))
+        
+        # Return with the correct key based on the input key
+        if key == 'amount':
+            return [{'amount': v['value'], 'confidence': v['confidence'], 'context': k} 
+                    for k, v in merged.items()]
+        else:
+            return [{'number': v['value'], 'confidence': v['confidence'], 'context': k} 
+                    for k, v in merged.items()] 

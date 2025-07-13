@@ -21,31 +21,137 @@ MIDA/
 │   └── config.yaml           # Configurazione del sistema
 ├── data/
 │   ├── raw/                  # Dati grezzi (Excel, PDF, JSON)
-│   ├── documents/            # Documenti PDF processati
+│   ├── documents/            # Documenti PDF/DOCX centralizzati
 │   ├── processed/            # Dati elaborati intermedi
 │   └── final/                # Output finali (CSV, XLSX)
 ├── core/
-│   ├── scrapers/             # Tutti gli scraper e data collectors
+│   ├── scrapers/             # Web scrapers e document collectors
+│   │   ├── smart_document_fetcher.py
+│   │   ├── sitemap_document_collector.py
+│   │   ├── european_document_collector.py
+│   │   ├── document_collector.py
+│   │   ├── camera_scraper.py
+│   │   ├── document_scraper.py
+│   │   ├── web_scraper.py
+│   │   └── altri scrapers...
+│   ├── pdf_extractor/        # Sistema di estrazione e analisi documenti
+│   │   ├── data_extractor.py
+│   │   ├── pdf_parser.py
+│   │   ├── docx_parser.py
+│   │   ├── report_generator.py
+│   │   ├── web_interface/    # Interfaccia web Flask
+│   │   │   ├── app.py
+│   │   │   └── templates/
+│   │   ├── run_pdf_extractor.py
+│   │   ├── run_fast_extractor.py
+│   │   ├── run_ultra_fast_extractor.py
+│   │   └── run_document_extractor.py
 │   ├── processors/           # Processamento e normalizzazione dati
 │   ├── validators/           # Validazione dati
 │   ├── mergers/              # Unione dati da fonti diverse
 │   ├── classifiers/          # Classificazione missioni
+│   ├── utils/                # Utility condivise
 │   └── main.py               # Script principale di orchestrazione
 ├── dashboard/
 │   ├── missioni_dashboard.py # Dashboard Streamlit principale
-│   ├── dashboard_old.py      # Versione precedente della dashboard
+│   ├── maps/                 # Componenti mappe avanzate
+│   │   ├── advanced_maps.py
+│   │   └── geocoding.py
 │   └── altri file dashboard  # Componenti e utility dashboard
+├── tests/                    # Test automatici e script di verifica
+│   ├── test_scrapers_update.py
+│   ├── test_extraction.py
+│   ├── benchmark_performance.py
+│   ├── quick_test.py
+│   └── altri test...
 ├── reports/
 │   └── report_generator.py   # Generazione report e template
 ├── utils/
 │   └── notification_system.py, map_utils.py, ecc.
-├── tests/
-│   └── Tutti i test automatici
 ├── docs/
 │   └── images/, missioni_analizzate.md, ecc.
 ├── requirements.txt
 ├── run_dashboard.py
 └── README.md
+```
+
+## 🚀 Avvio Dashboard
+
+#### Metodo 1 (Consigliato)
+```bash
+python run_dashboard.py
+```
+
+#### Metodo 2 (Alternativo)
+```bash
+python -m streamlit run dashboard/missioni_dashboard.py
+```
+
+### 🌐 Accesso Dashboard
+- **URL**: http://localhost:8501
+- **Porta**: 8501 (configurabile)
+- **Browser**: Apri il link nel tuo browser preferito
+
+### 🔄 Ricaricamento Dati
+- **Pulsante "🔄 Ricarica Dati"** nella sidebar per forzare l'aggiornamento
+- **Cache automatica**: I dati si aggiornano ogni 60 secondi
+- **Debug info**: Controlla la sidebar per informazioni tecniche
+
+## 📄 Sistema di Estrazione Documenti
+
+### 🚀 Avvio PDF Extractor
+
+#### Modalità Completa (con NLP)
+```bash
+python core/pdf_extractor/run_pdf_extractor.py
+```
+
+#### Modalità Veloce (spaCy disabilitato)
+```bash
+python core/pdf_extractor/run_fast_extractor.py
+```
+
+#### Modalità Ultra-Veloce (solo estrazione testo)
+```bash
+python core/pdf_extractor/run_ultra_fast_extractor.py
+```
+
+### 🌐 Accesso Interfaccia Web
+- **URL**: http://localhost:5000
+- **Porta**: 5000 (separata dalla dashboard Streamlit)
+- **Funzionalità**:
+  - Upload singolo file PDF/DOCX
+  - Estrazione testo con preview
+  - Analisi NLP con spaCy
+  - Visualizzazione risultati strutturati
+  - Gestione file nella cartella centralizzata
+
+### 📁 Cartella Centralizzata
+Tutti i documenti PDF e DOCX vengono salvati automaticamente in:
+```
+data/documents/
+```
+
+## 🕷️ Sistema Web Scraping
+
+### 📥 Download Automatico Documenti
+Il sistema include web scrapers specializzati per scaricare documenti da:
+
+- **Siti istituzionali italiani** (Camera, Senato, Governo)
+- **Siti europei** (UE, NATO)
+- **Sitemap XML** di siti istituzionali
+- **Documenti parlamentari** e relazioni
+
+### 🔧 Configurazione Scrapers
+I scrapers sono configurati in `config/config.yaml` con:
+- Timeout e retry automatici
+- User-Agent personalizzati
+- Gestione errori robusta
+- Salvataggio centralizzato in `data/documents/`
+
+### 🧪 Test Scrapers
+```bash
+python tests/test_scrapers_update.py
 ```
 
 ## 🔄 Flusso dei Dati
@@ -54,11 +160,13 @@ graph LR
     A[Documenti PDF] --> B[Document Processor]
     C[File Excel] --> D[Data Processor]
     E[Fonti parlamentari 2025] --> D
-    B --> F[Data Enrichment]
-    D --> F
-    F --> G[Dashboard Interattiva]
-    G --> H[Mappe Avanzate]
-    G --> I[Analisi Organizzazioni]
+    F[Web Scrapers] --> G[data/documents/]
+    G --> B
+    B --> H[Data Enrichment]
+    D --> H
+    H --> I[Dashboard Interattiva]
+    I --> J[Mappe Avanzate]
+    I --> K[Analisi Organizzazioni]
 ```
 
 ## 📁 Struttura dei Dati
@@ -275,6 +383,68 @@ python -m streamlit run dashboard/missioni_dashboard.py
 - **Cache automatica**: I dati si aggiornano ogni 60 secondi
 - **Debug info**: Controlla la sidebar per informazioni tecniche
 
+## 📄 Sistema di Estrazione Documenti
+
+### 🚀 Avvio PDF Extractor
+
+#### Modalità Completa (con NLP)
+```bash
+python core/pdf_extractor/run_pdf_extractor.py
+```
+
+#### Modalità Veloce (spaCy disabilitato)
+```bash
+python core/pdf_extractor/run_fast_extractor.py
+```
+
+#### Modalità Ultra Veloce (solo estrazione testo)
+```bash
+python core/pdf_extractor/run_ultra_fast_extractor.py
+```
+
+### 🌐 Accesso Interfaccia Web
+- **URL**: http://localhost:5000
+- **Porta**: 5000
+- **Funzionalità**:
+  - Upload singoli file PDF/DOCX
+  - Estrazione testo con preview
+  - Analisi NLP con entità e pattern
+  - Gestione file centralizzata in `data/documents/`
+
+### 📁 Gestione Documenti
+- **Cartella centralizzata**: `data/documents/`
+- **Formati supportati**: PDF, DOCX
+- **Deduplicazione automatica**: File con nomi simili vengono gestiti
+- **Metadati**: Ogni documento mantiene informazioni su fonte e download
+
+## 🕷️ Web Scrapers
+
+### 🧪 Test Configurazione
+```bash
+python tests/test_scrapers_update.py
+```
+
+### 📋 Scrapers Disponibili
+- **SmartDocumentFetcher**: Scraping intelligente con gestione errori
+- **SitemapDocumentCollector**: Raccolta da sitemap.xml
+- **EuropeanDocumentCollector**: Documenti istituzionali europei
+- **DocumentCollector**: Documenti PDF/DOCX generici
+- **CameraScraper**: Documenti Camera dei Deputati
+- **WebScraper**: Scraping generico con download documenti
+
+### 🔄 Flusso Integrato
+1. **Web Scrapers** scaricano documenti in `data/documents/`
+2. **PDF Extractor** processa i documenti scaricati
+3. **Dashboard** visualizza i risultati dell'analisi
+4. **Sistema unificato** per gestione documenti
+
+### ⚙️ Configurazione Scrapers
+Tutti gli scrapers sono configurati per:
+- Salvare documenti in `data/documents/`
+- Generare nomi file descrittivi
+- Evitare duplicati automaticamente
+- Mantenere metadati di download
+
 ## 🛠️ Tecnologie Utilizzate
 
 ### Backend
@@ -289,13 +459,26 @@ python -m streamlit run dashboard/missioni_dashboard.py
 
 ### Elaborazione Documenti
 - **PyMuPDF**: Estrazione testo da PDF
+- **python-docx**: Estrazione testo da DOCX
 - **BeautifulSoup**: Parsing HTML
 - **httpx**: Download documenti
+- **spaCy**: Analisi NLP e estrazione entità
+
+### Web Scraping
+- **requests**: HTTP requests
+- **BeautifulSoup**: Parsing HTML
+- **lxml**: XML parsing
+- **selenium**: Scraping dinamico (se necessario)
 
 ### Geografia & Mappe
 - **Geopandas**: Dati geografici
 - **Geopy**: Geocoding e coordinate
 - **PyDeck**: Visualizzazioni 3D
+
+### Machine Learning & NLP
+- **spaCy**: Processing del linguaggio naturale
+- **NLTK**: Natural Language Toolkit
+- **scikit-learn**: Machine learning utilities
 
 ## 📊 Funzionalità Dashboard
 
@@ -318,6 +501,34 @@ python -m streamlit run dashboard/missioni_dashboard.py
 - **Excel**: Export completo con multiple sheet
 - **PDF**: Report completi con statistiche
 - **Formattazione**: Valori monetari e numerici formattati
+
+## 🆕 Nuove Funzionalità Implementate
+
+### 📄 Sistema di Estrazione Documenti
+- **Estrazione intelligente** da PDF e DOCX
+- **Analisi NLP** con spaCy per entità e pattern
+- **Interfaccia web Flask** su porta 5000
+- **Modalità multiple**: Completa, Veloce, Ultra-veloce
+- **Gestione centralizzata** in `data/documents/`
+
+### 🕷️ Sistema Web Scraping
+- **Scrapers specializzati** per siti istituzionali
+- **Download automatico** di documenti PDF/DOCX
+- **Gestione errori robusta** con retry automatici
+- **Configurazione centralizzata** in `config/config.yaml`
+- **Test automatici** per verifica funzionamento
+
+### 🏗️ Riorganizzazione Struttura
+- **Cartelle logiche**: `core/scrapers/`, `core/pdf_extractor/`, `tests/`
+- **Separazione funzionalità**: Web scraping, estrazione documenti, test
+- **Documentazione aggiornata** con nuove istruzioni
+- **Flusso integrato** tra scrapers, extractor e dashboard
+
+### 🔧 Miglioramenti Tecnici
+- **Compatibilità Flask** risolta per tutte le versioni
+- **Gestione errori** migliorata per web scrapers
+- **Configurazione unificata** per tutti i componenti
+- **Test automatici** per verifica funzionamento
 
 ## 🐛 Risoluzione Problemi
 
@@ -353,6 +564,24 @@ pip install folium>=0.14.0 geopandas>=0.12.0 pydeck>=0.8.0 geopy>=2.3.0
 #### 5. **Problemi con i PDF**
 - Verificare che i PDF non siano protetti da password
 - Assicurarsi che i PDF siano in formato testo (non scansione)
+
+#### 6. **PDF Extractor non si avvia**
+```bash
+# Verifica installazione Flask
+pip install flask
+
+# Usa modalità veloce se problemi con spaCy
+python core/pdf_extractor/run_fast_extractor.py
+```
+
+#### 7. **Web Scrapers non funzionano**
+```bash
+# Test configurazione
+python tests/test_scrapers_update.py
+
+# Verifica file config
+cat config/config.yaml
+```
 
 ### Debug Dashboard
 - Attiva "🔧 Debug Info" nella sidebar per informazioni tecniche
@@ -409,24 +638,12 @@ Il sistema integra automaticamente:
 - **Analisi per organizzazione** (NATO: 48, ONU: 34, UE: 27, Bilateral: 27, Multinational: 16)
 - **Export dati** in CSV, Excel e PDF
 - **Sistema di debug** integrato nella sidebar
+- **Sistema di estrazione documenti** con interfaccia web
+- **Web scrapers** per download automatico documenti
 
 🛠️ **Debug e supporto**
 - Se il numero di missioni non è 208, usa il pulsante "🔄 Ricarica Dati"
 - Per integrare nuovi dati, aggiungi file Excel in `data/raw/Excel/`
 - Per problemi, controlla la sezione debug nella sidebar
-
----
-
-> Ultimo aggiornamento: luglio 2025
-
----
-
-**Progetto sviluppato presso l'Università degli Studi di Catania**  
-<img src="docs/images/logo_unict.jpg" alt="Logo Università di Catania" width="180"/> 
-
-## 🐞 Debug e raccomandazioni sulle date
-
-- Le colonne `data_inizio` e `data_fine` devono essere sempre in formato `YYYY-MM-DD` (esempio: 2024-07-02).
-- La dashboard forza la conversione automatica delle date e segnala nella sidebar quante missioni hanno date non valide.
-- Se vedi missioni mancanti nelle analisi temporali, controlla che tutte le date siano corrette e senza valori vuoti.
-- In caso di errore, correggi il file CSV e ricarica la dashboard.
+- Per testare web scrapers: `python tests/test_scrapers_update.py`
+- Per PDF extractor: `python core/pdf_extractor/run_pdf_extractor.py`

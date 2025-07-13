@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Estrazione Avanzato - MIDA Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .quality-high { color: #28a745; font-weight: bold; }
+        .quality-medium { color: #ffc107; font-weight: bold; }
+        .quality-low { color: #dc3545; font-weight: bold; }
+        .progress-custom {
+            height: 25px;
+            border-radius: 15px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 15px 0;
+        }
+        .analysis-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 mb-3">
+                            <i class="fas fa-chart-line text-primary"></i>
+                            Report Estrazione Avanzato
+                        </h1>
+                        <p class="lead text-muted">Analisi completa dei dati estratti dai documenti PDF</p>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <a href="/" class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left"></i> Torna alla Dashboard
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="/export/csv" class="btn btn-success">
+                                    <i class="fas fa-download"></i> Esporta CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quality Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tachometer-alt"></i> Metriche di Qualità</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="metric-card text-center p-3">
+                                    <h3 id="successRate">0%</h3>
+                                    <p class="mb-0">Tasso di Successo</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card text-center p-3">
+                                    <h3 id="avgConfidence">0%</h3>
+                                    <p class="mb-0">Confidenza Media</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card text-center p-3">
+                                    <h3 id="dataRichness">0%</h3>
+                                    <p class="mb-0">Ricchezza Dati</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card text-center p-3">
+                                    <h3 id="totalFiles">0</h3>
+                                    <p class="mb-0">File Processati</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="analysis-section">
+                    <h5><i class="fas fa-flag"></i> Analisi Missioni</h5>
+                    <div id="missionsAnalysis">
+                        <p>Caricamento analisi missioni...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analysis-section">
+                    <h5><i class="fas fa-globe"></i> Analisi Paesi</h5>
+                    <div id="countriesAnalysis">
+                        <p>Caricamento analisi paesi...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-pie"></i> Distribuzione Tipi di File</h5>
+                    <div id="fileTypesChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-bar"></i> Distribuzione Confidenza</h5>
+                    <div id="confidenceChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Details Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-table"></i> Dettagli File Processati</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="filesTable">
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Tipo</th>
+                                        <th>Missioni</th>
+                                        <th>Paesi</th>
+                                        <th>Personale</th>
+                                        <th>Costi</th>
+                                        <th>Confidenza</th>
+                                        <th>Qualità</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Reports -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-download"></i> Download Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a href="/export/report/summary" class="btn btn-primary w-100">
+                                    <i class="fas fa-file-csv"></i> Summary CSV
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/export/report/detailed" class="btn btn-info w-100">
+                                    <i class="fas fa-file-csv"></i> Detailed Report
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/export/report/quality" class="btn btn-warning w-100">
+                                    <i class="fas fa-file-csv"></i> Quality Assessment
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/export/report/visualizations" class="btn btn-success w-100">
+                                    <i class="fas fa-chart-bar"></i> Charts
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load report data
+        fetch('/api/results')
+            .then(response => response.json())
+            .then(data => {
+                if (data.report_data && data.report_data.analysis) {
+                    updateReport(data.report_data);
+                } else {
+                    document.body.innerHTML = '<div class="container text-center mt-5"><h3>Nessun report disponibile</h3><p>Esegui prima l\'estrazione per generare il report</p><a href="/" class="btn btn-primary">Torna alla Dashboard</a></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading report:', error);
+                document.body.innerHTML = '<div class="container text-center mt-5"><h3>Errore nel caricamento del report</h3><p>' + error.message + '</p><a href="/" class="btn btn-primary">Torna alla Dashboard</a></div>';
+            });
+
+        function updateReport(reportData) {
+            const analysis = reportData.analysis;
+            const qualityMetrics = analysis.quality_metrics;
+
+            // Update quality metrics
+            document.getElementById('successRate').textContent = qualityMetrics.success_rate?.toFixed(1) + '%' || '0%';
+            document.getElementById('avgConfidence').textContent = qualityMetrics.average_confidence?.toFixed(1) + '%' || '0%';
+            document.getElementById('dataRichness').textContent = qualityMetrics.data_richness_score?.toFixed(1) + '%' || '0%';
+            document.getElementById('totalFiles').textContent = analysis.total_files || 0;
+
+            // Update missions analysis
+            if (analysis.missions_found && analysis.missions_found.length > 0) {
+                const missionsAnalysis = document.getElementById('missionsAnalysis');
+                const uniqueMissions = [...new Set(analysis.missions_found.map(m => m.name))];
+                missionsAnalysis.innerHTML = `
+                    <p><strong>Missioni trovate:</strong> ${analysis.missions_found.length}</p>
+                    <p><strong>Missioni uniche:</strong> ${uniqueMissions.length}</p>
+                    <p><strong>Confidenza media:</strong> ${(analysis.missions_found.reduce((sum, m) => sum + m.confidence, 0) / analysis.missions_found.length * 100).toFixed(1)}%</p>
+                `;
+            }
+
+            // Update countries analysis
+            if (analysis.countries_mentioned && analysis.countries_mentioned.length > 0) {
+                const countriesAnalysis = document.getElementById('countriesAnalysis');
+                const uniqueCountries = [...new Set(analysis.countries_mentioned.map(c => c.name))];
+                countriesAnalysis.innerHTML = `
+                    <p><strong>Paesi menzionati:</strong> ${analysis.countries_mentioned.length}</p>
+                    <p><strong>Paesi unici:</strong> ${uniqueCountries.length}</p>
+                    <p><strong>Confidenza media:</strong> ${(analysis.countries_mentioned.reduce((sum, c) => sum + c.confidence, 0) / analysis.countries_mentioned.length * 100).toFixed(1)}%</p>
+                `;
+            }
+
+            // Create charts
+            createFileTypesChart(analysis.file_types);
+            createConfidenceChart(analysis.confidence_scores);
+
+            // Update files table
+            updateFilesTable(reportData.results);
+        }
+
+        function createFileTypesChart(fileTypes) {
+            if (!fileTypes || Object.keys(fileTypes).length === 0) return;
+
+            const data = [{
+                values: Object.values(fileTypes),
+                labels: Object.keys(fileTypes),
+                type: 'pie',
+                marker: {
+                    colors: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                }
+            }];
+
+            const layout = {
+                height: 300,
+                margin: { t: 20, b: 20, l: 20, r: 20 }
+            };
+
+            Plotly.newPlot('fileTypesChart', data, layout);
+        }
+
+        function createConfidenceChart(confidenceScores) {
+            if (!confidenceScores || confidenceScores.length === 0) return;
+
+            const confidences = confidenceScores.map(c => c.confidence * 100);
+            
+            const data = [{
+                x: confidences,
+                type: 'histogram',
+                nbinsx: 10,
+                marker: {
+                    color: '#36A2EB'
+                }
+            }];
+
+            const layout = {
+                xaxis: { title: 'Confidenza (%)' },
+                yaxis: { title: 'Frequenza' },
+                height: 300,
+                margin: { t: 20, b: 40, l: 40, r: 20 }
+            };
+
+            Plotly.newPlot('confidenceChart', data, layout);
+        }
+
+        function updateFilesTable(results) {
+            const tbody = document.querySelector('#filesTable tbody');
+            tbody.innerHTML = '';
+
+            if (!results || results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nessun file processato</td></tr>';
+                return;
+            }
+
+            results.forEach(result => {
+                const structured = result.structured_data || {};
+                const missions = structured.missions || [];
+                const countries = structured.countries || [];
+                const personnel = structured.personnel || [];
+                const costs = structured.costs || [];
+                const confidence = structured.confidence || 0;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${result.file}</td>
+                    <td>${result.type}</td>
+                    <td>${missions.length}</td>
+                    <td>${countries.length}</td>
+                    <td>${personnel.reduce((sum, p) => sum + (p.number || 0), 0)}</td>
+                    <td>€${costs.reduce((sum, c) => sum + (c.amount || 0), 0).toLocaleString()}</td>
+                    <td class="${confidence > 0.7 ? 'quality-high' : confidence > 0.4 ? 'quality-medium' : 'quality-low'}">
+                        ${(confidence * 100).toFixed(1)}%
+                    </td>
+                    <td>
+                        <div class="progress progress-custom">
+                            <div class="progress-bar" style="width: ${(missions.length + countries.length + personnel.length + costs.length) / 4 * 25}%"></div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html> 

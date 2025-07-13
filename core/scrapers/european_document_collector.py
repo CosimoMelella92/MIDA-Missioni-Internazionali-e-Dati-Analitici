@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from .base_collector import BaseCollector
 import pandas as pd
+from pathlib import Path
 
 class EuropeanDocumentCollector(BaseCollector):
     """Collector specializzato per documenti da siti istituzionali europei e italiani"""
@@ -28,6 +29,11 @@ class EuropeanDocumentCollector(BaseCollector):
             "esteri"
         ])
         self.allowed_extensions = config.get('allowed_extensions', ['.pdf', '.doc', '.docx'])
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.output_path = Path('data/documents')
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -57,26 +63,44 @@ class EuropeanDocumentCollector(BaseCollector):
                 
             content = response.content
             content_hash = self._hash_content(content)
-            ext = os.path.splitext(url)[1].lower()
-            filename = f"{content_hash[:12]}{ext}"
-            filepath = os.path.join(self.output_path, filename)
             
-            # Salva il file
+            # Genera un nome file più descrittivo basato sull'URL originale
+            original_filename = os.path.basename(urlparse(url).path)
+            if not original_filename or original_filename == '':
+                original_filename = 'document'
+            
+            # Rimuovi caratteri problematici dal nome file
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+            
+            # Se il file esiste già, aggiungi un suffisso
+            base_name = os.path.splitext(safe_filename)[0]
+            counter = 1
+            final_filename = safe_filename
+            
+            while (self.output_path / final_filename).exists():
+                name, ext_part = os.path.splitext(safe_filename)
+                final_filename = f"{name}_{counter}{ext_part}"
+                counter += 1
+            
+            filepath = self.output_path / final_filename
+            
+            # Salva il file nella cartella centralizzata
             with open(filepath, 'wb') as f:
                 f.write(content)
                 
             # Estrai metadata
             metadata = {
-                'filename': filename,
+                'filename': final_filename,
                 'original_url': url,
                 'download_date': datetime.now().isoformat(),
                 'file_size': len(content),
                 'content_type': response.headers.get('content-type', ''),
                 'source_domain': urlparse(url).netloc,
-                'content_hash': content_hash
+                'content_hash': content_hash,
+                'local_path': str(filepath)
             }
             
-            self.logger.info(f"Scaricato: {filename} da {url}")
+            self.logger.info(f"Scaricato in data/documents/: {final_filename} da {url}")
             return metadata
             
         except Exception as e:
@@ -143,13 +167,11 @@ class EuropeanDocumentCollector(BaseCollector):
             
         df = pd.DataFrame(all_metadata)
         
-        # Salva metadata
-        metadata_file = os.path.join(
-            self.output_path,
-            f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        )
+        # Salva metadata nella cartella documents
+        metadata_file = self.output_path / f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         df.to_csv(metadata_file, index=False, encoding='utf-8')
         
+        self.logger.info(f"Scaricati {len(df)} documenti in data/documents/")
         return df
         
     def validate(self, data: pd.DataFrame) -> bool:

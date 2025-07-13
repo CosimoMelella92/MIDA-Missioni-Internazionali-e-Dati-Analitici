@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiche Estrazione - MIDA Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 mb-3">
+                            <i class="fas fa-chart-pie text-primary"></i>
+                            Statistiche Estrazione
+                        </h1>
+                        <p class="lead text-muted">Analisi statistica dei dati estratti</p>
+                        <a href="/" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Torna alla Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <i class="fas fa-file-pdf fa-2x mb-3"></i>
+                    <div class="metric-value" id="totalFiles">0</div>
+                    <p class="mb-0">File Processati</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <i class="fas fa-flag fa-2x mb-3"></i>
+                    <div class="metric-value" id="totalMissions">0</div>
+                    <p class="mb-0">Missioni Trovate</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <i class="fas fa-globe fa-2x mb-3"></i>
+                    <div class="metric-value" id="totalCountries">0</div>
+                    <p class="mb-0">Paesi Identificati</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <i class="fas fa-users fa-2x mb-3"></i>
+                    <div class="metric-value" id="totalPersonnel">0</div>
+                    <p class="mb-0">Personale Totale</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list"></i> Dettagli Estrazione</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="extractionDetails">
+                            <p class="text-center text-muted">Caricamento dettagli...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> Distribuzione</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="distributionDetails">
+                            <p class="text-center text-muted">Caricamento distribuzione...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quality Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tachometer-alt"></i> Metriche di Qualità</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="qualityMetrics">
+                            <p class="text-center text-muted">Caricamento metriche...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load statistics data
+        fetch('/api/results')
+            .then(response => response.json())
+            .then(data => {
+                if (data.aggregated) {
+                    updateStatistics(data.aggregated, data.results || []);
+                } else {
+                    document.body.innerHTML = '<div class="container text-center mt-5"><h3>Nessuna statistica disponibile</h3><p>Esegui prima l\'estrazione per generare le statistiche</p><a href="/" class="btn btn-primary">Torna alla Dashboard</a></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading statistics:', error);
+                document.body.innerHTML = '<div class="container text-center mt-5"><h3>Errore nel caricamento delle statistiche</h3><p>' + error.message + '</p><a href="/" class="btn btn-primary">Torna alla Dashboard</a></div>';
+            });
+
+        function updateStatistics(aggregated, results) {
+            // Update main statistics
+            document.getElementById('totalFiles').textContent = aggregated.total_files || 0;
+            document.getElementById('totalMissions').textContent = aggregated.total_missions || 0;
+            document.getElementById('totalCountries').textContent = aggregated.countries_found ? aggregated.countries_found.length : 0;
+            document.getElementById('totalPersonnel').textContent = aggregated.total_personnel ? aggregated.total_personnel.toLocaleString() : 0;
+
+            // Update extraction details
+            const extractionDetails = document.getElementById('extractionDetails');
+            extractionDetails.innerHTML = `
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Estrazioni Riuscite:</strong> ${aggregated.successful_extractions || 0}</p>
+                        <p><strong>Costi Totali:</strong> €${aggregated.total_costs ? (aggregated.total_costs || 0).toLocaleString() : 0}</p>
+                        <p><strong>Organizzazioni:</strong> ${aggregated.organizations_found ? aggregated.organizations_found.length : 0}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>File con Errori:</strong> ${(aggregated.total_files || 0) - (aggregated.successful_extractions || 0)}</p>
+                        <p><strong>Tasso di Successo:</strong> ${aggregated.total_files ? Math.round((aggregated.successful_extractions / aggregated.total_files) * 100) : 0}%</p>
+                        <p><strong>Tipi di Missione:</strong> ${Object.keys(aggregated.mission_types || {}).length}</p>
+                    </div>
+                </div>
+            `;
+
+            // Update distribution details
+            const distributionDetails = document.getElementById('distributionDetails');
+            let missionTypesHtml = '';
+            if (aggregated.mission_types) {
+                for (const [type, count] of Object.entries(aggregated.mission_types)) {
+                    missionTypesHtml += `<p><strong>${type}:</strong> ${count}</p>`;
+                }
+            }
+            distributionDetails.innerHTML = `
+                <h6>Tipi di Missione</h6>
+                ${missionTypesHtml || '<p class="text-muted">Nessun tipo di missione trovato</p>'}
+                
+                <h6 class="mt-3">Paesi Principali</h6>
+                ${aggregated.countries_found && aggregated.countries_found.length > 0 ? 
+                    aggregated.countries_found.slice(0, 5).map(country => `<span class="badge bg-primary me-1">${country}</span>`).join('') :
+                    '<p class="text-muted">Nessun paese trovato</p>'
+                }
+            `;
+
+            // Update quality metrics
+            const qualityMetrics = document.getElementById('qualityMetrics');
+            const avgConfidence = results.length > 0 ? 
+                results.reduce((sum, r) => sum + (r.structured_data?.confidence || 0), 0) / results.length : 0;
+            
+            qualityMetrics.innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h4>${Math.round(avgConfidence * 100)}%</h4>
+                        <p class="text-muted">Confidenza Media</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h4>${aggregated.total_files || 0}</h4>
+                        <p class="text-muted">File Processati</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h4>${aggregated.successful_extractions || 0}</h4>
+                        <p class="text-muted">Estrazioni Riuscite</p>
+                    </div>
+                </div>
+                <div class="progress mt-3">
+                    <div class="progress-bar" style="width: ${Math.round(avgConfidence * 100)}%"></div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

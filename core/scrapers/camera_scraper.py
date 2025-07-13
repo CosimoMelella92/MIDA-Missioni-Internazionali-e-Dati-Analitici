@@ -2,13 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
-from document_scraper import DocumentScraper
+from .document_scraper import DocumentScraper
 from pathlib import Path
 import re
 import time
 from typing import Dict, List
 import logging
 import json
+import os
 
 class CameraScraper(DocumentScraper):
     def __init__(self):
@@ -16,6 +17,10 @@ class CameraScraper(DocumentScraper):
         self.fonte = "camera_deputati"
         self.url_base = self.config['fonti_dati']['camera_deputati']['url_base']
         self.document_urls = self.config['fonti_dati']['camera_deputati'].get('document_urls', [])
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.documents_dir = Path('data/documents')
+        self.documents_dir.mkdir(parents=True, exist_ok=True)
         
         # Pattern per l'estrazione dei dati
         self.patterns = {
@@ -44,6 +49,7 @@ class CameraScraper(DocumentScraper):
                         dati_estratti['fonte'] = self.fonte
                         dati_estratti['ultimo_aggiornamento'] = datetime.now().strftime('%Y-%m-%d')
                         dati_estratti['link_documento'] = url
+                        dati_estratti['local_path'] = str(local_path)
                         dati.append(dati_estratti)
             except Exception as e:
                 self.logger.error(f"Errore nell'elaborazione del documento {url}: {str(e)}")
@@ -65,11 +71,28 @@ class CameraScraper(DocumentScraper):
 
     def _scarica_documento(self, url: str) -> str:
         """Scarica il documento e restituisce il path locale"""
-        nome_file = url.split('/')[-1]
-        local_path = self.raw_data_dir / nome_file
+        # Genera un nome file più descrittivo basato sull'URL originale
+        original_filename = url.split('/')[-1]
+        if not original_filename or original_filename == '':
+            original_filename = 'document'
+        
+        # Rimuovi caratteri problematici dal nome file
+        safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+        
+        # Se il file esiste già, aggiungi un suffisso
+        base_name = os.path.splitext(safe_filename)[0]
+        counter = 1
+        final_filename = safe_filename
+        
+        while (self.documents_dir / final_filename).exists():
+            name, ext_part = os.path.splitext(safe_filename)
+            final_filename = f"{name}_{counter}{ext_part}"
+            counter += 1
+        
+        local_path = self.documents_dir / final_filename
         
         if local_path.exists():
-            self.logger.info(f"Documento già presente: {local_path}")
+            self.logger.info(f"Documento già presente in data/documents/: {local_path.name}")
             return str(local_path)
             
         for tentativo in range(self.max_retries):
@@ -81,7 +104,7 @@ class CameraScraper(DocumentScraper):
                 with open(local_path, 'wb') as f:
                     f.write(response.content)
                     
-                self.logger.info(f"Documento scaricato con successo: {local_path}")
+                self.logger.info(f"Documento scaricato con successo in data/documents/: {local_path.name}")
                 return str(local_path)
                 
             except requests.Timeout:
@@ -198,53 +221,50 @@ class CameraScraper(DocumentScraper):
 
     def _estrai_nome_missione(self, doc: BeautifulSoup) -> str:
         """Estrae il nome della missione"""
-        # TODO: Implementare la logica specifica
-        return doc.find('h2').text.strip() if doc.find('h2') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_paese(self, doc: BeautifulSoup) -> str:
         """Estrae il paese della missione"""
-        # TODO: Implementare la logica specifica
-        return doc.find('span', class_='paese').text.strip() if doc.find('span', class_='paese') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_data_inizio(self, doc: BeautifulSoup) -> str:
         """Estrae la data di inizio"""
-        # TODO: Implementare la logica specifica
-        return doc.find('span', class_='data-inizio').text.strip() if doc.find('span', class_='data-inizio') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_data_fine(self, doc: BeautifulSoup) -> str:
         """Estrae la data di fine"""
-        # TODO: Implementare la logica specifica
-        return doc.find('span', class_='data-fine').text.strip() if doc.find('span', class_='data-fine') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_personale(self, doc: BeautifulSoup) -> int:
         """Estrae il numero di personale"""
-        # TODO: Implementare la logica specifica
-        testo = doc.find('span', class_='personale').text.strip() if doc.find('span', class_='personale') else "0"
-        return int(re.sub(r'[^\d]', '', testo))
+        # TODO: Implementare logica specifica
+        return 0
 
     def _estrai_costo(self, doc: BeautifulSoup) -> float:
         """Estrae il costo totale"""
-        # TODO: Implementare la logica specifica
-        testo = doc.find('span', class_='costo').text.strip() if doc.find('span', class_='costo') else "0"
-        return float(re.sub(r'[^\d.]', '', testo))
+        # TODO: Implementare logica specifica
+        return 0.0
 
     def _estrai_tipo_missione(self, doc: BeautifulSoup) -> str:
         """Estrae il tipo di missione"""
-        # TODO: Implementare la logica specifica
-        return doc.find('span', class_='tipo').text.strip() if doc.find('span', class_='tipo') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_mandato(self, doc: BeautifulSoup) -> str:
         """Estrae il mandato della missione"""
-        # TODO: Implementare la logica specifica
-        return doc.find('span', class_='mandato').text.strip() if doc.find('span', class_='mandato') else ""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_note(self, doc: BeautifulSoup) -> str:
-        """Estrae le note aggiuntive"""
-        # TODO: Implementare la logica specifica
-        return doc.find('div', class_='note').text.strip() if doc.find('div', class_='note') else ""
+        """Estrae le note del documento"""
+        # TODO: Implementare logica specifica
+        return ""
 
     def _estrai_link(self, doc: BeautifulSoup) -> str:
-        """Estrae il link al documento"""
-        # TODO: Implementare la logica specifica
-        link = doc.find('a', href=True)
-        return link['href'] if link else "" 
+        """Estrae il link del documento"""
+        # TODO: Implementare logica specifica
+        return "" 

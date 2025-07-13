@@ -77,10 +77,17 @@ class PDFParser:
                 # Extract text
                 text = page.get_text()
                 
-                # If text is minimal, try OCR
+                # If text is minimal, try OCR (only if tesseract is available)
                 if len(text.strip()) < 100:
-                    self.logger.info(f"Page {page_num + 1}: Using OCR")
-                    text = self._ocr_page(page)
+                    try:
+                        # Quick check if tesseract is available
+                        pytesseract.get_tesseract_version()
+                        self.logger.info(f"Page {page_num + 1}: Using OCR")
+                        text = self._ocr_page(page)
+                    except Exception:
+                        # Skip OCR if tesseract not available
+                        self.logger.debug(f"Page {page_num + 1}: Skipping OCR (tesseract not available)")
+                        pass
                 
                 extracted_data['text_by_page'].append({
                     'page': page_num + 1,

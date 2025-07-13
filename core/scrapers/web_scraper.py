@@ -9,6 +9,9 @@ import random
 from typing import Dict, List, Optional
 import json
 import yaml
+import os
+import re
+from urllib.parse import urljoin, urlparse
 
 class WebScraper:
     def __init__(self, source_name: str, base_url: str, sections: list = None, config_path: str = "config/config.yaml"):
@@ -19,6 +22,10 @@ class WebScraper:
         self.config = self._carica_configurazione(config_path)
         self.setup_logging()
         self.session = self._setup_session()
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.documents_dir = Path('data/documents')
+        self.documents_dir.mkdir(parents=True, exist_ok=True)
         
     def _carica_configurazione(self, config_path: str) -> Dict:
         """Carica il file di configurazione YAML"""
@@ -58,6 +65,74 @@ class WebScraper:
             self.config['parametri_scraping']['delay_max']
         )
         time.sleep(delay)
+
+    def _scarica_documento(self, url: str) -> Optional[str]:
+        """Scarica un documento e lo salva nella cartella centralizzata"""
+        try:
+            # Assicurati che l'URL sia assoluto
+            if not url.startswith(('http://', 'https://')):
+                url = urljoin(self.base_url, url)
+            
+            # Genera un nome file più descrittivo basato sull'URL originale
+            original_filename = os.path.basename(urlparse(url).path)
+            if not original_filename or original_filename == '':
+                original_filename = 'document'
+            
+            # Rimuovi caratteri problematici dal nome file
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+            
+            # Se il file esiste già, aggiungi un suffisso
+            base_name = os.path.splitext(safe_filename)[0]
+            counter = 1
+            final_filename = safe_filename
+            
+            while (self.documents_dir / final_filename).exists():
+                name, ext_part = os.path.splitext(safe_filename)
+                final_filename = f"{name}_{counter}{ext_part}"
+                counter += 1
+            
+            filepath = self.documents_dir / final_filename
+            
+            # Controlla se il file esiste già
+            if filepath.exists():
+                self.logger.info(f"Documento già presente in data/documents/: {final_filename}")
+                return str(filepath)
+            
+            # Scarica il documento
+            response = self.session.get(url, timeout=30)
+            response.raise_for_status()
+            
+            # Salva il file nella cartella centralizzata
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            self.logger.info(f"Documento scaricato in data/documents/: {final_filename}")
+            return str(filepath)
+            
+        except Exception as e:
+            self.logger.error(f"Errore nel download del documento {url}: {str(e)}")
+            return None
+
+    def _trova_documenti(self, soup: BeautifulSoup, base_url: str) -> List[Dict]:
+        """Trova tutti i link a documenti PDF e DOCX nella pagina"""
+        documents = []
+        
+        # Cerca link a documenti
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if any(href.lower().endswith(ext) for ext in ['.pdf', '.doc', '.docx']):
+                # Assicurati che l'URL sia assoluto
+                if not href.startswith(('http://', 'https://')):
+                    href = urljoin(base_url, href)
+                
+                documents.append({
+                    'url': href,
+                    'text': link.get_text(strip=True),
+                    'title': link.get('title', ''),
+                    'source': self.source_name
+                })
+        
+        return documents
 
     def _salva_dati_raw(self, dati: Dict, nome_file: str):
         """Salva i dati grezzi in formato JSON"""

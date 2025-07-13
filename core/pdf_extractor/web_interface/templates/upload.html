@@ -1,0 +1,79 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>📤 Carica un singolo documento (PDF o DOCX)</h2>
+  <div class="alert alert-info">
+    <b>Info:</b> Tutti i documenti raccolti dai webscraper vengono salvati nella cartella centrale <code>data/documents/</code>.<br>
+    Qui puoi caricare manualmente un file, oppure vedere e processare quelli già raccolti automaticamente.<br>
+    <b>File attualmente presenti:</b> {{ num_pdfs }} PDF, {{ num_docxs }} DOCX
+    <a href="#file-list" class="btn btn-link btn-sm">Mostra elenco file</a>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <input type="file" name="file" accept=".pdf,.docx" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Carica e Analizza</button>
+  </form>
+  {% if error %}
+    <div class="alert alert-danger mt-3">{{ error }}</div>
+  {% endif %}
+  {% if preview %}
+    <div class="card mt-4">
+      <div class="card-header">Anteprima testo estratto</div>
+      <div class="card-body"><pre style="max-height:200px;overflow:auto;">{{ preview }}</pre></div>
+    </div>
+  {% endif %}
+  {% if result %}
+    <div class="card mt-4">
+      <div class="card-header">Risultato Estrazione</div>
+      <div class="card-body">
+        <h5>Missioni trovate: {{ result.missions|length }}</h5>
+        <ul>
+          {% for m in result.missions %}
+            <li>{{ m.name }} (conf: {{ m.confidence }})</li>
+          {% endfor %}
+        </ul>
+        <h5>Paesi trovati: {{ result.countries|length }}</h5>
+        <ul>
+          {% for c in result.countries %}
+            <li>{{ c.name }} (conf: {{ c.confidence }})</li>
+          {% endfor %}
+        </ul>
+        <h5>Personale:</h5>
+        <ul>
+          {% for p in result.personnel %}
+            <li>{{ p.number }} ({{ p.context }})</li>
+          {% endfor %}
+        </ul>
+        <h5>Costi:</h5>
+        <ul>
+          {% for c in result.costs %}
+            <li>{{ c.amount }} ({{ c.context }})</li>
+          {% endfor %}
+        </ul>
+        <h5>Organizzazioni:</h5>
+        <ul>
+          {% for o in result.organizations %}
+            <li>{{ o.name }}</li>
+          {% endfor %}
+        </ul>
+        <h5>Tipi di missione:</h5>
+        <ul>
+          {% for t in result.mission_types %}
+            <li>{{ t.type }} (conf: {{ t.confidence }})</li>
+          {% endfor %}
+        </ul>
+        <h5>Confidence complessiva: {{ result.confidence }}</h5>
+      </div>
+    </div>
+  {% endif %}
+  <div id="file-list" class="mt-5">
+    <h4>📂 Elenco file nella cartella centrale</h4>
+    <ul>
+      {% for f in file_list %}
+        <li>{{ f }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %} 

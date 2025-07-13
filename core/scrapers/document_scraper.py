@@ -5,7 +5,7 @@ import docx
 import openpyxl
 from bs4 import BeautifulSoup
 from datetime import datetime
-from base_scraper import BaseScraper
+from .base_scraper import BaseScraper
 from pathlib import Path
 import re
 import time
@@ -25,6 +25,11 @@ class DocumentScraper(BaseScraper):
     def __init__(self, config_path: str = "config/config.yaml"):
         super().__init__(config_path)
         self.raw_data_dir = Path(self.config['percorsi']['raw_data'])
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.documents_dir = Path('data/documents')
+        self.documents_dir.mkdir(parents=True, exist_ok=True)
+        
         self.max_retries = self.config['parametri_scraping'].get('retry_attempts', 3)
         self.timeout = self.config['parametri_scraping'].get('timeout', 30)
         self.session = requests.Session()
@@ -74,7 +79,7 @@ class DocumentScraper(BaseScraper):
                     raise
                     
     def _scarica_documento(self, url: str) -> Optional[str]:
-        """Scarica un documento e ne estrae il testo"""
+        """Scarica un documento e ne estrae il testo, salvandolo nella cartella centralizzata"""
         try:
             # Assicurati che l'URL sia assoluto
             if not url.startswith(('http://', 'https://')):
@@ -85,6 +90,32 @@ class DocumentScraper(BaseScraper):
                 return None
             
             content_type = response.headers.get('content-type', '').lower()
+            
+            # Genera un nome file più descrittivo basato sull'URL originale
+            original_filename = os.path.basename(url)
+            if not original_filename or original_filename == '':
+                original_filename = 'document'
+            
+            # Rimuovi caratteri problematici dal nome file
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+            
+            # Se il file esiste già, aggiungi un suffisso
+            base_name = os.path.splitext(safe_filename)[0]
+            counter = 1
+            final_filename = safe_filename
+            
+            while (self.documents_dir / final_filename).exists():
+                name, ext_part = os.path.splitext(safe_filename)
+                final_filename = f"{name}_{counter}{ext_part}"
+                counter += 1
+            
+            filepath = self.documents_dir / final_filename
+            
+            # Salva il file nella cartella centralizzata
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            self.logger.info(f"Documento salvato in data/documents/: {final_filename}")
             
             if 'application/pdf' in content_type:
                 return self._estrai_testo_da_pdf(response.content)
@@ -200,5 +231,5 @@ class DocumentScraper(BaseScraper):
         return dati
 
     def estrai_dati(self) -> pd.DataFrame:
-        """Metodo da implementare nelle classi figlie."""
+        """Metodo da implementare nelle classi figlie"""
         raise NotImplementedError("Le classi figlie devono implementare questo metodo") 

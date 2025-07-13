@@ -1,5 +1,5 @@
 """
-PDF Extractor Module for MIDA Project
+Document Extractor Module for MIDA Project (PDF & Word)
 Intelligent PDF data extraction system
 """
 

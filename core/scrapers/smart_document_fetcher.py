@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from .base_collector import BaseCollector
 import pandas as pd
+from pathlib import Path
 
 class SmartDocumentFetcher(BaseCollector):
     """Collector avanzato per il download di documenti con gestione errori e Wayback Machine"""
@@ -23,7 +24,10 @@ class SmartDocumentFetcher(BaseCollector):
         self.sleep_time = config.get('sleep_time', 2)
         self.max_retries = config.get('max_retries', 3)
         self.retry_delay = config.get('retry_delay', 5)
-        self.output_path = config.get('output_path', 'data/documents/smart')
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.output_path = Path('data/documents')
+        self.output_path.mkdir(parents=True, exist_ok=True)
         
         # Headers più realistici
         self.headers = {
@@ -36,9 +40,6 @@ class SmartDocumentFetcher(BaseCollector):
             "DNT": "1"
         }
         
-        # Crea directory output se non esiste
-        os.makedirs(self.output_path, exist_ok=True)
-        
     def _is_document_url(self, url: str) -> bool:
         """Verifica se l'URL punta a un documento consentito"""
         return any(url.lower().endswith(ext) for ext in self.allowed_extensions)
@@ -48,29 +49,48 @@ class SmartDocumentFetcher(BaseCollector):
         return hashlib.sha256(content).hexdigest()
         
     def _save_file(self, content: bytes, url: str) -> Optional[Dict[str, Any]]:
-        """Salva il file e restituisce i metadata"""
+        """Salva il file nella cartella centralizzata e restituisce i metadata"""
         try:
             content_hash = self._hash_content(content)
             ext = os.path.splitext(url)[1].lower()
-            filename = f"{content_hash[:12]}{ext}"
-            filepath = os.path.join(self.output_path, filename)
+            
+            # Genera un nome file più descrittivo basato sull'URL originale
+            original_filename = os.path.basename(urlparse(url).path)
+            if not original_filename or original_filename == '':
+                original_filename = 'document'
+            
+            # Rimuovi caratteri problematici dal nome file
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+            
+            # Se il file esiste già, aggiungi un suffisso
+            base_name = os.path.splitext(safe_filename)[0]
+            counter = 1
+            final_filename = safe_filename
+            
+            while (self.output_path / final_filename).exists():
+                name, ext_part = os.path.splitext(safe_filename)
+                final_filename = f"{name}_{counter}{ext_part}"
+                counter += 1
+            
+            filepath = self.output_path / final_filename
             
             # Salva solo se non esiste già
-            if not os.path.exists(filepath):
+            if not filepath.exists():
                 with open(filepath, 'wb') as f:
                     f.write(content)
-                self.logger.info(f"[OK] Salvato: {filename}")
+                self.logger.info(f"[OK] Salvato in data/documents/: {final_filename}")
                 
                 return {
-                    'filename': filename,
+                    'filename': final_filename,
                     'original_url': url,
                     'download_date': datetime.now().isoformat(),
                     'file_size': len(content),
                     'content_hash': content_hash,
-                    'source_domain': urlparse(url).netloc
+                    'source_domain': urlparse(url).netloc,
+                    'local_path': str(filepath)
                 }
             else:
-                self.logger.info(f"[SKIP] Duplicato: {filename}")
+                self.logger.info(f"[SKIP] Duplicato: {final_filename}")
                 return None
                 
         except Exception as e:
@@ -192,27 +212,21 @@ class SmartDocumentFetcher(BaseCollector):
             
         df = pd.DataFrame(all_metadata)
         
-        # Salva metadata
-        metadata_file = os.path.join(
-            self.output_path,
-            f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        )
+        # Salva metadata nella cartella documents
+        metadata_file = self.output_path / f"document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         df.to_csv(metadata_file, index=False, encoding='utf-8')
         
+        self.logger.info(f"Scaricati {len(df)} documenti in data/documents/")
         return df
-        
+
     def validate(self, data: pd.DataFrame) -> bool:
         """Valida i dati raccolti"""
         if data.empty:
             return False
             
         required_columns = [
-            'filename',
-            'original_url',
-            'download_date',
-            'file_size',
-            'source_domain',
-            'content_hash'
+            'filename', 'original_url', 'download_date', 
+            'file_size', 'source_domain', 'content_hash'
         ]
         
         return all(col in data.columns for col in required_columns) 

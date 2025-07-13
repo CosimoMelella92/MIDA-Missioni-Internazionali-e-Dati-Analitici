@@ -9,6 +9,19 @@ percorsi:
   raw_data: "data/raw"
   processed_data: "data/processed"
 
+# Parametri di scraping
+parametri_scraping:
+  timeout: 30
+  max_retries: 3
+  delay_between_requests: 2
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3"
+    Accept-Encoding: "gzip, deflate"
+    Connection: "keep-alive"
+    Upgrade-Insecure-Requests: "1"
+
 # Configurazione generale
 configurazione:
   excel_path: "data/raw/Matrice dati 1AGG.xlsx"
@@ -20,6 +33,22 @@ configurazione:
 
 # Configurazione fonti dati
 fonti_dati:
+  camera_deputati:
+    url_base: "https://www.camera.it"
+    document_urls:
+      - "https://www.camera.it/application/xmanager/projects/leg18/attachments/upload_file_doc_acquisiti/pdfs/0001/2023/03/23/OCD177-3020.pdf"
+    sections:
+      - "missioni-internazionali"
+      - "operazioni-militari"
+    patterns:
+      nome_missione: "Missione\\s*:\\s*([^\\n]+)"
+      paese: "Paese\\s*:\\s*([^\\n]+)"
+      data_inizio: "Data\\s*inizio\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      data_fine: "Data\\s*fine\\s*:\\s*(\\d{1,2}/\\d{1,2}/\\d{4})"
+      personale_totale: "Personale\\s*totale\\s*:\\s*(\\d+)"
+      costo_totale: "Costo\\s*totale\\s*:\\s*€\\s*([\\d,.]+)"
+      tipo_missione: "Tipo\\s*missione\\s*:\\s*([^\\n]+)"
+      mandato: "Mandato\\s*:\\s*([^\\n]+)"
   camera:
     url_base: "https://www.camera.it"
     document_urls:

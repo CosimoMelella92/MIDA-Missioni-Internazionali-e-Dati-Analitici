@@ -4,7 +4,6 @@ Script per avviare il sistema di estrazione PDF
 Avvia l'interfaccia web su porta 5000 (separata dalla dashboard Streamlit)
 """
 
-import subprocess
 import sys
 import os
 from pathlib import Path
@@ -29,21 +28,34 @@ def main():
     print("⏹️  Premi Ctrl+C per fermare il sistema\n")
     
     try:
-        # Avvia l'app Flask
-        subprocess.run([
-            sys.executable, "-m", "flask", "run", 
-            "--app", str(app_file),
-            "--host", "0.0.0.0",
-            "--port", "5000",
-            "--debug"
-        ], check=True)
+        # Aggiungi il percorso dell'app al sys.path
+        app_dir = app_file.parent
+        sys.path.insert(0, str(app_dir))
         
+        # Imposta la variabile d'ambiente per Flask
+        os.environ['FLASK_APP'] = str(app_file)
+        os.environ['FLASK_ENV'] = 'development'
+        
+        # Importa e avvia l'app Flask direttamente
+        from app import app
+        
+        print("✅ Flask app caricata correttamente")
+        print("🌐 Avvio server su http://localhost:5000")
+        
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=True,
+            use_reloader=False  # Evita problemi di reloading
+        )
+        
+    except ImportError as e:
+        print(f"❌ Errore di importazione: {e}")
+        print("Assicurati che Flask sia installato: pip install flask")
+        return 1
     except KeyboardInterrupt:
         print("\n👋 PDF Extractor fermato dall'utente")
         return 0
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Errore nell'esecuzione del PDF Extractor: {e}")
-        return 1
     except Exception as e:
         print(f"❌ Errore imprevisto: {e}")
         return 1

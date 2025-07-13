@@ -9,6 +9,8 @@ from datetime import datetime
 import pandas as pd
 from typing import List, Dict, Any
 from .base_collector import BaseCollector
+from pathlib import Path
+import re
 
 class SitemapDocumentCollector(BaseCollector):
     """Collector che scarica documenti da sitemap.xml di siti istituzionali"""
@@ -18,6 +20,11 @@ class SitemapDocumentCollector(BaseCollector):
         self.sitemap_urls = config.get('sitemap_urls', [])
         self.allowed_extensions = config.get('allowed_extensions', ['.pdf', '.doc', '.docx'])
         self.sleep_time = config.get('sleep_time', 2)
+        
+        # Aggiornato per salvare nella cartella centralizzata
+        self.output_path = Path('data/documents')
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Referer": "https://google.com",
@@ -51,20 +58,41 @@ class SitemapDocumentCollector(BaseCollector):
             content = r.content
             content_hash = self._hash_content(content)
             ext = os.path.splitext(url)[1].lower()
-            filename = f"{content_hash[:12]}{ext}"
-            filepath = os.path.join(self.output_path, filename)
+            
+            # Genera un nome file più descrittivo basato sull'URL originale
+            original_filename = os.path.basename(urlparse(url).path)
+            if not original_filename or original_filename == '':
+                original_filename = 'document'
+            
+            # Rimuovi caratteri problematici dal nome file
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
+            
+            # Se il file esiste già, aggiungi un suffisso
+            base_name = os.path.splitext(safe_filename)[0]
+            counter = 1
+            final_filename = safe_filename
+            
+            while (self.output_path / final_filename).exists():
+                name, ext_part = os.path.splitext(safe_filename)
+                final_filename = f"{name}_{counter}{ext_part}"
+                counter += 1
+            
+            filepath = self.output_path / final_filename
+            
             with open(filepath, "wb") as f:
                 f.write(content)
+                
             metadata = {
-                'filename': filename,
+                'filename': final_filename,
                 'original_url': url,
                 'download_date': datetime.now().isoformat(),
                 'file_size': len(content),
                 'content_type': r.headers.get('content-type', ''),
                 'source_domain': urlparse(url).netloc,
-                'content_hash': content_hash
+                'content_hash': content_hash,
+                'local_path': str(filepath)
             }
-            self.logger.info(f"Scaricato: {filename} da {url}")
+            self.logger.info(f"Scaricato in data/documents/: {final_filename} da {url}")
             return metadata
         except Exception as e:
             self.logger.error(f"Errore download {url}: {e}")
@@ -78,7 +106,7 @@ class SitemapDocumentCollector(BaseCollector):
             all_urls.extend(urls)
         doc_urls = [u for u in all_urls if self._is_document_url(u)]
         self.logger.info(f"Trovati {len(doc_urls)} documenti nelle sitemap.")
-        os.makedirs(self.output_path, exist_ok=True)
+        
         with httpx.Client(headers=self.headers, follow_redirects=True, http2=False) as session:
             for url in doc_urls:
                 metadata = self._download_file(url, session)
@@ -88,11 +116,10 @@ class SitemapDocumentCollector(BaseCollector):
         if not all_metadata:
             return pd.DataFrame()
         df = pd.DataFrame(all_metadata)
-        metadata_file = os.path.join(
-            self.output_path,
-            f"sitemap_document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        )
+        metadata_file = self.output_path / f"sitemap_document_metadata_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         df.to_csv(metadata_file, index=False, encoding='utf-8')
+        
+        self.logger.info(f"Scaricati {len(df)} documenti in data/documents/")
         return df
 
     def validate(self, data: pd.DataFrame) -> bool:
