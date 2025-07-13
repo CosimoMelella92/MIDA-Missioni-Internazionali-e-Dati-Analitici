@@ -161,11 +161,18 @@ def extract_documents():
                 data_extractor = IntelligentDataExtractor()
         except Exception as e:
             logger.error(f"Error initializing extractor: {str(e)}")
-            extraction_progress.update({
-                'status': 'error',
-                'error_message': f'Errore inizializzazione: {str(e)}'
-            })
-            return jsonify({'error': f'Errore inizializzazione: {str(e)}'}), 500
+            # Try to initialize without AI as fallback
+            try:
+                logger.info("Retrying without AI extraction...")
+                data_extractor = IntelligentDataExtractor(use_ai=False)
+                extraction_progress['current_step'] = 'AI Extraction disabilitata - usando NLP'
+            except Exception as e2:
+                logger.error(f"Fallback initialization also failed: {str(e2)}")
+                extraction_progress.update({
+                    'status': 'error',
+                    'error_message': f'Errore inizializzazione: {str(e)}. Fallback fallito: {str(e2)}'
+                })
+                return jsonify({'error': f'Errore inizializzazione: {str(e)}. Fallback fallito: {str(e2)}'}), 500
         
         # Count total files
         pdf_files = list(docs_dir.glob('*.pdf'))
@@ -239,14 +246,48 @@ def extract_documents():
                         logger.warning(f"Text too large ({len(text)} chars), truncating for processing")
                         text = text[:2000000]  # Truncate to 2M chars
                     
-                    structured_data = data_extractor.extract_structured_data(text)
-                    all_results.append({
-                        'file': result.get('filename', result.get('file', 'unknown')),
-                        'type': result.get('type', 'pdf'),
-                        'structured_data': structured_data,
-                        'raw_data': result
-                    })
-                    successful_extractions += 1
+                    try:
+                        structured_data = data_extractor.extract_structured_data(text)
+                        
+                        # Debug logging
+                        logger.info(f"Extracted data for {result.get('filename', result.get('file', 'unknown'))}:")
+                        logger.info(f"  - Missions: {len(structured_data.get('missions', []))}")
+                        logger.info(f"  - Countries: {len(structured_data.get('countries', []))}")
+                        logger.info(f"  - Personnel: {len(structured_data.get('personnel', []))}")
+                        logger.info(f"  - Costs: {len(structured_data.get('costs', []))}")
+                        logger.info(f"  - Confidence: {structured_data.get('confidence', 0.0):.2f}")
+                        
+                        all_results.append({
+                            'file': result.get('filename', result.get('file', 'unknown')),
+                            'type': result.get('type', 'pdf'),
+                            'structured_data': structured_data,
+                            'raw_data': result
+                        })
+                        successful_extractions += 1
+                    except Exception as extraction_error:
+                        logger.error(f"Error during data extraction for {result.get('filename', result.get('file', 'unknown'))}: {str(extraction_error)}")
+                        # Try with a smaller text chunk as fallback
+                        try:
+                            logger.info(f"Retrying with smaller text chunk...")
+                            smaller_text = text[:1000000]  # 1M characters
+                            structured_data = data_extractor.extract_structured_data(smaller_text)
+                            all_results.append({
+                                'file': result.get('filename', result.get('file', 'unknown')),
+                                'type': result.get('type', 'pdf'),
+                                'structured_data': structured_data,
+                                'raw_data': result,
+                                'note': 'Processed with reduced text due to extraction error'
+                            })
+                            successful_extractions += 1
+                        except Exception as fallback_error:
+                            logger.error(f"Fallback extraction also failed: {str(fallback_error)}")
+                            all_results.append({
+                                'file': result.get('filename', result.get('file', 'unknown')),
+                                'type': result.get('type', 'pdf'),
+                                'error': f'Extraction failed: {str(extraction_error)}. Fallback failed: {str(fallback_error)}',
+                                'structured_data': {},
+                                'raw_data': result
+                            })
                 except Exception as e:
                     logger.error(f"Error processing {result.get('filename', result.get('file', 'unknown'))}: {str(e)}")
                     all_results.append({

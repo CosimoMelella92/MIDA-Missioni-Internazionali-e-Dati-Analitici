@@ -23,14 +23,26 @@ except ImportError:
 class IntelligentDataExtractor:
     """Advanced data extractor using NLP techniques"""
     
-    def __init__(self, language_model: str = "it_core_news_sm"):
+    def __init__(self, language_model: str = "it_core_news_sm", use_ai: bool = False, ai_api_key: str = None):
         """
         Initialize the intelligent data extractor
         
         Args:
             language_model: spaCy language model to use
+            use_ai: Whether to use AI extraction
+            ai_api_key: API key for AI extraction
         """
         self.logger = logging.getLogger(__name__)
+        
+        # Initialize AI extractor if requested
+        self.ai_extractor = None
+        if use_ai and AI_AVAILABLE:
+            try:
+                self.ai_extractor = AIExtractor(api_key=ai_api_key)
+                self.logger.info("AI extractor initialized")
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize AI extractor: {str(e)}")
+                self.ai_extractor = None
         
         # Check if spaCy should be disabled for performance
         if os.environ.get('DISABLE_SPACY', 'false').lower() == 'true':
@@ -112,6 +124,17 @@ class IntelligentDataExtractor:
         # Clean text
         cleaned_text = self._clean_text(text)
         
+        # Try AI extraction first if available
+        if self.ai_extractor:
+            try:
+                self.logger.info("Attempting AI extraction...")
+                ai_result = self.ai_extractor.extract_with_chain_of_thought(cleaned_text)
+                if ai_result and ai_result.get('missioni'):
+                    self.logger.info(f"AI extraction successful: {len(ai_result.get('missioni', []))} missions found")
+                    return self._convert_ai_result_to_standard_format(ai_result)
+            except Exception as e:
+                self.logger.warning(f"AI extraction failed: {str(e)}, falling back to NLP")
+        
         # Check for fast mode
         fast_mode = os.environ.get('FAST_MODE', 'false').lower() == 'true'
         
@@ -163,9 +186,20 @@ class IntelligentDataExtractor:
         missions = []
         
         # Known mission keywords for validation
-        mission_keywords = ['missione', 'operazione', 'peacekeeping', 'stabilizzazione', 'addestramento']
+        mission_keywords = ['missione', 'operazione', 'peacekeeping', 'stabilizzazione', 'addestramento', 'mission', 'operation']
         
-        for pattern in self.enhanced_patterns['mission_names']:
+        # Enhanced patterns for mission detection
+        mission_patterns = [
+            r'\b(?:missione|operazione)\s+([A-Z][A-Z\s]{2,30})\b',
+            r'\b([A-Z]{2,10})\s+(?:missione|operazione)\b',
+            r'\b(UNIFIL|KFOR|ISAF|EUTM|EUNAVFOR|EUBAM|EULEX|MINURSO|UNSMIS)\b',
+            r'\b(?:missione|operazione)\s+(?:in|a|per)\s+([A-Z][a-z\s]{2,20})\b',
+            r'\b([A-Z][a-z\s]{2,20})\s+(?:missione|operazione)\b'
+        ]
+        
+        self.logger.info(f"Searching for missions in text of {len(text)} characters")
+        
+        for pattern in mission_patterns:
             matches = re.finditer(pattern, text, re.IGNORECASE)
             for match in matches:
                 mission_name = match.group(1) if match.groups() else match.group(0)
@@ -176,15 +210,36 @@ class IntelligentDataExtractor:
                     continue
                 
                 # Check if it's a real mission (contains mission keywords or is a known acronym)
-                is_valid = any(keyword in text[max(0, match.start()-50):match.end()+50].lower() 
-                             for keyword in mission_keywords)
+                context_text = text[max(0, match.start()-100):match.end()+100].lower()
+                is_valid = any(keyword in context_text for keyword in mission_keywords)
+                is_known_acronym = any(acronym in mission_name.upper() for acronym in ['UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS'])
                 
-                if is_valid or any(acronym in mission_name.upper() for acronym in ['UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS']):
+                if is_valid or is_known_acronym:
+                    confidence = 0.9 if is_known_acronym else 0.7
                     missions.append({
                         'name': mission_name,
-                        'confidence': 0.9 if any(acronym in mission_name.upper() for acronym in ['UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS']) else 0.7,
-                        'position': match.start()
+                        'confidence': confidence,
+                        'position': match.start(),
+                        'context': context_text[:200]  # Add context for debugging
                     })
+                    self.logger.info(f"Found mission: {mission_name} (confidence: {confidence})")
+        
+        # Also look for common mission patterns in the text
+        common_missions = [
+            'UNIFIL', 'KFOR', 'ISAF', 'EUTM', 'EUNAVFOR', 'EUBAM', 'EULEX', 'MINURSO', 'UNSMIS',
+            'Missione Libano', 'Missione Kosovo', 'Missione Afghanistan', 'Missione Mali',
+            'Operazione Libano', 'Operazione Kosovo', 'Operazione Afghanistan', 'Operazione Mali'
+        ]
+        
+        for mission in common_missions:
+            if mission.lower() in text.lower():
+                missions.append({
+                    'name': mission,
+                    'confidence': 0.8,
+                    'position': text.lower().find(mission.lower()),
+                    'context': 'Common mission pattern'
+                })
+                self.logger.info(f"Found common mission: {mission}")
         
         # Remove duplicates and limit results
         unique_missions = []
@@ -195,7 +250,48 @@ class IntelligentDataExtractor:
                 unique_missions.append(mission)
                 seen_names.add(mission['name'])
         
+        self.logger.info(f"Total unique missions found: {len(unique_missions)}")
         return unique_missions
+    
+    def _convert_ai_result_to_standard_format(self, ai_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert AI extraction result to standard format"""
+        try:
+            missions = ai_result.get('missioni', [])
+            stats = ai_result.get('statistiche', {})
+            
+            # Convert missions to standard format
+            standard_missions = []
+            for mission in missions:
+                standard_missions.append({
+                    'name': mission.get('nome', ''),
+                    'country': mission.get('paese', ''),
+                    'type': mission.get('tipo', ''),
+                    'personnel': mission.get('personale', 0),
+                    'cost': mission.get('costo', 0),
+                    'start_date': mission.get('data_inizio', ''),
+                    'end_date': mission.get('data_fine', ''),
+                    'confidence': mission.get('confidenza', 0.0)
+                })
+            
+            return {
+                'missions': standard_missions,
+                'countries': list(set([m.get('country', '') for m in standard_missions if m.get('country')])),
+                'personnel': [{'value': m.get('personnel', 0), 'confidence': m.get('confidence', 0.0)} for m in standard_missions],
+                'costs': [{'value': m.get('cost', 0), 'confidence': m.get('confidence', 0.0)} for m in standard_missions],
+                'dates': [{'value': m.get('start_date', ''), 'confidence': m.get('confidence', 0.0)} for m in standard_missions if m.get('start_date')],
+                'organizations': list(set([m.get('type', '') for m in standard_missions if m.get('type')])),
+                'mission_types': [],
+                'entities': [],
+                'confidence': sum([m.get('confidence', 0.0) for m in standard_missions]) / len(standard_missions) if standard_missions else 0.0,
+                'ai_extracted': True,
+                'total_missions': stats.get('totale_missioni', len(standard_missions)),
+                'total_personnel': stats.get('totale_personale', sum([m.get('personnel', 0) for m in standard_missions])),
+                'total_costs': stats.get('totale_costi', sum([m.get('cost', 0) for m in standard_missions])),
+                'countries_involved': stats.get('paesi_coinvolti', len(set([m.get('country', '') for m in standard_missions if m.get('country')])))
+            }
+        except Exception as e:
+            self.logger.error(f"Error converting AI result: {str(e)}")
+            return {}
     
     def _extract_countries(self, text: str) -> List[Dict]:
         """Extract country information"""

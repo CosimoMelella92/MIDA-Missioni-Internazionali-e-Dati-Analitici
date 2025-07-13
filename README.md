@@ -4,10 +4,16 @@
   <b>Progetto finanziato dall'Unione Europea – NextGenerationEU, Ministero dell'Università e della Ricerca, Italia Domani – PNRR</b>
 </div>
 
+<div align="center">
+  <img src="docs/images/logo_unict.jpg" alt="Università di Catania" width="200"/>
+  <br/>
+  <b>Progetto sviluppato presso l'Università di Catania</b>
+</div>
+
 # MIDA - Missioni Internazionali e Dati Analitici
 
 ## 👨‍💻 Autore
-**Cosimo Melella**
+**Cosimo Melella** - Università di Catania
 
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.

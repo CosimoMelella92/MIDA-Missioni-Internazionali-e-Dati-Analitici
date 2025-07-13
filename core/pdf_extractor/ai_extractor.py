@@ -162,6 +162,21 @@ RAGIONAMENTO STEP-BY-STEP:
 """
         
         try:
+            import requests
+            from requests.adapters import HTTPAdapter
+            from urllib3.util.retry import Retry
+            
+            # Configure retry strategy
+            retry_strategy = Retry(
+                total=3,
+                backoff_factor=1,
+                status_forcelist=[429, 500, 502, 503, 504],
+            )
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            
+            # Set timeout for requests
+            openai.api_requestor.TIMEOUT_SECONDS = 30
+            
             response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=[
@@ -169,13 +184,23 @@ RAGIONAMENTO STEP-BY-STEP:
                     {"role": "user", "content": reasoning_prompt}
                 ],
                 temperature=0.1,  # Low temperature for consistent extraction
-                max_tokens=2000
+                max_tokens=2000,
+                timeout=30  # 30 second timeout
             )
             
             result = json.loads(response.choices[0].message.content)
             logger.info(f"AI extraction completed: {len(result.get('missioni', []))} missions found")
             return result
             
+        except openai.error.Timeout:
+            logger.error("AI extraction timed out")
+            return self._fallback_extraction(text)
+        except openai.error.APIConnectionError as e:
+            logger.error(f"AI extraction connection error: {str(e)}")
+            return self._fallback_extraction(text)
+        except openai.error.APIError as e:
+            logger.error(f"AI extraction API error: {str(e)}")
+            return self._fallback_extraction(text)
         except Exception as e:
             logger.error(f"AI extraction failed: {str(e)}")
             return self._fallback_extraction(text)
