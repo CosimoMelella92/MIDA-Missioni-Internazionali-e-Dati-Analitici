@@ -144,6 +144,9 @@ def load_data():
             st.error("Impossibile caricare i dati delle missioni")
             return None
     
+    # Normalizza le regioni per accorpare "Americas" e "America"
+    df = normalize_regions(df)
+    
     # Converti le date
     df['data_inizio'] = pd.to_datetime(df['data_inizio'], errors='coerce')
     df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce')
@@ -180,6 +183,67 @@ def load_data():
     
     # Rimuovi colonne duplicate se presenti
     df = df.loc[:, ~df.columns.duplicated()]
+    
+    return df
+
+def normalize_regions(df):
+    """Normalizza le regioni per accorpare varianti come 'Americas' e 'America'"""
+    if 'regione' not in df.columns:
+        return df
+    
+    # Mappa di normalizzazione delle regioni
+    region_mapping = {
+        'Americas': 'America',
+        'America': 'America',
+        'North America': 'America',
+        'South America': 'America',
+        'Central America': 'America',
+        'Latin America': 'America',
+        'Caribbean': 'America',
+        'Caraibi': 'America',
+        'America Centrale': 'America',
+        'America Meridionale': 'America',
+        'America Settentrionale': 'America',
+        'America Latina': 'America',
+        
+        # Altre normalizzazioni comuni
+        'Middle East': 'Medio Oriente',
+        'Medio Oriente': 'Medio Oriente',
+        'Near East': 'Medio Oriente',
+        'Vicino Oriente': 'Medio Oriente',
+        
+        'Europe': 'Europa',
+        'Europa': 'Europa',
+        'European Union': 'Europa',
+        'Unione Europea': 'Europa',
+        
+        'Asia': 'Asia',
+        'Asia Centrale': 'Asia',
+        'Asia Sudorientale': 'Asia',
+        'Asia Meridionale': 'Asia',
+        'Asia Orientale': 'Asia',
+        'Far East': 'Asia',
+        'Estremo Oriente': 'Asia',
+        
+        'Africa': 'Africa',
+        'Sub-Saharan Africa': 'Africa',
+        'Africa Sub-sahariana': 'Africa',
+        'Northern Africa': 'Africa',
+        'Nord Africa': 'Africa',
+        'Western Africa': 'Africa',
+        'Africa Occidentale': 'Africa',
+        'Eastern Africa': 'Africa',
+        'Africa Orientale': 'Africa',
+        'Central Africa': 'Africa',
+        'Africa Centrale': 'Africa',
+        'Southern Africa': 'Africa',
+        'Africa Meridionale': 'Africa',
+        'Horn of Africa': 'Africa',
+        'Corno d\'Africa': 'Africa'
+    }
+    
+    # Applica la normalizzazione
+    df['regione'] = df['regione'].map(region_mapping).fillna(df['regione'])
     
     return df
 
@@ -231,6 +295,9 @@ def integrate_excel_data(df_existing):
         
         # Normalizza tutte le organizzazioni nel dataset
         df_existing = normalize_all_organizations(df_existing)
+        
+        # Normalizza le regioni per accorpare varianti come 'Americas' e 'America'
+        df_existing = normalize_regions(df_existing)
         
         # Rimozione duplicati: normalizza nome (minuscolo, senza spazi e trattini), paese, data_inizio
         def normalize_name(name):
@@ -2025,6 +2092,88 @@ def main():
         with map_tab4:
             st.subheader(f"🔗 Cluster - {organizzazione_selezionata}")
             render_cluster_map(df_mappa)
+        
+        # Sezione dedicata alle statistiche delle organizzazioni
+        st.markdown("---")
+        st.markdown('<h3 class="period-header">📊 Statistiche delle Organizzazioni nelle Mappe</h3>', 
+                    unsafe_allow_html=True)
+        
+        # Calcola statistiche per organizzazione
+        org_map_stats = df_mappa.groupby('tipo_missione').agg({
+            'nome': 'count',
+            'personale_totale': 'sum',
+            'costo_totale': 'sum'
+        }).reset_index()
+        org_map_stats.columns = ['Organizzazione', 'Numero Missioni', 'Personale Totale', 'Costo Totale']
+        
+        # Mostra statistiche in colonne
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 4px solid #1f77b4;">
+                <h4 style="margin: 0 0 10px 0; color: #1f77b4;">🏛️ Organizzazioni</h4>
+            """, unsafe_allow_html=True)
+            
+            for _, row in org_map_stats.iterrows():
+                color_map = {
+                    'ONU': '#1f77b4',
+                    'UE': '#ff7f0e', 
+                    'NATO': '#2ca02c',
+                    'ITA': '#d62728',
+                    'Multinational': '#9467bd',
+                    'Bilateral': '#8c564b'
+                }
+                color = color_map.get(row['Organizzazione'], '#666')
+                st.markdown(f"""
+                <div style="margin: 5px 0; display: flex; align-items: center;">
+                    <span style="color: {color}; font-size: 16px; margin-right: 8px;">●</span>
+                    <span style="flex: 1; font-weight: bold;">{row['Organizzazione']}</span>
+                    <span style="color: #666;">{row['Numero Missioni']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 4px solid #ff7f0e;">
+                <h4 style="margin: 0 0 10px 0; color: #ff7f0e;">👥 Personale Totale</h4>
+            """, unsafe_allow_html=True)
+            
+            for _, row in org_map_stats.iterrows():
+                st.markdown(f"""
+                <div style="margin: 5px 0; display: flex; justify-content: space-between;">
+                    <span style="font-weight: bold;">{row['Organizzazione']}</span>
+                    <span style="color: #666;">{row['Personale Totale']:,.0f}</span>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown("""
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 4px solid #2ca02c;">
+                <h4 style="margin: 0 0 10px 0; color: #2ca02c;">💰 Costo Totale</h4>
+            """, unsafe_allow_html=True)
+            
+            for _, row in org_map_stats.iterrows():
+                st.markdown(f"""
+                <div style="margin: 5px 0; display: flex; justify-content: space-between;">
+                    <span style="font-weight: bold;">{row['Organizzazione']}</span>
+                    <span style="color: #666;">€{row['Costo Totale']:,.0f}</span>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Tabella riassuntiva
+        st.markdown("### 📋 Tabella Riassuntiva")
+        org_display = org_map_stats.copy()
+        org_display['Personale Totale'] = org_display['Personale Totale'].apply(lambda x: f"{x:,.0f}")
+        org_display['Costo Totale'] = org_display['Costo Totale'].apply(format_currency)
+        st.dataframe(org_display, use_container_width=True)
+        
     else:
         st.warning("⚠️ Le funzioni delle mappe non sono disponibili. Installa le dipendenze con: pip install folium geopandas pydeck geopy")
         st.info("📦 Dipendenze mancanti per le mappe:")

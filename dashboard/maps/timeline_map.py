@@ -51,12 +51,12 @@ def render_timeline_map(df: pd.DataFrame):
         ).add_to(m)
     
     # Aggiungi leggenda
-    legend_html = '''
+    legend_html = f'''
     <div style="position: fixed; 
-                bottom: 50px; left: 50px; width: 200px; height: 200px; 
+                top: 20px; right: 20px; width: 250px; 
                 background-color: white; border:2px solid grey; z-index:9999; 
-                font-size:14px; padding: 10px">
-    <p><b>⏰ Missioni Attive {selected_year}</b></p>
+                font-size:12px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 14px; text-align: center;">⏰ Missioni Attive {selected_year}</p>
     '''
     
     # Conta missioni per organizzazione nell'anno selezionato
@@ -65,7 +65,11 @@ def render_timeline_map(df: pd.DataFrame):
     for org, color in ORG_COLORS.items():
         count = org_counts.get(org, 0)
         legend_html += f'''
-        <p><span style="color:{color};">●</span> {org}: {count} missioni</p>
+        <p style="margin: 5px 0; display: flex; align-items: center;">
+            <span style="color:{color}; font-size: 16px; margin-right: 8px;">●</span> 
+            <span style="flex: 1;">{org}</span>
+            <span style="font-weight: bold; color: #666;">{count}</span>
+        </p>
         '''
     
     legend_html += '</div>'

@@ -200,12 +200,14 @@ def create_world_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figure
             legend=dict(
                 yanchor="top",
                 y=0.99,
-                xanchor="left",
-                x=0.01,
-                bgcolor='rgba(255, 255, 255, 0.9)',
+                xanchor="right",
+                x=0.99,
+                bgcolor='rgba(255, 255, 255, 0.95)',
                 bordercolor='rgba(0, 0, 0, 0.3)',
                 borderwidth=2,
-                font=dict(size=12)
+                font=dict(size=11),
+                itemsizing='constant',
+                itemwidth=20
             ),
             hovermode='closest',
             # Miglioramenti UI
@@ -309,8 +311,14 @@ def create_region_map_plotly(df: pd.DataFrame, geo_df: pd.DataFrame) -> go.Figur
             legend=dict(
                 yanchor="top",
                 y=0.99,
-                xanchor="left", 
-                x=0.01
+                xanchor="right", 
+                x=0.99,
+                bgcolor='rgba(255, 255, 255, 0.95)',
+                bordercolor='rgba(0, 0, 0, 0.3)',
+                borderwidth=2,
+                font=dict(size=11),
+                itemsizing='constant',
+                itemwidth=20
             )
         )
         
