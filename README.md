@@ -608,10 +608,10 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ## 📸 Screenshots Dashboard
 
 ### Panoramica Generale
-![Panoramica Missioni](docs/images/panoramica%20missioni.png)
+![Panoramica Missioni](docs/images/panoramica-missioni.png)
 
 ### Dettagli Missioni
-![Dettagli Missioni](docs/images/dettagli%20missioni.png)
+![Dettagli Missioni](docs/images/dettagli-missioni.png)
 
 ### Analisi Organizzazioni
 ![Analisi Organizzazioni](docs/images/analisi_organizazzione.png)
@@ -623,7 +623,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ![Mappa del Mondo](docs/images/mappa_mondo.png)
 
 ### Analisi Commitment
-![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
+![Numero di missioni per tipo di commitment](docs/images/numero-missioni-per-tipo-commitment.png)
 *Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
 
 ---
