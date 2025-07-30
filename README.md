@@ -18,7 +18,7 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **208 missioni uniche** dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **208 missioni uniche** nel dataset principale, con **218 missioni** nella dashboard grazie all'integrazione automatica con fonti aggiuntive, dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -210,6 +210,47 @@ I documenti PDF vengono elaborati per estrarre:
 - **Pulizia colonne**: Vengono rimosse colonne duplicate e valori incoerenti.
 - **Validazione**: Il sistema segnala missioni con dati mancanti, date incoerenti o costi anomali.
 
+## 📊 Conteggio Missioni: 208 vs 218
+
+Il sistema gestisce due conteggi diversi:
+
+### Dataset Principale (208 missioni)
+- **File**: `data/processed/missioni_complete.csv`
+- **Contenuto**: Missioni principali con dati completi e dettagliati
+- **Uso**: Dataset pulito e validato per analisi approfondite
+
+### Dashboard (218 missioni)
+- **Fonte**: Integrazione automatica del dataset principale + file Excel aggiuntivi
+- **Processo**: 
+  1. Carica 208 missioni dal dataset principale
+  2. Integra automaticamente `data/raw/Excel/missions.xlsx`
+  3. Rimuove duplicati usando `str.contains()` per il confronto
+  4. Risultato: 218 missioni uniche
+- **Vantaggio**: Dataset più completo con missioni aggiuntive
+
+### Missioni Aggiunte dalla Dashboard
+La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 missioni durante la deduplicazione finale:
+- Joint Forge (SFOR) (NATO)
+- UNMIBH (IPTF) (UN)
+- UNSOM (UN)
+- EUTM Mozambico (EU)
+- Enhanced Vigilance Activity Bulgaria (NATO)
+- Enhanced Vigilance Activity Hungary (NATO)
+- VJTF NATO (NATO)
+- Qatar World Cup (Bilateral)
+- TFA-R Gladiator Romania (NATO)
+- EUMAM Ukraine (EU)
+- EUMPM Niger (EU)
+- EMASoH (EU)
+- EUNAVFOR - Aspides (EU)
+- Combined Task Force 153 (Multinational)
+- Operazione Levante (Bilateral)
+- Bilateral mission in Burkina Faso (Bilateral)
+
+**Calcolo finale**: 208 (file principale) + 16 (aggiunte) - 6 (rimosse) = 218 missioni
+
+**Entrambi i conteggi sono corretti** per il loro scopo specifico.
+
 ## ➕ Come aggiungere nuovi dati
 1. **Aggiungi il file Excel/CSV** in `data/raw/Excel/`.
 2. **Assicurati che le colonne siano mappabili** su quelle richieste (vedi sopra). Se usi nomi diversi, la pipeline li mapperà automaticamente se riconoscibili.
@@ -224,7 +265,7 @@ I documenti PDF vengono elaborati per estrarre:
 ## 📈 Dashboard Avanzata
 
 ### 🎯 Metriche Principali
-- **📊 Missioni Totali**: Numero complessivo di missioni (**208 uniche**)
+- **📊 Missioni Totali**: Numero complessivo di missioni (**218 nella dashboard, 208 nel dataset principale**)
 - **👥 Personale Totale**: Somma di tutto il personale impiegato
 - **💰 Costo Totale**: Budget complessivo investito
 - **🟢 Missioni Attive**: Missioni attualmente in corso
@@ -496,7 +537,7 @@ Tutti gli scrapers sono configurati per:
 - **Organizzazione**: Filtro specifico per organizzazione
 
 ### 📈 Visualizzazioni
-- **Grafici a barre**: Missioni per periodo/organizzazione (208 missioni totali)
+- **Grafici a barre**: Missioni per periodo/organizzazione (218 missioni nella dashboard)
 - **Grafici a torta**: Distribuzione budget e personale
 - **Timeline**: Evoluzione temporale delle missioni (1949-2027)
 - **Tabelle interattive**: Dati completi con formattazione
@@ -630,7 +671,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 
 🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1949 al 2027
 
-📊 **Dataset integrato con 208 missioni uniche** dal 1949 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
+📊 **Dataset integrato con 218 missioni nella dashboard** (208 nel dataset principale + 16 aggiunte - 6 rimosse) dal 1949 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
 
 🚀 **Come si usa**
 1. **Avvia la dashboard**: `python run_dashboard.py`
@@ -640,12 +681,13 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 
 🗂️ **Struttura dati aggiornata**
 Il sistema integra automaticamente:
-- **68 missioni** dal CSV principale
-- **134 missioni** da fonti Excel aggiuntive
-- **208 missioni uniche** dopo deduplicazione
+- **208 missioni** nel dataset principale
+- **16 missioni** aggiunte da integrazione automatica
+- **6 missioni** rimosse durante deduplicazione finale
+- **218 missioni totali** nella dashboard
 
 🆕 **Funzionalità principali**
-- **Dashboard interattiva** con 208 missioni integrate
+- **Dashboard interattiva** con 218 missioni integrate
 - **Mappe avanzate** con 4 tipologie diverse
 - **Timeline temporali** con slider interattivi
 - **Analisi per organizzazione** (NATO: 48, ONU: 34, UE: 27, Bilateral: 27, Multinational: 16)
@@ -655,7 +697,7 @@ Il sistema integra automaticamente:
 - **Web scrapers** per download automatico documenti
 
 🛠️ **Debug e supporto**
-- Se il numero di missioni non è 208, usa il pulsante "🔄 Ricarica Dati"
+- La dashboard mostra 218 missioni (208 dal dataset principale + 16 aggiunte - 6 rimosse)
 - Per integrare nuovi dati, aggiungi file Excel in `data/raw/Excel/`
 - Per problemi, controlla la sezione debug nella sidebar
 - Per testare web scrapers: `python tests/test_scrapers_update.py`

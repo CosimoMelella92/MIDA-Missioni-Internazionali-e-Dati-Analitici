@@ -76,16 +76,6 @@ Sea Guardian,Mediterraneo,Europa,Mediterraneo,mil,2016-11-09,2025-12-31,250.0,30
 Air Policing,Baltico,Europa,Baltico,mil,2004-01-01,2025-12-31,150.0,20.0,170,30000000,NATO,Troops (Air)
 MPCC UE,Bruxelles,Europa,Belgio,civ,2017-06-08,2025-12-31,50.0,100.0,150,25000000,UE,Logistical Support & Advisory
 CRRTs UE,Varie,Europa,Varie,civ,2020-01-01,2025-12-31,30.0,70.0,100,20000000,UE,Advisory/Training
-NATO Air Defense System,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,5000.0,1000.0,6000,500000000,NATO,Air Defense
-NATO Maritime Patrol,Atlantico del Nord,Europa,Atlantico,mil,1949-04-04,1991-12-25,3000.0,500.0,3500,300000000,NATO,Maritime Patrol
-NATO Ground Forces Europe,Europa,Europa,Europa Centrale,mil,1949-04-04,1991-12-25,15000.0,2000.0,17000,1000000000,NATO,Ground Forces
-NATO Nuclear Deterrence,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,2000.0,500.0,2500,200000000,NATO,Nuclear Deterrence
-Operation Anchor Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,800.0,200.0,1000,50000000,NATO,Air Defense
-Operation Ace Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,600.0,150.0,750,40000000,NATO,Air Defense
-Operation Desert Shield Support,Medio Oriente,Medio Oriente,Golfo Persico,mil,1990-08-07,1991-02-28,1200.0,300.0,1500,80000000,NATO,Logistical Support
-NATO Standing Naval Forces,Atlantico del Nord,Europa,Atlantico,mil,1968-01-01,1991-12-25,2000.0,300.0,2300,150000000,NATO,Naval Forces
-NATO AWACS,Europa,Europa,Europa Occidentale,mil,1982-01-01,1991-12-25,1500.0,400.0,1900,120000000,NATO,Airborne Warning
-NATO Rapid Reaction Force,Europa,Europa,Europa Centrale,mil,1982-01-01,1991-12-25,5000.0,800.0,5800,400000000,NATO,Rapid Reaction
 Mandato ONU in Somalia,Somalia,Sub-Saharan Africa,Non specificata,civmil,1950-02-12 00:00:00,1960-07-01 00:00:00,100.0,50.0,150,25000000,UN,Troops
 UNEF,Egypt,Northern Africa and Meditterranean,Non specificata,civmil,1956-11-21 00:00:00,1967-05-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
 UNOGIL,Lebanon,Middle East,Non specificata,civmil,1958-06-19 00:00:00,1958-12-09 00:00:00,100.0,50.0,150,25000000,UN,Troops
@@ -207,3 +197,17 @@ EUNAVFOR Med - Irini,Mediterranean Sea,Northern Africa and Meditterranean,Non sp
 Northern Lightning II,Iceland,Rest of Europe,Non specificata,civmil,2020-06-07 00:00:00,2020-07-29 00:00:00,100.0,50.0,150,25000000,NATO,Troops
 Task Force Takuba,Mali,Sub-Saharan Africa,Non specificata,civmil,2020-06-16 00:00:00,2022-07-01 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
 TASK Force CEDRI,Lebanon,Middle East,Non specificata,civmil,2020-08-15 00:00:00,2020-11-21 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
+UNSOM,Somalia,Sub-Saharan Africa,Non specificata,civmil,2021-01-01 00:00:00,2023-10-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
+EUTM Mozambico,Mozambique,Sub-Saharan Africa,Non specificata,civmil,2022-01-01 00:00:00,2024-08-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
+Enhanced Vigilance Activity Bulgaria,Bulgaria,Rest of Europe,Non specificata,civmil,2022-02-25 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
+Enhanced Vigilance Activity Hungary,Hungary,Rest of Europe,Non specificata,civmil,2022-02-25 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
+VJTF NATO,Ukraine,Rest of Europe,Non specificata,civmil,2022-03-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
+Qatar World Cup,Qatar,Middle East,Non specificata,civmil,2022-11-01 00:00:00,2022-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
+TFA-R Gladiator Romania,Romania,Rest of Europe,Non specificata,civmil,2022-12-01 00:00:00,2023-08-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
+EUMAM Ukraine,Ukraine,Rest of Europe,Non specificata,civmil,2022-10-17 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
+EUMPM Niger,Niger,Sub-Saharan Africa,Non specificata,civmil,2022-12-01 00:00:00,2024-06-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
+EMASoH,Yemen,Middle East,Non specificata,civmil,2021-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
+EUNAVFOR - Aspides,Non specificato,Middle East,Non specificata,civmil,2024-02-19 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
+Combined Task Force 153,Non specificato,Middle East,Non specificata,civmil,2024-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
+Operazione Levante,Palestine,Middle East,Non specificata,civmil,2024-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
+Bilateral mission in Burkina Faso,Burkina Faso,Sub-Saharan Africa,Non specificata,civmil,2023-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
