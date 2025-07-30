@@ -119,8 +119,12 @@ st.markdown("""
 def load_data():
     """Carica e prepara i dati delle missioni"""
     try:
-        # Prova prima il file completo
-        df = pd.read_csv('data/processed/missioni_complete.csv')
+        # Prova prima il file aggiornato con missioni NATO storiche
+        try:
+            df = pd.read_csv('data/processed/missioni_complete_updated.csv')
+        except:
+            # Fallback al file originale
+            df = pd.read_csv('data/processed/missioni_complete.csv')
         
         # Integra nuovi dati Excel se presenti
         df = integrate_excel_data(df)
@@ -1007,7 +1011,7 @@ def main():
     st.markdown("""
     <div class="info-box">
         <strong>📊 Dashboard Interattiva</strong><br>
-        Analisi completa delle missioni internazionali italiane dal 1991 ad oggi. 
+        Analisi completa delle missioni internazionali italiane dal 1949 ad oggi. 
         Utilizza i filtri nella sidebar per personalizzare la visualizzazione.
     </div>
     """, unsafe_allow_html=True)
