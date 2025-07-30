@@ -284,10 +284,10 @@ La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 m
 ### 🏛️ Analisi per Organizzazione
 - **🏛️ ONU:** 60 missioni  
   Esempi: UNIFIL, MINURSO, UNMISS, UNPROFOR, UNMIK, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNFICYP, ecc.
+- **🏛️ NATO:** 60 missioni  
+  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, ecc.
 - **🇪🇺 UE:** 51 missioni  
   Esempi: EUTM Mali, EUBAM Libya, EUFOR ALTHEA, EUTM Somalia, EUTM RCA, EUNAVFOR ATALANTA, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, MPCC UE, CRRTs UE, ecc.
-- **🏛️ NATO:** 50 missioni  
-  Esempi: KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, ecc.
 - **🤝 Bilateral:** 28 missioni  
   Esempi: MIBIL, MIADIT, MIASIT, Cooperazione tecnica Angola, ecc.
 - **🤝 Multinational:** 18 missioni  
@@ -298,22 +298,17 @@ La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 m
 *Distribuzione delle missioni per organizzazione internazionale*
 
 ### 🌍 Analisi per Regione e Sub-Regione
-- **Balkans**: 32 missioni (KFOR, EUFOR ALTHEA, IFOR, SFOR, ecc.)
-- **Sub-Saharan Africa**: 29 missioni (MISIN, EUTM Mali, MINUSMA, ecc.)
-- **Africa**: 26 missioni (MONUSCO, MINURSO, MINUSCA, ecc.)
-- **Middle East**: 23 missioni (UNIFIL, MIBIL, MIADIT, Operation Inherent Resolve, ecc.)
+- **Africa**: 57 missioni (MONUSCO, MINURSO, MINUSCA, EUTM Mali, MINUSMA, ecc.)
+- **Medio Oriente**: 39 missioni (UNIFIL, MIBIL, MIADIT, UNSMIL, EUAM Iraq, Operation Inherent Resolve, ecc.)
+- **Balkans**: 32 missioni (KFOR, EUFOR ALTHEA, IFOR, SFOR, EULEX Kosovo, ecc.)
+- **Europa**: 27 missioni (EUBAM Moldova-Ukraine, EUPM Moldova, ecc.)
 - **Rest of Europe**: 22 missioni (EUMM Georgia, MPCC UE, ecc.)
-- **Europa**: 18 missioni (EULEX Kosovo, EUBAM Moldova-Ukraine, ecc.)
-- **Medio Oriente**: 15 missioni (UNSMIL, EUAM Iraq, ecc.)
 - **Asia**: 14 missioni (ISAF, UNAMA, UNTAET, ecc.)
 - **Northern Africa and Meditterranean**: 13 missioni (EUBAM Libya, MIASIT, ecc.)
-- **America**: 6 missioni (MINUSTAH, MINUJUSTH, BINUH, ecc.)
-- **Americas**: 4 missioni (MIPONUH, UNTMIH, ecc.)
+- **America**: 10 missioni (MINUSTAH, MINUJUSTH, BINUH, MIPONUH, UNTMIH, ecc.)
 - **Eurasia**: 2 missioni (EUMA Armenia, ecc.)
 - **Mediterraneo**: 1 missione (IRINI)
 - **Africa/Asia**: 1 missione (EUNAVFOR Aspides)
-- **Nord Africa**: 1 missione (Cooperazione tecnica Angola)
-- **Africa Sub-sahariana**: 1 missione (Cooperazione tecnica Angola)
 
 ---
 
@@ -328,7 +323,13 @@ La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 m
 
 ### 🌍 Mappa del Mondo
 ![Mappa del Mondo](docs/images/mappa_mondo.png)
-- **Colori per organizzazione**: 🔵 ONU, 🟠 UE, 🟢 NATO, 🔴 ITA, 🟡 Bilateral, 🟣 Multinational
+- **Colori per organizzazione**: 
+  - 🔵 **ONU** (60 missioni): UNIFIL, MINURSO, UNMISS, UNPROFOR, UNMIK, MONUSCO, UNOCI, UNAMID, MINUSTAH, UNTAET, UNFICYP, ecc.
+  - 🟢 **NATO** (60 missioni): KFOR, ISAF, IFOR, SFOR, NATO Mission Iraq, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, ecc.
+  - 🟠 **UE** (51 missioni): EUTM Mali, EUBAM Libya, EUFOR ALTHEA, EUTM Somalia, EUTM RCA, EUNAVFOR ATALANTA, IRINI, EUMM, EUAM Iraq, EULEX Kosovo, EUCAP Somalia, EUAM Ukraine, EUMA Armenia, EUPM Moldova, EUBAM Moldova-Ukraine, EUBAM Rafah, EUPOL COPPS, EUSDI Gulf of Guinea, EUNAVFOR Aspides, MPCC UE, CRRTs UE, ecc.
+  - 🟡 **Bilateral** (28 missioni): MIBIL, MIADIT, MIASIT, Cooperazione tecnica Angola, ecc.
+  - 🟣 **Multinational** (18 missioni): Combined Task Force 153, ecc.
+  - 🔴 **ITA** (1 missione): MISIN
 - **Marker intelligenti**: Dimensioni basate sul personale
 - **Hover ricchi**: Tutti i dettagli della missione con emoji
 - **Legenda integrata**: Visibile e ben posizionata
@@ -337,17 +338,30 @@ La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 m
 - **Densità personale**: Visualizzazione della concentrazione di personale
 - **Scala colori**: Blu (basso) → Rosso (alto)
 - **Radius ottimizzato**: 40px per migliore visualizzazione
-- **Organizzazioni**: Tutte le 6 organizzazioni rappresentate (ONU, UE, NATO, ITA, Bilateral, Multinational)
+- **Organizzazioni**: Tutte le 6 organizzazioni rappresentate con distribuzione aggiornata:
+  - **ONU**: 60 missioni (27.5%)
+  - **NATO**: 60 missioni (27.5%)
+  - **UE**: 51 missioni (23.4%)
+  - **Bilateral**: 28 missioni (12.8%)
+  - **Multinational**: 18 missioni (8.3%)
+  - **ITA**: 1 missione (0.5%)
 
 ### ⏰ Timeline Geografica
-- **Slider temporale**: Navigazione anno per anno
-- **Evoluzione missioni**: Come si sono sviluppate nel tempo
-- **Colori mantenuti**: Organizzazioni sempre distinguibili (ONU, UE, NATO, ITA, Bilateral, Multinational)
+- **Slider temporale**: Navigazione anno per anno dal 1949 al 2027
+- **Evoluzione missioni**: Come si sono sviluppate nel tempo attraverso 78 anni di impegno internazionale
+- **Colori mantenuti**: Organizzazioni sempre distinguibili con la stessa palette colori:
+  - 🔵 ONU, 🟢 NATO, 🟠 UE, 🟡 Bilateral, 🟣 Multinational, 🔴 ITA
 
 ### 📍 Mappa Cluster
-- **Raggruppamento automatico**: Missioni vicine raggruppate
-- **Popup HTML ricchi**: Informazioni complete con styling
-- **Layer control**: Attiva/disattiva organizzazioni (ONU, UE, NATO, ITA, Bilateral, Multinational)
+- **Raggruppamento automatico**: Missioni vicine raggruppate per ottimizzare la visualizzazione
+- **Popup HTML ricchi**: Informazioni complete con styling e dettagli per ogni missione
+- **Layer control**: Attiva/disattiva organizzazioni individualmente per analisi mirate:
+  - ONU (60 missioni)
+  - NATO (60 missioni) 
+  - UE (51 missioni)
+  - Bilateral (28 missioni)
+  - Multinational (18 missioni)
+  - ITA (1 missione)
 
 ## 🚀 Installazione e Utilizzo
 
@@ -655,7 +669,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ![Dettagli Missioni](docs/images/dettagli-missioni.png)
 
 ### Analisi Organizzazioni
-![Analisi Organizzazioni](docs/images/analisi_organizazzione.png)
+![Analisi Organizzazioni](docs/images/analisi_organizazione.png)
 
 ### Mappe Interattive
 ![Mappe Interattive](docs/images/mappe_interattive.png)
@@ -690,7 +704,7 @@ Il sistema integra automaticamente:
 - **Dashboard interattiva** con 218 missioni integrate
 - **Mappe avanzate** con 4 tipologie diverse
 - **Timeline temporali** con slider interattivi
-- **Analisi per organizzazione** (NATO: 48, ONU: 34, UE: 27, Bilateral: 27, Multinational: 16)
+- **Analisi per organizzazione** (ONU: 60, NATO: 60, UE: 51, Bilateral: 28, Multinational: 18, ITA: 1)
 - **Export dati** in CSV, Excel e PDF
 - **Sistema di debug** integrato nella sidebar
 - **Sistema di estrazione documenti** con interfaccia web
