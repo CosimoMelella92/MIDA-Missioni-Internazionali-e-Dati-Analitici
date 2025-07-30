@@ -18,7 +18,7 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **208 missioni uniche** dal **1948 al 2027**, coprendo un arco temporale di **79 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **208 missioni uniche** dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
 
 ## 🏗️ Struttura del Progetto
 ```
@@ -230,7 +230,7 @@ I documenti PDF vengono elaborati per estrarre:
 - **🟢 Missioni Attive**: Missioni attualmente in corso
 
 ### 📅 Analisi per Periodi Temporali
-- **1948-1990**: Guerra Fredda e prime missioni ONU
+- **1949-1990**: Guerra Fredda e prime missioni ONU
 - **1991-2001**: Post Guerra Fredda
 - **2001-2015**: Guerra al Terrorismo  
 - **2015-Presente**: Crisi Migratoria e Stabilizzazione
@@ -278,7 +278,7 @@ I documenti PDF vengono elaborati per estrarre:
 
 ### 🆕 Note aggiornate
 
-- **Copertura temporale:** la dashboard ora copre missioni dal 1948 al 2027, incluse tutte le missioni attive e pianificate per il 2025 secondo i dati parlamentari più recenti, con alcune missioni UE estese fino al 2027 (EUCAP Somalia, EUMA Armenia).
+- **Copertura temporale:** la dashboard ora copre missioni dal 1949 al 2027, incluse tutte le missioni attive e pianificate per il 2025 secondo i dati parlamentari più recenti, con alcune missioni UE estese fino al 2027 (EUCAP Somalia, EUMA Armenia).
 - **Nuove missioni 2025:** integrate e visibili nella dashboard (es. EUFOR ALTHEA, Enhanced Vigilance Activities, Forward Land Forces, Sea Guardian, Air Policing, MPCC UE, CRRTs UE, ecc.).
 - **Missioni estese:** alcune missioni UE sono state estese oltre il 2025 per riflettere gli impegni a lungo termine.
 - **Deduplicazione e qualità:** il dataset è stato deduplicato e validato, senza anomalie o doppioni.
@@ -489,7 +489,7 @@ Tutti gli scrapers sono configurati per:
 ## 📊 Funzionalità Dashboard
 
 ### 🔍 Filtri Avanzati
-- **Anno di inizio**: Dal 1948 al 2027
+- **Anno di inizio**: Dal 1949 al 2027
 - **Tipo di partecipazione**: Militare, Civile, Misto
 - **Regione**: Africa, Europa, Medio Oriente, Asia, America
 - **Tipo missione**: ONU, UE, NATO, ITA, Bilateral, Multinational
@@ -498,7 +498,7 @@ Tutti gli scrapers sono configurati per:
 ### 📈 Visualizzazioni
 - **Grafici a barre**: Missioni per periodo/organizzazione (208 missioni totali)
 - **Grafici a torta**: Distribuzione budget e personale
-- **Timeline**: Evoluzione temporale delle missioni (1948-2027)
+- **Timeline**: Evoluzione temporale delle missioni (1949-2027)
 - **Tabelle interattive**: Dati completi con formattazione
 - **Mappe interattive**: 4 tipi di mappe avanzate con 6 organizzazioni
 
@@ -613,17 +613,24 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ### Dettagli Missioni
 ![Dettagli Missioni](docs/images/dettagli%20missioni.png)
 
-### Mappe Interattive
-![Mappe](docs/images/mappe_interattive.png)
+### Analisi Organizzazioni
+![Analisi Organizzazioni](docs/images/analisi_organizazzione.png)
 
+### Mappe Interattive
+![Mappe Interattive](docs/images/mappe_interattive.png)
+
+### Mappa del Mondo
+![Mappa del Mondo](docs/images/mappa_mondo.png)
+
+### Analisi Commitment
 ![Numero di missioni per tipo di commitment](docs/images/numero%20di%20missioni%20per%20tipo%20di%20commitment.png)
 *Numero di missioni suddivise per tipologia di commitment (Head of Mission, Forze terrestri/navali/aeree, Supporto logistico, ecc.)*
 
 ---
 
-🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1948 al 2027
+🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1949 al 2027
 
-📊 **Dataset integrato con 208 missioni uniche** dal 1948 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
+📊 **Dataset integrato con 208 missioni uniche** dal 1949 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
 
 🚀 **Come si usa**
 1. **Avvia la dashboard**: `python run_dashboard.py`
