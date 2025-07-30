@@ -669,7 +669,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 ![Dettagli Missioni](docs/images/dettagli-missioni.png)
 
 ### Analisi Organizzazioni
-![Analisi Organizzazioni](docs/images/analisi_organizazione.png)
+![Analisi Organizzazioni](docs/images/analisi_organizzazione.png)
 
 ### Mappe Interattive
 ![Mappe Interattive](docs/images/mappe_interattive.png)
