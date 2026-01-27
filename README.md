@@ -18,7 +18,18 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **208 missioni uniche** nel dataset principale, con **218 missioni** nella dashboard grazie all'integrazione automatica con fonti aggiuntive, dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Attualmente il sistema gestisce **221 missioni** dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+
+### 📈 Statistiche Chiave
+- **Totale missioni**: 221
+- **Missioni attive**: 39 (allineate con il sito ufficiale del Ministero della Difesa)
+- **Missioni terminate**: 182
+- **Periodo coperto**: 1949-2027 (78 anni)
+- **Personale totale**: ~114,000 unità
+- **Costo totale**: €22.7 miliardi
+- **Costo medio per missione**: €103 milioni
+
+**Nota**: Il conteggio delle missioni attive è basato sul campo `is_active`, che riflette l'elenco ufficiale delle operazioni in corso pubblicato sul sito del Ministero della Difesa. Questo garantisce allineamento preciso con le fonti ufficiali. La dashboard integra automaticamente dati aggiuntivi da fonti Excel, portando il totale visualizzato a ~350 missioni (includendo missioni storiche).
 
 ## 🏗️ Struttura del Progetto
 ```

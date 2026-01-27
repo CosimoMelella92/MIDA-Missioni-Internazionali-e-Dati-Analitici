@@ -1,209 +1,222 @@
-nome,paese,regione,sub_regione,tipo_partecipazione,data_inizio,data_fine,personale_militare,personale_civile,personale_totale,costo_totale,tipo_missione,commitment
-UNIFIL,Libano,Medio Oriente,Levante,civmil,1978-03-19,2025-12-31,800.0,400.0,1200,150000000,ONU,Troops
-EUTM Mali,Mali,Africa,Africa Occidentale,mil,2013-02-18,2025-12-31,200.0,50.0,250,45000000,UE,Head of Mission
-KFOR,Kosovo,Europa,Balcani,mil,1999-06-12,2025-12-31,1148.0,700.0,1848,150520083,NATO,Troops
-MINURSO,Sahara Occidentale,Africa,Africa Settentrionale,civ,1991-04-29,2025-12-31,5.0,10.0,15,5000000,ONU,Head of Mission
-EUBAM Libya,Libia,Africa,Africa Settentrionale,civmil,2013-05-22,2025-12-31,60.0,40.0,100,20000000,UE,Head of Mission
-MISIN,Niger,Africa,Africa Occidentale,mil,2018-07-01,2025-12-31,400.0,70.0,470,90000000,ITA,Troops
-ISAF,Afghanistan,Asia,Asia Centrale,mil,2001-10-07,2014-12-31,2500.0,300.0,2800,500000000,NATO,Troops
-EUFOR,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-02-01,2019-03-15,150.0,50.0,200,35000000,UE,Troops
-UNMISS,Sudan del Sud,Africa,Africa Orientale,civ,2011-07-09,2025-12-31,20.0,80.0,100,25000000,ONU,Head of Mission
-EUTM Somalia,Somalia,Africa,Corno d'Africa,mil,2010-04-07,2025-12-31,180.0,70.0,250,40000000,UE,Head of Mission
-UNPROFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1992-02-21,1995-12-20,1200.0,100.0,1300,200000000,ONU,Troops
-IFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1995-12-20,1996-12-20,1500.0,150.0,1650,250000000,NATO,Troops
-SFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1996-12-20,2004-12-02,800.0,100.0,900,120000000,NATO,Troops
-UNMIK,Kosovo,Europa,Balcani,civmil,1999-06-10,2008-06-15,300.0,200.0,500,80000000,ONU,Head of Mission
-UNMIL,Liberia,Africa,Africa Occidentale,civmil,2003-09-19,2018-03-30,150.0,100.0,250,45000000,ONU,Troops
-MONUC,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,1999-11-30,2010-06-30,200.0,150.0,350,60000000,ONU,Troops
-MONUSCO,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,2010-07-01,2025-12-31,250.0,200.0,450,75000000,ONU,Troops
-UNOCI,Costa d'Avorio,Africa,Africa Occidentale,civmil,2004-04-04,2017-06-30,180.0,120.0,300,55000000,ONU,Troops
-UNMIS,Sudan,Africa,Africa Orientale,civ,2005-03-24,2011-07-09,50.0,100.0,150,30000000,ONU,Head of Mission
-UNAMID,Darfur,Africa,Africa Orientale,civmil,2007-07-31,2020-12-31,300.0,250.0,550,90000000,ONU,Troops
-UNIKOM,Iraq-Kuwait,Medio Oriente,Golfo Persico,mil,1991-04-09,2003-10-06,50.0,30.0,80,15000000,ONU,Troops
-UNSCOM,Iraq,Medio Oriente,Golfo Persico,civ,1991-04-03,1999-12-17,20.0,80.0,100,25000000,ONU,Head of Mission
-UNMOVIC,Iraq,Medio Oriente,Golfo Persico,civ,1999-12-17,2003-03-19,15.0,85.0,100,20000000,ONU,Head of Mission
-UNSMIH,Haiti,America,Caraibi,civmil,1996-07-01,1997-06-30,100.0,50.0,150,25000000,ONU,Troops
-UNTMIH,Haiti,America,Caraibi,civmil,1997-08-01,1997-11-30,80.0,40.0,120,20000000,ONU,Troops
-MIPONUH,Haiti,America,Caraibi,civmil,1997-12-01,2000-03-15,90.0,60.0,150,30000000,ONU,Troops
-MINUSTAH,Haiti,America,Caraibi,civmil,2004-06-01,2017-10-15,200.0,150.0,350,60000000,ONU,Troops
-MINUJUSTH,Haiti,America,Caraibi,civmil,2017-10-16,2019-10-15,100.0,100.0,200,40000000,ONU,Troops
-BINUH,Haiti,America,Caraibi,civ,2019-10-16,2025-12-31,30.0,170.0,200,35000000,ONU,Head of Mission
-UNTAET,Timor Est,Asia,Asia Sudorientale,civmil,1999-10-25,2002-05-20,300.0,200.0,500,80000000,ONU,Head of Mission
-UNMISET,Timor Est,Asia,Asia Sudorientale,civmil,2002-05-20,2005-05-20,250.0,150.0,400,65000000,ONU,Troops
-UNMIT,Timor Est,Asia,Asia Sudorientale,civmil,2006-08-25,2012-12-31,200.0,100.0,300,50000000,ONU,Troops
-UNMEE,Etiopia-Eritrea,Africa,Corno d'Africa,civmil,2000-07-31,2008-07-31,150.0,100.0,250,40000000,ONU,Troops
-EUTM RCA,Repubblica Centrafricana,Africa,Africa Centrale,mil,2016-07-19,2025-12-31,120.0,30.0,150,30000000,UE,Head of Mission
-EUCAP Sahel Niger,Niger,Africa,Africa Occidentale,civ,2012-08-15,2025-12-31,15.0,85.0,100,25000000,UE,Head of Mission
-EUCAP Sahel Mali,Mali,Africa,Africa Occidentale,civ,2014-04-15,2025-12-31,10.0,90.0,100,20000000,UE,Head of Mission
-EUNAVFOR MED,Mediterraneo,Europa,Mediterraneo,mil,2015-06-22,2025-12-31,300.0,50.0,350,60000000,UE,Troops
-IRINI,Mediterraneo,Europa,Mediterraneo,mil,2020-03-31,2025-12-31,250.0,30.0,280,50000000,UE,Troops
-MINUSMA,Mali,Africa,Africa Occidentale,civmil,2013-04-25,2023-12-31,200.0,150.0,350,70000000,ONU,Troops
-UNSMIL,Libia,Africa,Africa Settentrionale,civ,2011-09-16,2025-12-31,25.0,175.0,200,40000000,ONU,Head of Mission
-UNSOS,Somalia,Africa,Corno d'Africa,civ,2013-06-03,2025-12-31,30.0,170.0,200,35000000,ONU,Head of Mission
-MINUSCA,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-04-10,2025-12-31,300.0,200.0,500,80000000,ONU,Troops
-UNISFA,Abyei,Africa,Africa Orientale,civmil,2011-06-27,2025-12-31,100.0,50.0,150,30000000,ONU,Troops
-MFO,Egitto,Medio Oriente,Sinai,civmil,1982-01-01,2025-12-31,,,1200,40000000,Coalizione,Logistical Support & Advisory
-EUMM,Georgia,Eurasia,Caucaso,civ,2009-04-01,2025-12-31,,200.0,200,10000000,UE,Logistical Support & Advisory
-UNTSO,Israele,Medio Oriente,Israele,civ,1948-01-01,2025-12-31,,100.0,100,20000000,ONU,Logistical Support & Advisory
-UNAMA,Afghanistan,Asia,Afghanistan,civmil,2002-01-01,2021-12-31,,,10000,250000000,ONU,Logistical Support & Advisory
-EUAM Iraq,Iraq,Medio Oriente,Iraq,civ,2017-06-01,2025-12-31,,40.0,40,10000000,UE,Logistical Support & Advisory
-Operation Inherent Resolve,Iraq,Medio Oriente,Iraq-Siria,mil,2014-10-01,2025-12-31,5200.0,,5200,12000000000,Coalizione,Troops (Ground Forces)
-NATO Mission Iraq,Iraq,Medio Oriente,Iraq,mil,2020-01-01,2025-12-31,50.0,,50,5000000,NATO,Logistical Support & Advisory
-UNFICYP,Cipro,Mediterraneo,Cipro,civmil,1964-01-01,2025-12-31,,,880,60000000,ONU,Logistical Support & Advisory
-EUTM Mozambique,Mozambico,Africa,Mozambico,civmil,2021-07-01,2025-12-31,,,200,10000000,UE,Logistical Support & Advisory
-UNAMI,Iraq,Medio Oriente,Iraq,civmil,2003-01-01,2025-12-31,,,1200,150000000,ONU,Logistical Support & Advisory
-EULEX Kosovo,Kosovo,Europa,Balcani occidentali,civmil,2008-02-01,2025-12-31,,,1600,60000000,UE,Logistical Support & Advisory
-UNMOGIP,India/Pakistan,Asia,India-Pakistan,civ,1949-01-01,2025-12-31,,40.0,40,8000000,ONU,Logistical Support & Advisory
-EUCAP Somalia,Somalia,Africa,Corno d'Africa,civ,2012-07-16,2027-02-28,,169.0,169,110000000,UE,Head of Mission
-EUAM Ukraine,Ucraina,Europa,Est Europa,civ,2014-12-01,2025-12-31,,300.0,300,65000000,UE,Head of Mission
-EUMA Armenia,Armenia,Eurasia,Caucaso,civ,2023-02-20,2027-02-19,,225.0,225,44000000,UE,Head of Mission
-EUPM Moldova,Moldova,Europa,Europa Orientale,civ,2023-04-24,2025-12-31,,90.0,90,20000000,UE,Head of Mission
-EUBAM Moldova-Ukraine,Moldova/Ucraina,Europa,Europa Orientale,civ,2005-12-01,2025-12-31,,130.0,130,30000000,UE,Head of Mission
-EUBAM Rafah,Palestina,Medio Oriente,Territori Palestinesi,civ,2005-11-25,2025-12-31,,80.0,80,18000000,UE,Head of Mission
-EUPOL COPPS,Territori Palestinesi,Medio Oriente,Palestina,civ,2006-01-01,2025-12-31,,100.0,100,20000000,UE,Head of Mission
-EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120.0,120,30000000,UE,Advisory/Training
-EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180.0,,180,55000000,UE,Troops (Naval)
-Italcon,Libano,Medio Oriente,Levant,mil,1982-08-24,1984-03-20,8200.0,0.0,8200,25000000,Bilaterale,Troops (Ground Forces)
-MIBIL,Libano,Medio Oriente,Levant,civmil,2015-01-28,2025-12-31,100.0,50.0,150,25000000,Bilaterale,Advisory/Training
-MIASIT,Libia,Nord Africa,Nord Africa e Mediterraneo,civmil,2018-01-01,2025-12-31,100.0,50.0,150,25000000,Bilaterale,Logistical Support & Advisory
-Cooperazione tecnica Angola,Angola,Africa Sub-sahariana,Africa Australe,mil,2017-01-01,2025-12-31,50.0,0.0,50,25000000,Bilaterale,Advisory/Training
-EUFOR ALTHEA,Bosnia ed Erzegovina,Europa,Balcani,mil,2004-12-02,2025-12-31,600.0,100.0,700,80000000,UE,Troops
-MIADIT,Palestina,Medio Oriente,Territori Palestinesi,civmil,2015-01-01,2025-12-31,50.0,100.0,150,30000000,Bilaterale,Advisory/Training
-EUNAVFOR ATALANTA,Oceano Indiano,Africa,Corno d'Africa,mil,2008-12-08,2025-12-31,200.0,50.0,250,40000000,UE,Troops (Naval)
-Enhanced Vigilance Activities,Slovacchia,Europa,Europa Centrale,mil,2022-01-01,2025-12-31,300.0,50.0,350,50000000,NATO,Troops
-Forward Land Forces,Polonia,Europa,Europa Orientale,mil,2022-01-01,2025-12-31,400.0,50.0,450,60000000,NATO,Troops
-Sea Guardian,Mediterraneo,Europa,Mediterraneo,mil,2016-11-09,2025-12-31,250.0,30.0,280,45000000,NATO,Troops (Naval)
-Air Policing,Baltico,Europa,Baltico,mil,2004-01-01,2025-12-31,150.0,20.0,170,30000000,NATO,Troops (Air)
-MPCC UE,Bruxelles,Europa,Belgio,civ,2017-06-08,2025-12-31,50.0,100.0,150,25000000,UE,Logistical Support & Advisory
-CRRTs UE,Varie,Europa,Varie,civ,2020-01-01,2025-12-31,30.0,70.0,100,20000000,UE,Advisory/Training
-NATO Air Defense System,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,5000.0,1000.0,6000,500000000,NATO,Air Defense
-NATO Maritime Patrol,Atlantico del Nord,Europa,Atlantico,mil,1949-04-04,1991-12-25,3000.0,500.0,3500,300000000,NATO,Maritime Patrol
-NATO Ground Forces Europe,Europa,Europa,Europa Centrale,mil,1949-04-04,1991-12-25,15000.0,2000.0,17000,1000000000,NATO,Ground Forces
-NATO Nuclear Deterrence,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,2000.0,500.0,2500,200000000,NATO,Nuclear Deterrence
-Operation Anchor Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,800.0,200.0,1000,50000000,NATO,Air Defense
-Operation Ace Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,600.0,150.0,750,40000000,NATO,Air Defense
-Operation Desert Shield Support,Medio Oriente,Medio Oriente,Golfo Persico,mil,1990-08-07,1991-02-28,1200.0,300.0,1500,80000000,NATO,Logistical Support
-NATO Standing Naval Forces,Atlantico del Nord,Europa,Atlantico,mil,1968-01-01,1991-12-25,2000.0,300.0,2300,150000000,NATO,Naval Forces
-NATO AWACS,Europa,Europa,Europa Occidentale,mil,1982-01-01,1991-12-25,1500.0,400.0,1900,120000000,NATO,Airborne Warning
-NATO Rapid Reaction Force,Europa,Europa,Europa Centrale,mil,1982-01-01,1991-12-25,5000.0,800.0,5800,400000000,NATO,Rapid Reaction
-Mandato ONU in Somalia,Somalia,Sub-Saharan Africa,Non specificata,civmil,1950-02-12 00:00:00,1960-07-01 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNEF,Egypt,Northern Africa and Meditterranean,Non specificata,civmil,1956-11-21 00:00:00,1967-05-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNOGIL,Lebanon,Middle East,Non specificata,civmil,1958-06-19 00:00:00,1958-12-09 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Intervento in Laos,Laos,Asia,Non specificata,civmil,1959-10-07 00:00:00,1959-11-20 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNOC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,1960-07-11 00:00:00,1964-01-04 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNYOM,Yemen,Middle East,Non specificata,civmil,1963-12-20 00:00:00,1964-03-05 00:00:00,100.0,50.0,150,25000000,UN,Troops
-MICTM,Malta,Rest of Europe,Non specificata,civmil,1973-08-01 00:00:00,1988-07-14 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-DIATM,Malta,Rest of Europe,Non specificata,civmil,1981-12-31 00:00:00,1988-07-14 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Libano I,Lebanon,Middle East,Non specificata,civmil,1982-08-21 00:00:00,1982-09-23 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Libano II,Lebanon,Middle East,Non specificata,civmil,1982-09-23 00:00:00,1984-03-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Mine Mar Rosso,Egypt,Northern Africa and Meditterranean,Non specificata,civmil,1984-08-22 00:00:00,1984-10-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-MIATM,Malta,Rest of Europe,Non specificata,civmil,1988-07-14 00:00:00,2011-12-01 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-UNIIMOG,"Iraq, Iran",Middle East,Non specificata,civmil,1988-08-15 00:00:00,1991-03-10 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNTAG,Namibia,Sub-Saharan Africa,Non specificata,civmil,1989-03-13 00:00:00,1990-04-07 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNOCA,Afghanistan,Asia,Non specificata,civmil,1989-03-30 00:00:00,1990-10-14 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Desert Shield - Golfo 2,Iraq,Middle East,Non specificata,civmil,1990-08-16 00:00:00,1991-08-24 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Desert Storm - Locusta,Iraq,Middle East,Non specificata,civmil,1990-09-25 00:00:00,1991-03-13 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-UNOSGI,Iraq,Middle East,Non specificata,civmil,1991-03-01 00:00:00,1991-12-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Provide Comfort I,Iraq,Middle East,Non specificata,civmil,1991-04-20 00:00:00,1991-07-24 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-EUMM Balcani,"Bosnia and Herzegovina, Croatia, Serbia, Montenegro, Albania, Macedonia",Balkans,Non specificata,civmil,1991-07-18 00:00:00,2006-10-18 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Provide Comfort II,Iraq,Middle East,Non specificata,civmil,1991-07-24 00:00:00,1996-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-ONUSAL,El Salvador,Americas,Non specificata,civmil,1991-07-26 00:00:00,1995-10-01 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Pellicano,Albania,Balkans,Non specificata,civmil,1991-09-16 00:00:00,1993-12-03 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Sharp Fence - Maritime Guard,Adriatic Sea,Balkans,Non specificata,civmil,1992-07-10 00:00:00,1993-06-15 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-UNTAC,Cambodia,Asia,Non specificata,civmil,1992-07-23 00:00:00,1993-07-22 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNITAF - Restore Hope - Ibis I,Somalia,Sub-Saharan Africa,Non specificata,civmil,1992-12-03 00:00:00,1993-05-04 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNOMOZ,Mozambique,Sub-Saharan Africa,Non specificata,civmil,1993-02-22 00:00:00,1995-02-28 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNOSOM II - Ibis II,Somalia,Sub-Saharan Africa,Non specificata,civmil,1993-05-04 00:00:00,1995-03-01 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Operazione Danubio,Yugoslavia,Balkans,Non specificata,civmil,1993-05-26 00:00:00,1995-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Sharp Guard,Adriatic Sea,Balkans,Non specificata,civmil,1993-06-15 00:00:00,1996-06-19 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Deny Flight,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1993-06-30 00:00:00,1995-12-20 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Ippocampo,Rwanda,Sub-Saharan Africa,Non specificata,civmil,1994-03-10 00:00:00,1994-03-20 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-TIPH I,Palestine,Middle East,Non specificata,civmil,1994-05-08 00:00:00,1994-08-08 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-United Shield,Somalia,Sub-Saharan Africa,Non specificata,civmil,1995-01-10 00:00:00,1995-03-25 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UPFM,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1995-03-08 00:00:00,1996-10-22 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-MINUGUA,Guatemala,Americas,Non specificata,civmil,1995-07-17 00:00:00,2001-08-15 00:00:00,100.0,50.0,150,25000000,UN,Troops
-UNAVEM III,Angola,Sub-Saharan Africa,Non specificata,civmil,1995-08-24 00:00:00,1996-12-30 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Deliberate Force,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1995-09-04 00:00:00,1995-09-20 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-TIPH II,Palestine,Middle East,Non specificata,civmil,1996-01-29 00:00:00,2019-03-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Joint Forge (SFOR),Kosovo,Balkans,Non specificata,civmil,1996-12-20 00:00:00,2004-12-01 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Alba,Albania,Balkans,Non specificata,civmil,1997-04-13 00:00:00,1997-08-12 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-28esimo gruppo navale,Albania,Balkans,Non specificata,civmil,1997-04-15 00:00:00,2009-06-30 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-MAPE,Albania,Balkans,Non specificata,civmil,1997-05-12 00:00:00,2001-06-20 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-UNMIBH (IPTF),Bosnia and Herzegovina,Balkans,Non specificata,civmil,1997-05-27 00:00:00,2002-12-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
-DIE,Albania,Balkans,Non specificata,civmil,1997-10-11 00:00:00,2012-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Eagle Eye,Kosovo,Balkans,Non specificata,civmil,1998-11-27 00:00:00,1999-03-24 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Joint Guarantor,Macedonia,Balkans,Non specificata,civmil,1998-12-09 00:00:00,1999-03-01 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Allied Force,Kosovo,Balkans,Non specificata,civmil,1999-03-24 00:00:00,1999-06-10 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Allied Harbour,Albania,Balkans,Non specificata,civmil,1999-04-11 00:00:00,1999-08-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Allied Harvest,Adriatic Sea,Balkans,Non specificata,civmil,1999-05-11 00:00:00,2000-09-04 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-KFOR - Joint Enterprise,Kosovo,Balkans,Non specificata,civmil,1999-06-13 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-INTERFET,East Timor,Asia,Non specificata,civmil,1999-09-20 00:00:00,2000-02-28 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Albit,Albania,Balkans,Non specificata,civmil,2000-03-16 00:00:00,2004-01-28 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Essential Harvest,Macedonia,Balkans,Non specificata,civmil,2001-08-27 00:00:00,2001-10-04 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Amber Fox,Macedonia,Balkans,Non specificata,civmil,2001-10-05 00:00:00,2002-12-15 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Active Endeavour,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2001-10-26 00:00:00,2016-10-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Enduring Freedom - Nibbio,Afghanistan,Asia,Non specificata,civmil,2001-11-18 00:00:00,2006-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Processo Pace Sudan,Sudan,Sub-Saharan Africa,Non specificata,civmil,2002-04-01 00:00:00,2007-12-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
-NATO HQ Tirana,Albania,Balkans,Non specificata,civmil,2002-06-17 00:00:00,2011-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-NATO HQ Skopje,Macedonia,Balkans,Non specificata,civmil,2002-06-17 00:00:00,2021-03-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Allied Harmony,Macedonia,Balkans,Non specificata,civmil,2002-12-16 00:00:00,2003-03-30 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-EUPM,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2003-01-01 00:00:00,2012-06-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EU Concordia,Macedonia,Balkans,Non specificata,civmil,2003-03-31 00:00:00,2003-12-15 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Antica Babilonia,Iraq,Middle East,Non specificata,civmil,2003-05-28 00:00:00,2006-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Artemis,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2003-06-12 00:00:00,2003-09-01 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUPOL Proxima,Macedonia,Balkans,Non specificata,civmil,2003-09-16 00:00:00,2005-12-14 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Baltic Air Policing,"Estonia, Latvia, Lithuania",Rest of Europe,Non specificata,civmil,2004-03-30 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-NTM I,Iraq,Middle East,Non specificata,civmil,2004-08-01 00:00:00,2011-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-UNOWA,Morocco,Northern Africa and Meditterranean,Non specificata,civmil,2004-10-01 00:00:00,2005-11-30 00:00:00,100.0,50.0,150,25000000,UN,Troops
-EU AMIS II Sudan,Sudan,Sub-Saharan Africa,Non specificata,civmil,2004-10-20 00:00:00,2007-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-NATO HQ Sarajevo,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2004-12-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Althea,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2004-12-02 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUPOL Kinshasa,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2005-01-01 00:00:00,2007-06-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Mare Sicuro,Somalia,Sub-Saharan Africa,Non specificata,civmil,2005-07-31 00:00:00,2005-11-25 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-INDUS,Pakistan,Asia,Non specificata,civmil,2005-11-20 00:00:00,2006-02-01 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-EUPAT,Macedonia,Balkans,Non specificata,civmil,2005-12-14 00:00:00,2005-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-NATO HQ Belgrado,Serbia,Balkans,Non specificata,civmil,2006-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-EUPT,Kosovo,Balkans,Non specificata,civmil,2006-04-30 00:00:00,2008-06-14 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUFOR RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2006-06-12 00:00:00,2006-12-15 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUSEC RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2007-05-21 00:00:00,2009-06-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUPOL Afghanistan,Afghanistan,Asia,Non specificata,civmil,2007-06-15 00:00:00,2016-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-AMISOM,Somalia,Sub-Saharan Africa,Non specificata,civmil,2007-07-01 00:00:00,2007-12-31 00:00:00,100.0,50.0,150,25000000,UN,Troops
-EUPOL RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2007-07-01 00:00:00,2015-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUFOR Ciad,Chad,Sub-Saharan Africa,Non specificata,civmil,2007-09-25 00:00:00,2009-06-30 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUMM Georgia,Georgia,Rest of Europe,Non specificata,civmil,2008-09-21 00:00:00,2011-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Atalanta,Somalia,Sub-Saharan Africa,Non specificata,civmil,2009-03-07 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Ocean Shield,Indian Ocean,Sub-Saharan Africa,Non specificata,civmil,2009-08-17 00:00:00,2016-12-15 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-White Crane,Haiti,Americas,Non specificata,civmil,2010-01-13 00:00:00,2010-04-17 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Caravella,Haiti,Americas,Non specificata,civmil,2010-04-22 00:00:00,2011-01-02 00:00:00,100.0,50.0,150,25000000,UN,Troops
-Unified Protector,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2011-03-31 00:00:00,2011-10-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Cyrene,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2011-04-28 00:00:00,2013-09-06 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-MICCD,Malta,Rest of Europe,Non specificata,civmil,2011-12-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-UNSMIS,Syria,Middle East,Non specificata,civmil,2012-05-15 00:00:00,2012-07-22 00:00:00,100.0,50.0,150,25000000,UN,Troops
-MIADIT Palestine,Palestine,Middle East,Non specificata,civmil,2012-07-12 00:00:00,2023-10-14 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-EUDEL,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2013-05-24 00:00:00,2020-09-20 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EUDEL Libya,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2013-05-24 00:00:00,2023-12-04 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Cieli Ghiacciati,Iceland,Rest of Europe,Non specificata,civmil,2013-06-13 00:00:00,2013-07-09 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Base Gibuti,Djibouti,Sub-Saharan Africa,Non specificata,civmil,2014-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-EUFOR RCA,Central African Republic,Sub-Saharan Africa,Non specificata,civmil,2014-06-15 00:00:00,2015-03-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-EMOCHM,Mozambique,Sub-Saharan Africa,Non specificata,civmil,2014-08-24 00:00:00,2015-03-15 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Prima Parthica,"Iraq, Kuwait",Middle East,Non specificata,civmil,2014-10-03 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-Frontiera Baltica,Lithuania,Rest of Europe,Non specificata,civmil,2015-01-01 00:00:00,2015-08-28 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Resolute Support,Afghanistan,Asia,Non specificata,civmil,2015-01-01 00:00:00,2021-09-01 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-EUNAVFOR Med - Sophia,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2015-05-18 00:00:00,2020-03-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Enhanced Forward Presence - Baltic Guardian Lettonia,Latvia,Rest of Europe,Non specificata,civmil,2016-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Ippocrate,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2016-09-14 00:00:00,2017-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Enhanced Air Policing Bulgaria,Bulgaria,Rest of Europe,Non specificata,civmil,2017-01-01 00:00:00,2017-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Northern Ice,Iceland,Rest of Europe,Non specificata,civmil,2017-03-23 00:00:00,2017-04-14 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Active Fence,Turkey,Rest of Europe,Non specificata,civmil,2018-01-01 00:00:00,2019-11-15 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Baltic Eagle,Esthonia,Rest of Europe,Non specificata,civmil,2018-01-01 00:00:00,2018-05-03 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-MISIN Niger,Niger,Sub-Saharan Africa,Non specificata,civmil,2018-01-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-Joint Operation Themis,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2018-02-01 00:00:00,2020-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Northern Stork,Iceland,Rest of Europe,Non specificata,civmil,2018-09-13 00:00:00,2018-10-03 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Enhanced Air Policing Romania,Romania,Rest of Europe,Non specificata,civmil,2019-01-01 00:00:00,2019-08-08 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-MIADIT Somalia,Somalia,Sub-Saharan Africa,Non specificata,civmil,2019-01-21 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
-NATO Standing Naval Forces Med,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2019-06-01 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Northern Lightning I,Iceland,Rest of Europe,Non specificata,civmil,2019-09-27 00:00:00,2019-10-24 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-EUNAVFOR Med - Irini,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2020-03-31 00:00:00,2024-12-31 00:00:00,100.0,50.0,150,25000000,EU,Troops
-Northern Lightning II,Iceland,Rest of Europe,Non specificata,civmil,2020-06-07 00:00:00,2020-07-29 00:00:00,100.0,50.0,150,25000000,NATO,Troops
-Task Force Takuba,Mali,Sub-Saharan Africa,Non specificata,civmil,2020-06-16 00:00:00,2022-07-01 00:00:00,100.0,50.0,150,25000000,Multinational,Troops
-TASK Force CEDRI,Lebanon,Middle East,Non specificata,civmil,2020-08-15 00:00:00,2020-11-21 00:00:00,100.0,50.0,150,25000000,Bilateral,Troops
+nome,paese,regione,sub_regione,tipo_partecipazione,data_inizio,data_fine,personale_militare,personale_civile,personale_totale,costo_totale,tipo_missione,commitment,is_active
+UNIFIL,Libano,Medio Oriente,Levante,civmil,1978-03-19,2025-12-31,800.0,400.0,1200,150000000,ONU,Troops,True
+EUTM Mali,Mali,Africa,Africa Occidentale,mil,2013-02-18,2025-12-31,200.0,50.0,250,45000000,UE,Head of Mission,False
+KFOR,Kosovo,Europa,Balcani,mil,1999-06-12,2025-12-31,1148.0,700.0,1848,150520083,NATO,Troops,False
+MINURSO,Sahara Occidentale,Africa,Africa Settentrionale,civ,1991-04-29,2025-12-31,5.0,10.0,15,5000000,ONU,Head of Mission,True
+EUBAM Libya,Libia,Africa,Africa Settentrionale,civmil,2013-05-22,2025-12-31,60.0,40.0,100,20000000,UE,Head of Mission,False
+MISIN,Niger,Africa,Africa Occidentale,mil,2018-07-01,2025-12-31,400.0,70.0,470,90000000,ITA,Troops,False
+ISAF,Afghanistan,Asia,Asia Centrale,mil,2001-10-07,2014-12-31,2500.0,300.0,2800,500000000,NATO,Troops,False
+EUFOR,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-02-01,2019-03-15,150.0,50.0,200,35000000,UE,Troops,False
+UNMISS,Sudan del Sud,Africa,Africa Orientale,civ,2011-07-09,2025-12-31,20.0,80.0,100,25000000,ONU,Head of Mission,False
+EUTM Somalia,Somalia,Africa,Corno d'Africa,mil,2010-04-07,2025-12-31,180.0,70.0,250,40000000,UE,Head of Mission,True
+UNPROFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1992-02-21,1995-12-20,1200.0,100.0,1300,200000000,ONU,Troops,False
+IFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1995-12-20,1996-12-20,1500.0,150.0,1650,250000000,NATO,Troops,False
+SFOR,Bosnia ed Erzegovina,Europa,Balcani,mil,1996-12-20,2004-12-02,800.0,100.0,900,120000000,NATO,Troops,False
+UNMIK,Kosovo,Europa,Balcani,civmil,1999-06-10,2008-06-15,300.0,200.0,500,80000000,ONU,Head of Mission,False
+UNMIL,Liberia,Africa,Africa Occidentale,civmil,2003-09-19,2018-03-30,150.0,100.0,250,45000000,ONU,Troops,False
+MONUC,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,1999-11-30,2010-06-30,200.0,150.0,350,60000000,ONU,Troops,False
+MONUSCO,Repubblica Democratica del Congo,Africa,Africa Centrale,civmil,2010-07-01,2025-12-31,250.0,200.0,450,75000000,ONU,Troops,False
+UNOCI,Costa d'Avorio,Africa,Africa Occidentale,civmil,2004-04-04,2017-06-30,180.0,120.0,300,55000000,ONU,Troops,False
+UNMIS,Sudan,Africa,Africa Orientale,civ,2005-03-24,2011-07-09,50.0,100.0,150,30000000,ONU,Head of Mission,False
+UNAMID,Darfur,Africa,Africa Orientale,civmil,2007-07-31,2020-12-31,300.0,250.0,550,90000000,ONU,Troops,False
+UNIKOM,Iraq-Kuwait,Medio Oriente,Golfo Persico,mil,1991-04-09,2003-10-06,50.0,30.0,80,15000000,ONU,Troops,False
+UNSCOM,Iraq,Medio Oriente,Golfo Persico,civ,1991-04-03,1999-12-17,20.0,80.0,100,25000000,ONU,Head of Mission,False
+UNMOVIC,Iraq,Medio Oriente,Golfo Persico,civ,1999-12-17,2003-03-19,15.0,85.0,100,20000000,ONU,Head of Mission,False
+UNSMIH,Haiti,America,Caraibi,civmil,1996-07-01,1997-06-30,100.0,50.0,150,25000000,ONU,Troops,False
+UNTMIH,Haiti,America,Caraibi,civmil,1997-08-01,1997-11-30,80.0,40.0,120,20000000,ONU,Troops,False
+MIPONUH,Haiti,America,Caraibi,civmil,1997-12-01,2000-03-15,90.0,60.0,150,30000000,ONU,Troops,False
+MINUSTAH,Haiti,America,Caraibi,civmil,2004-06-01,2017-10-15,200.0,150.0,350,60000000,ONU,Troops,False
+MINUJUSTH,Haiti,America,Caraibi,civmil,2017-10-16,2019-10-15,100.0,100.0,200,40000000,ONU,Troops,False
+BINUH,Haiti,America,Caraibi,civ,2019-10-16,2025-12-31,30.0,170.0,200,35000000,ONU,Head of Mission,False
+UNTAET,Timor Est,Asia,Asia Sudorientale,civmil,1999-10-25,2002-05-20,300.0,200.0,500,80000000,ONU,Head of Mission,False
+UNMISET,Timor Est,Asia,Asia Sudorientale,civmil,2002-05-20,2005-05-20,250.0,150.0,400,65000000,ONU,Troops,False
+UNMIT,Timor Est,Asia,Asia Sudorientale,civmil,2006-08-25,2012-12-31,200.0,100.0,300,50000000,ONU,Troops,False
+UNMEE,Etiopia-Eritrea,Africa,Corno d'Africa,civmil,2000-07-31,2008-07-31,150.0,100.0,250,40000000,ONU,Troops,False
+EUTM RCA,Repubblica Centrafricana,Africa,Africa Centrale,mil,2016-07-19,2025-12-31,120.0,30.0,150,30000000,UE,Head of Mission,False
+EUCAP Sahel Niger,Niger,Africa,Africa Occidentale,civ,2012-08-15,2025-12-31,15.0,85.0,100,25000000,UE,Head of Mission,False
+EUCAP Sahel Mali,Mali,Africa,Africa Occidentale,civ,2014-04-15,2025-12-31,10.0,90.0,100,20000000,UE,Head of Mission,False
+EUNAVFOR MED,Mediterraneo,Europa,Mediterraneo,mil,2015-06-22,2025-12-31,300.0,50.0,350,60000000,UE,Troops,False
+IRINI,Mediterraneo,Europa,Mediterraneo,mil,2020-03-31,2025-12-31,250.0,30.0,280,50000000,UE,Troops,False
+MINUSMA,Mali,Africa,Africa Occidentale,civmil,2013-04-25,2023-12-31,200.0,150.0,350,70000000,ONU,Troops,False
+UNSMIL,Libia,Africa,Africa Settentrionale,civ,2011-09-16,2025-12-31,25.0,175.0,200,40000000,ONU,Head of Mission,False
+UNSOS,Somalia,Africa,Corno d'Africa,civ,2013-06-03,2025-12-31,30.0,170.0,200,35000000,ONU,Head of Mission,False
+MINUSCA,Repubblica Centrafricana,Africa,Africa Centrale,civmil,2014-04-10,2025-12-31,300.0,200.0,500,80000000,ONU,Troops,False
+UNISFA,Abyei,Africa,Africa Orientale,civmil,2011-06-27,2025-12-31,100.0,50.0,150,30000000,ONU,Troops,False
+MFO,Egitto,Medio Oriente,Sinai,civmil,1982-01-01,2025-12-31,,,1200,40000000,Coalizione,Logistical Support & Advisory,True
+EUMM,Georgia,Eurasia,Caucaso,civ,2009-04-01,2025-12-31,,200.0,200,10000000,UE,Logistical Support & Advisory,False
+UNTSO,Israele,Medio Oriente,Israele,civ,1948-01-01,2025-12-31,,100.0,100,20000000,ONU,Logistical Support & Advisory,False
+UNAMA,Afghanistan,Asia,Afghanistan,civmil,2002-01-01,2021-12-31,,,10000,250000000,ONU,Logistical Support & Advisory,False
+EUAM Iraq,Iraq,Medio Oriente,Iraq,civ,2017-06-01,2025-12-31,,40.0,40,10000000,UE,Logistical Support & Advisory,False
+Operation Inherent Resolve,Iraq,Medio Oriente,Iraq-Siria,mil,2014-10-01,2025-12-31,5200.0,,5200,12000000000,Coalizione,Troops (Ground Forces),False
+NATO Mission Iraq,Iraq,Medio Oriente,Iraq,mil,2020-01-01,2025-12-31,50.0,,50,5000000,NATO,Logistical Support & Advisory,True
+UNFICYP,Cipro,Mediterraneo,Cipro,civmil,1964-01-01,2025-12-31,,,880,60000000,ONU,Logistical Support & Advisory,True
+EUTM Mozambique,Mozambico,Africa,Mozambico,civmil,2021-07-01,2025-12-31,,,200,10000000,UE,Logistical Support & Advisory,False
+UNAMI,Iraq,Medio Oriente,Iraq,civmil,2003-01-01,2025-12-31,,,1200,150000000,ONU,Logistical Support & Advisory,False
+EULEX Kosovo,Kosovo,Europa,Balcani occidentali,civmil,2008-02-01,2025-12-31,,,1600,60000000,UE,Logistical Support & Advisory,True
+UNMOGIP,India/Pakistan,Asia,India-Pakistan,civ,1949-01-01,2025-12-31,,40.0,40,8000000,ONU,Logistical Support & Advisory,True
+EUCAP Somalia,Somalia,Africa,Corno d'Africa,civ,2012-07-16,2027-02-28,,169.0,169,110000000,UE,Head of Mission,True
+EUAM Ukraine,Ucraina,Europa,Est Europa,civ,2014-12-01,2025-12-31,,300.0,300,65000000,UE,Head of Mission,False
+EUMA Armenia,Armenia,Eurasia,Caucaso,civ,2023-02-20,2027-02-19,,225.0,225,44000000,UE,Head of Mission,False
+EUPM Moldova,Moldova,Europa,Europa Orientale,civ,2023-04-24,2025-12-31,,90.0,90,20000000,UE,Head of Mission,False
+EUBAM Moldova-Ukraine,Moldova/Ucraina,Europa,Europa Orientale,civ,2005-12-01,2025-12-31,,130.0,130,30000000,UE,Head of Mission,False
+EUBAM Rafah,Palestina,Medio Oriente,Territori Palestinesi,civ,2005-11-25,2025-12-31,,80.0,80,18000000,UE,Head of Mission,True
+EUPOL COPPS,Territori Palestinesi,Medio Oriente,Palestina,civ,2006-01-01,2025-12-31,,100.0,100,20000000,UE,Head of Mission,True
+EUSDI Gulf of Guinea,Golfo di Guinea,Africa,Africa Occidentale,civmil,2023-12-01,2025-12-31,,120.0,120,30000000,UE,Advisory/Training,False
+EUNAVFOR Aspides,Mar Rosso,Africa/Asia,Mare Arabico,mil,2024-02-19,2025-12-31,180.0,,180,55000000,UE,Troops (Naval),True
+Italcon,Libano,Medio Oriente,Levant,mil,1982-08-24,1984-03-20,8200.0,0.0,8200,25000000,Bilaterale,Troops (Ground Forces),False
+MIBIL,Libano,Medio Oriente,Levant,civmil,2015-01-28,2025-12-31,100.0,50.0,150,25000000,Bilaterale,Advisory/Training,True
+MIASIT,Libia,Nord Africa,Nord Africa e Mediterraneo,civmil,2018-01-01,2025-12-31,100.0,50.0,150,25000000,Bilaterale,Logistical Support & Advisory,True
+Cooperazione tecnica Angola,Angola,Africa Sub-sahariana,Africa Australe,mil,2017-01-01,2025-12-31,50.0,0.0,50,25000000,Bilaterale,Advisory/Training,False
+EUFOR ALTHEA,Bosnia ed Erzegovina,Europa,Balcani,mil,2004-12-02,2025-12-31,600.0,100.0,700,80000000,UE,Troops,True
+MIADIT,Palestina,Medio Oriente,Territori Palestinesi,civmil,2015-01-01,2025-12-31,50.0,100.0,150,30000000,Bilaterale,Advisory/Training,False
+EUNAVFOR ATALANTA,Oceano Indiano,Africa,Corno d'Africa,mil,2008-12-08,2025-12-31,200.0,50.0,250,40000000,UE,Troops (Naval),True
+Enhanced Vigilance Activities,Slovacchia,Europa,Europa Centrale,mil,2022-01-01,2025-12-31,300.0,50.0,350,50000000,NATO,Troops,False
+Forward Land Forces,Polonia,Europa,Europa Orientale,mil,2022-01-01,2025-12-31,400.0,50.0,450,60000000,NATO,Troops,False
+Sea Guardian,Mediterraneo,Europa,Mediterraneo,mil,2016-11-09,2025-12-31,250.0,30.0,280,45000000,NATO,Troops (Naval),True
+Air Policing,Baltico,Europa,Baltico,mil,2004-01-01,2025-12-31,150.0,20.0,170,30000000,NATO,Troops (Air),False
+MPCC UE,Bruxelles,Europa,Belgio,civ,2017-06-08,2025-12-31,50.0,100.0,150,25000000,UE,Logistical Support & Advisory,False
+CRRTs UE,Varie,Europa,Varie,civ,2020-01-01,2025-12-31,30.0,70.0,100,20000000,UE,Advisory/Training,False
+NATO Air Defense System,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,5000.0,1000.0,6000,500000000,NATO,Air Defense,False
+NATO Maritime Patrol,Atlantico del Nord,Europa,Atlantico,mil,1949-04-04,1991-12-25,3000.0,500.0,3500,300000000,NATO,Maritime Patrol,False
+NATO Ground Forces Europe,Europa,Europa,Europa Centrale,mil,1949-04-04,1991-12-25,15000.0,2000.0,17000,1000000000,NATO,Ground Forces,False
+NATO Nuclear Deterrence,Europa,Europa,Europa Occidentale,mil,1949-04-04,1991-12-25,2000.0,500.0,2500,200000000,NATO,Nuclear Deterrence,False
+Operation Anchor Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,800.0,200.0,1000,50000000,NATO,Air Defense,False
+Operation Ace Guard,Turchia,Europa,Europa Orientale,mil,1990-08-15,1991-03-15,600.0,150.0,750,40000000,NATO,Air Defense,False
+Operation Desert Shield Support,Medio Oriente,Medio Oriente,Golfo Persico,mil,1990-08-07,1991-02-28,1200.0,300.0,1500,80000000,NATO,Logistical Support,False
+NATO Standing Naval Forces,Atlantico del Nord,Europa,Atlantico,mil,1968-01-01,1991-12-25,2000.0,300.0,2300,150000000,NATO,Naval Forces,False
+NATO AWACS,Europa,Europa,Europa Occidentale,mil,1982-01-01,1991-12-25,1500.0,400.0,1900,120000000,NATO,Airborne Warning,False
+NATO Rapid Reaction Force,Europa,Europa,Europa Centrale,mil,1982-01-01,1991-12-25,5000.0,800.0,5800,400000000,NATO,Rapid Reaction,False
+Mandato ONU in Somalia,Somalia,Sub-Saharan Africa,Non specificata,civmil,1950-02-12 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNEF,Egypt,Northern Africa and Meditterranean,Non specificata,civmil,1956-11-21 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNOGIL,Lebanon,Middle East,Non specificata,civmil,1958-06-19 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Intervento in Laos,Laos,Asia,Non specificata,civmil,1959-10-07 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNOC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,1960-07-11 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNYOM,Yemen,Middle East,Non specificata,civmil,1963-12-20 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+MICTM,Malta,Rest of Europe,Non specificata,civmil,1973-08-01 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+DIATM,Malta,Rest of Europe,Non specificata,civmil,1981-12-31 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Libano I,Lebanon,Middle East,Non specificata,civmil,1982-08-21 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Libano II,Lebanon,Middle East,Non specificata,civmil,1982-09-23 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Mine Mar Rosso,Egypt,Northern Africa and Meditterranean,Non specificata,civmil,1984-08-22 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+MIATM,Malta,Rest of Europe,Non specificata,civmil,1988-07-14 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+UNIIMOG,"Iraq, Iran",Middle East,Non specificata,civmil,1988-08-15 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNTAG,Namibia,Sub-Saharan Africa,Non specificata,civmil,1989-03-13 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNOCA,Afghanistan,Asia,Non specificata,civmil,1989-03-30 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Desert Shield - Golfo 2,Iraq,Middle East,Non specificata,civmil,1990-08-16 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Desert Storm - Locusta,Iraq,Middle East,Non specificata,civmil,1990-09-25 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+UNOSGI,Iraq,Middle East,Non specificata,civmil,1991-03-01 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Provide Comfort I,Iraq,Middle East,Non specificata,civmil,1991-04-20 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+EUMM Balcani,"Bosnia and Herzegovina, Croatia, Serbia, Montenegro, Albania, Macedonia",Balkans,Non specificata,civmil,1991-07-18 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Provide Comfort II,Iraq,Middle East,Non specificata,civmil,1991-07-24 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+ONUSAL,El Salvador,Americas,Non specificata,civmil,1991-07-26 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Pellicano,Albania,Balkans,Non specificata,civmil,1991-09-16 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Sharp Fence - Maritime Guard,Adriatic Sea,Balkans,Non specificata,civmil,1992-07-10 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+UNTAC,Cambodia,Asia,Non specificata,civmil,1992-07-23 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNITAF - Restore Hope - Ibis I,Somalia,Sub-Saharan Africa,Non specificata,civmil,1992-12-03 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNOMOZ,Mozambique,Sub-Saharan Africa,Non specificata,civmil,1993-02-22 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNOSOM II - Ibis II,Somalia,Sub-Saharan Africa,Non specificata,civmil,1993-05-04 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Operazione Danubio,Yugoslavia,Balkans,Non specificata,civmil,1993-05-26 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Sharp Guard,Adriatic Sea,Balkans,Non specificata,civmil,1993-06-15 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Deny Flight,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1993-06-30 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Ippocampo,Rwanda,Sub-Saharan Africa,Non specificata,civmil,1994-03-10 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+TIPH I,Palestine,Middle East,Non specificata,civmil,1994-05-08 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+United Shield,Somalia,Sub-Saharan Africa,Non specificata,civmil,1995-01-10 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UPFM,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1995-03-08 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+MINUGUA,Guatemala,Americas,Non specificata,civmil,1995-07-17 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+UNAVEM III,Angola,Sub-Saharan Africa,Non specificata,civmil,1995-08-24 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Deliberate Force,Bosnia and Herzegovina,Balkans,Non specificata,civmil,1995-09-04 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+TIPH II,Palestine,Middle East,Non specificata,civmil,1996-01-29 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Joint Forge (SFOR),Kosovo,Balkans,Non specificata,civmil,1996-12-20 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Alba,Albania,Balkans,Non specificata,civmil,1997-04-13 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+28esimo gruppo navale,Albania,Balkans,Non specificata,civmil,1997-04-15 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+MAPE,Albania,Balkans,Non specificata,civmil,1997-05-12 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+UNMIBH (IPTF),Bosnia and Herzegovina,Balkans,Non specificata,civmil,1997-05-27 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+DIE,Albania,Balkans,Non specificata,civmil,1997-10-11 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Eagle Eye,Kosovo,Balkans,Non specificata,civmil,1998-11-27 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Joint Guarantor,Macedonia,Balkans,Non specificata,civmil,1998-12-09 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Allied Force,Kosovo,Balkans,Non specificata,civmil,1999-03-24 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Allied Harbour,Albania,Balkans,Non specificata,civmil,1999-04-11 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Allied Harvest,Adriatic Sea,Balkans,Non specificata,civmil,1999-05-11 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+KFOR - Joint Enterprise,Kosovo,Balkans,Non specificata,civmil,1999-06-13 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,True
+INTERFET,East Timor,Asia,Non specificata,civmil,1999-09-20 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Albit,Albania,Balkans,Non specificata,civmil,2000-03-16 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Essential Harvest,Macedonia,Balkans,Non specificata,civmil,2001-08-27 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Amber Fox,Macedonia,Balkans,Non specificata,civmil,2001-10-05 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Active Endeavour,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2001-10-26 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Enduring Freedom - Nibbio,Afghanistan,Asia,Non specificata,civmil,2001-11-18 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Processo Pace Sudan,Sudan,Sub-Saharan Africa,Non specificata,civmil,2002-04-01 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+NATO HQ Tirana,Albania,Balkans,Non specificata,civmil,2002-06-17 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+NATO HQ Skopje,Macedonia,Balkans,Non specificata,civmil,2002-06-17 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Allied Harmony,Macedonia,Balkans,Non specificata,civmil,2002-12-16 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+EUPM,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2003-01-01 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EU Concordia,Macedonia,Balkans,Non specificata,civmil,2003-03-31 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Antica Babilonia,Iraq,Middle East,Non specificata,civmil,2003-05-28 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+Artemis,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2003-06-12 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUPOL Proxima,Macedonia,Balkans,Non specificata,civmil,2003-09-16 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Baltic Air Policing,"Estonia, Latvia, Lithuania",Rest of Europe,Non specificata,civmil,2004-03-30 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+NTM I,Iraq,Middle East,Non specificata,civmil,2004-08-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+UNOWA,Morocco,Northern Africa and Meditterranean,Non specificata,civmil,2004-10-01 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+EU AMIS II Sudan,Sudan,Sub-Saharan Africa,Non specificata,civmil,2004-10-20 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+NATO HQ Sarajevo,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2004-12-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,True
+Althea,Bosnia and Herzegovina,Balkans,Non specificata,civmil,2004-12-02 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUPOL Kinshasa,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2005-01-01 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Mare Sicuro,Somalia,Sub-Saharan Africa,Non specificata,civmil,2005-07-31 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+INDUS,Pakistan,Asia,Non specificata,civmil,2005-11-20 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+EUPAT,Macedonia,Balkans,Non specificata,civmil,2005-12-14 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+NATO HQ Belgrado,Serbia,Balkans,Non specificata,civmil,2006-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+EUPT,Kosovo,Balkans,Non specificata,civmil,2006-04-30 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUFOR RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2006-06-12 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUSEC RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2007-05-21 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUPOL Afghanistan,Afghanistan,Asia,Non specificata,civmil,2007-06-15 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+AMISOM,Somalia,Sub-Saharan Africa,Non specificata,civmil,2007-07-01 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+EUPOL RDC,DR Congo,Sub-Saharan Africa,Non specificata,civmil,2007-07-01 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUFOR Ciad,Chad,Sub-Saharan Africa,Non specificata,civmil,2007-09-25 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUMM Georgia,Georgia,Rest of Europe,Non specificata,civmil,2008-09-21 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Atalanta,Somalia,Sub-Saharan Africa,Non specificata,civmil,2009-03-07 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Ocean Shield,Indian Ocean,Sub-Saharan Africa,Non specificata,civmil,2009-08-17 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+White Crane,Haiti,Americas,Non specificata,civmil,2010-01-13 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Caravella,Haiti,Americas,Non specificata,civmil,2010-04-22 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+Unified Protector,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2011-03-31 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Cyrene,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2011-04-28 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+MICCD,Malta,Rest of Europe,Non specificata,civmil,2011-12-01 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,True
+UNSMIS,Syria,Middle East,Non specificata,civmil,2012-05-15 00:00:00,,100.0,50.0,150,25000000,UN,Troops,False
+MIADIT Palestine,Palestine,Middle East,Non specificata,civmil,2012-07-12 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+EUDEL,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2013-05-24 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EUDEL Libya,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2013-05-24 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Cieli Ghiacciati,Iceland,Rest of Europe,Non specificata,civmil,2013-06-13 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Base Gibuti,Djibouti,Sub-Saharan Africa,Non specificata,civmil,2014-01-01 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+EUFOR RCA,Central African Republic,Sub-Saharan Africa,Non specificata,civmil,2014-06-15 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+EMOCHM,Mozambique,Sub-Saharan Africa,Non specificata,civmil,2014-08-24 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Prima Parthica,"Iraq, Kuwait",Middle East,Non specificata,civmil,2014-10-03 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,True
+Frontiera Baltica,Lithuania,Rest of Europe,Non specificata,civmil,2015-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Resolute Support,Afghanistan,Asia,Non specificata,civmil,2015-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+EUNAVFOR Med - Sophia,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2015-05-18 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Enhanced Forward Presence - Baltic Guardian Lettonia,Latvia,Rest of Europe,Non specificata,civmil,2016-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,True
+Ippocrate,Libya,Northern Africa and Meditterranean,Non specificata,civmil,2016-09-14 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+Enhanced Air Policing Bulgaria,Bulgaria,Rest of Europe,Non specificata,civmil,2017-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Northern Ice,Iceland,Rest of Europe,Non specificata,civmil,2017-03-23 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Active Fence,Turkey,Rest of Europe,Non specificata,civmil,2018-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Baltic Eagle,Esthonia,Rest of Europe,Non specificata,civmil,2018-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,True
+MISIN Niger,Niger,Sub-Saharan Africa,Non specificata,civmil,2018-01-01 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,True
+Joint Operation Themis,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2018-02-01 00:00:00,,100.0,50.0,150,25000000,EU,Troops,False
+Northern Stork,Iceland,Rest of Europe,Non specificata,civmil,2018-09-13 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Enhanced Air Policing Romania,Romania,Rest of Europe,Non specificata,civmil,2019-01-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+MIADIT Somalia,Somalia,Sub-Saharan Africa,Non specificata,civmil,2019-01-21 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,True
+NATO Standing Naval Forces Med,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2019-06-01 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,True
+Northern Lightning I,Iceland,Rest of Europe,Non specificata,civmil,2019-09-27 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+EUNAVFOR Med - Irini,Mediterranean Sea,Northern Africa and Meditterranean,Non specificata,civmil,2020-03-31 00:00:00,,100.0,50.0,150,25000000,EU,Troops,True
+Northern Lightning II,Iceland,Rest of Europe,Non specificata,civmil,2020-06-07 00:00:00,,100.0,50.0,150,25000000,NATO,Troops,False
+Task Force Takuba,Mali,Sub-Saharan Africa,Non specificata,civmil,2020-06-16 00:00:00,,100.0,50.0,150,25000000,Multinational,Troops,False
+TASK Force CEDRI,Lebanon,Middle East,Non specificata,civmil,2020-08-15 00:00:00,,100.0,50.0,150,25000000,Bilateral,Troops,False
+EULEX,Kosovo,Europa,Balcani,civ,2008-12-09,2027-12-31,0.0,15.0,15,8000000,UE,Logistical Support & Advisory,False
+MTC4L,Libano,Medio Oriente,Levante,mil,2006-08-01,2027-12-31,50.0,10.0,60,15000000,Bilateral,Logistical Support & Advisory,True
+EMASOH,Stretto di Hormuz,Medio Oriente,Golfo Persico,mil,2020-01-20,2027-12-31,30.0,5.0,35,12000000,UE,Naval Forces,True
+EUPOL COPPS,Cisgiordania,Medio Oriente,Levante,civ,2006-01-01,2027-12-31,0.0,12.0,12,8000000,UE,Logistical Support & Advisory,True
+EUMAM Mozambico,Mozambico,Africa,Africa Australe,mil,2021-10-12,2027-12-31,15.0,5.0,20,10000000,UE,Head of Mission,True
+Operazione LEVANTE,Mediterraneo Orientale,Medio Oriente,Mediterraneo,mil,2020-09-01,2027-12-31,200.0,20.0,220,45000000,Bilateral,Naval Forces,True
+CTF153,Mar Rosso,Medio Oriente,Mar Rosso,mil,2022-04-17,2027-12-31,50.0,5.0,55,20000000,Multinational,Naval Forces,True
+Mediterraneo Sicuro,Mediterraneo,Europa,Mediterraneo,mil,2015-05-04,2027-12-31,400.0,50.0,450,100000000,Bilateral,Naval Forces,True
+NATO HQ Sarajevo,Bosnia ed Erzegovina,Europa,Balcani,mil,2004-12-02,2027-12-31,10.0,5.0,15,5000000,NATO,Logistical Support & Advisory,True
+NATO MLNB,Serbia,Europa,Balcani,mil,2006-09-01,2027-12-31,5.0,3.0,8,3000000,NATO,Logistical Support & Advisory,True
+BMIS Gibuti,Gibuti,Africa,Corno d'Africa,mil,2013-01-01,2027-12-31,150.0,30.0,180,50000000,Bilateral,Logistical Support & Advisory,True
+Enhanced Vigilance Activity Bulgaria,Bulgaria,Europa,Balcani,mil,2022-01-01,2027-12-31,240.0,20.0,260,45000000,NATO,Troops,True
+Enhanced Vigilance Activity Hungary,Ungheria,Europa,Europa Centrale,mil,2022-01-01,2027-12-31,200.0,15.0,215,40000000,NATO,Troops,True

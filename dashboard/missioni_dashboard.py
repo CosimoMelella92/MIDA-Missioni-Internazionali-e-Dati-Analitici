@@ -119,15 +119,11 @@ st.markdown("""
 def load_data():
     """Carica e prepara i dati delle missioni"""
     try:
-        # Prova prima il file aggiornato con missioni NATO storiche
-        try:
-            df = pd.read_csv('data/processed/missioni_complete_updated.csv')
-        except:
-            # Fallback al file originale
-            df = pd.read_csv('data/processed/missioni_complete.csv')
+        # Carica SOLO il file principale con campo is_active
+        df = pd.read_csv('data/processed/missioni_complete.csv')
         
-        # Integra nuovi dati Excel se presenti
-        df = integrate_excel_data(df)
+        # NON integrare dati Excel per preservare il campo is_active
+        # df = integrate_excel_data(df)
         
     except:
         try:
@@ -184,6 +180,13 @@ def load_data():
             if (current_date - row['data_inizio']).days < 1825:  # 5 anni
                 # Estendi fino al 2025 per le missioni attive
                 df.at[idx, 'data_fine'] = pd.Timestamp('2025-12-31')
+    
+    # Assicurati che la colonna is_active esista
+    if 'is_active' not in df.columns:
+        # Inizializza a False per tutte le missioni
+        df['is_active'] = False
+        # Nota: il campo is_active dovrebbe essere già presente nel CSV principale
+        # Se manca, significa che sono stati integrati dati Excel senza questo campo
     
     # Rimuovi colonne duplicate se presenti
     df = df.loc[:, ~df.columns.duplicated()]
@@ -253,6 +256,10 @@ def normalize_regions(df):
 
 def integrate_excel_data(df_existing):
     """Integra i dati dai nuovi file Excel evitando duplicati e normalizzando organizzazioni"""
+    # TEMPORANEAMENTE DISABILITATO: L'integrazione Excel sovrascrive il campo is_active
+    # Ritorna il dataframe esistente senza modifiche
+    return df_existing
+    
     try:
         # Carica i nuovi dati Excel
         missions_df = pd.read_excel('data/raw/Excel/missions.xlsx')
@@ -287,7 +294,8 @@ def integrate_excel_data(df_existing):
                     'personale_totale': 150,    # Valore di default
                     'costo_totale': 25000000,   # Valore di default
                     'tipo_missione': normalized_org,
-                    'commitment': 'Troops'  # Default
+                    'commitment': 'Troops',  # Default
+                    'is_active': False  # Le missioni da Excel sono storiche, non attive
                 }
                 new_missions.append(new_mission)
         
@@ -1026,7 +1034,7 @@ def main():
     df['data_inizio'] = pd.to_datetime(df['data_inizio'], errors='coerce')
     df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce')
     st.sidebar.write(f"Missioni con data_inizio non valida: {df['data_inizio'].isna().sum()}")
-    st.sidebar.write(f"Missioni con data_fine non valida: {df['data_fine'].isna().sum()}")
+    st.sidebar.write(f"Missioni attive: {(df['is_active'] == True).sum()}")
     
     # Dati geografici non più necessari con le nuove mappe
     # geo_df = load_geo_data()
@@ -1048,7 +1056,7 @@ def main():
     for nome in df['nome'].unique():
         st.sidebar.write(f'- {nome}')
     # Missioni con date non valide
-    invalid_dates = df[df['data_inizio'].isna() | df['data_fine'].isna()]
+    invalid_dates = df[df['data_inizio'].isna() | (df['is_active'] == True)]
     if not invalid_dates.empty:
         st.sidebar.write('⚠️ Missioni con date non valide:')
         for _, row in invalid_dates.iterrows():
@@ -1131,14 +1139,14 @@ def main():
         st.metric("💰 Costo Totale", format_currency(costo_totale))
     
     with col4:
-        # Calcolo corretto delle missioni attive
-        current_date = pd.Timestamp.now()
-        missioni_attive = len(df_filtered[df_filtered['data_fine'] > current_date])
+        # Calcolo missioni attive usando il campo is_active (allineato con sito Ministero Difesa)
+        missioni_attive = len(df_filtered[df_filtered['is_active'] == True])
         st.metric("🟢 Missioni Attive", missioni_attive)
     
     # Statistiche aggiuntive
     col1, col2, col3, col4 = st.columns(4)
     
+# ... (rest of the code remains the same)
     with col1:
         personale_militare = df_filtered['personale_militare'].sum()
         st.metric("🎖️ Personale Militare", f"{personale_militare:,.0f}")
