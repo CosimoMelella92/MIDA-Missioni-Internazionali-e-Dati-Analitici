@@ -486,11 +486,14 @@ class ExcelAggregator:
         "unmogip": {"personale_totale": 7, "personale_militare": 7, "paese": "India/Pakistan"},
         "mfo": {"personale_totale": 75, "personale_militare": 75, "paese": "Egitto",
                 "tipo_missione": "Multinational"},
+        "untso": {"paese": "Israele", "personale_totale": 7, "personale_militare": 7},
+        "eutm somalia": {"personale_totale": 250, "personale_militare": 250, "paese": "Somalia"},
         "irini": {"nome": "EUNAVFOR MED Irini", "paese": "Mediterraneo",
                   "personale_totale": 350, "personale_militare": 350, "tipo_missione": "UE"},
         # ── Costi sproporzionati: dati coalizione, non quota italiana ──
         "operation inherent resolve": {"costo_totale": 150_000_000},  # quota ITA ~150M (non 12B coalizione)
         "nato ground forces europe": {"costo_totale": 80_000_000},    # quota ITA ~80M (non 1B NATO totale)
+        "ctf153 mar rosso": {"paese": "Mar Rosso"},
     }
 
     # ── Date mancanti: fonti difesa.it, analisidifesa.it, EU CSDP factsheets ──
@@ -504,7 +507,6 @@ class ExcelAggregator:
         "frontiera baltica": {"data_inizio": "2014-09-01", "data_fine": "2015-03-31"},
         "enhanced forward presence - baltic guardian lettonia": {"data_inizio": "2017-06-19"},
         "enhanced air policing bulgaria": {"data_inizio": "2014-09-01", "data_fine": "2022-12-31"},
-        "enhanced air policing romania": {"data_inizio": "2014-05-01"},
         "northern ice": {"data_inizio": "2014-10-01", "data_fine": "2014-12-31"},
         "northern stork": {"data_inizio": "2015-10-01", "data_fine": "2015-12-31"},
         "northern lightning i": {"data_inizio": "2016-04-01", "data_fine": "2016-06-30"},
@@ -534,7 +536,7 @@ class ExcelAggregator:
         "ctf153 mar rosso": {"data_inizio": "2022-04-17"},
         # EU CSDP (fonti: EU factsheets, eeas.europa.eu)
         "aceh mission- amm": {"data_inizio": "2005-09-15", "data_fine": "2006-12-15", "paese": "Indonesia"},
-        "eu advisory mission in iraq": {"data_inizio": "2017-10-16", "paese": "Iraq"},
+        "eu advisory mission in iraq": {"data_inizio": "2017-10-16", "data_fine": "2024-06-30", "paese": "Iraq"},  # EUAM Iraq, conclusa
         "eu aviation security south sudan (euavsec south sudan)": {"data_inizio": "2012-06-18", "data_fine": "2014-01-17", "paese": "Sud Sudan"},
         "eu capacity building sahel niger (eucap niger)": {"data_inizio": "2012-08-16", "data_fine": "2024-06-30", "paese": "Niger"},
         "eu integrated rule of law mission iraq (eujust lex-iraq)": {"data_inizio": "2005-07-01", "data_fine": "2013-12-31", "paese": "Iraq"},
@@ -553,7 +555,7 @@ class ExcelAggregator:
         "eudel": {"data_inizio": "2011-05-22", "data_fine": "2012-01-31", "paese": "Libia"},
         "eudel libya": {"data_inizio": "2013-05-22", "data_fine": "2015-02-28", "paese": "Libia"},
         "eufor rca": {"data_inizio": "2014-04-01", "data_fine": "2015-03-15", "paese": "Repubblica Centrafricana"},
-        "joint operation themis": {"data_inizio": "2018-02-01", "paese": "Mediterraneo"},
+        "joint operation themis": {"data_inizio": "2018-02-01", "data_fine": "2023-12-31", "paese": "Mediterraneo"},  # Frontex/UE, conclusa
         "eunavfor med - sophia": {"data_inizio": "2015-06-22", "data_fine": "2020-03-31"},
         "eumam ucraina": {"data_inizio": "2022-11-15"},
         # ── Missioni storiche (pre-2010) — fonti: difesa.it archivio, Wikipedia, EU CSDP ──
@@ -595,7 +597,7 @@ class ExcelAggregator:
         "ntm i": {"data_inizio": "2004-08-14", "data_fine": "2011-12-31"},  # NATO Training Mission Iraq
         "indus": {"data_inizio": "2005-10-08", "data_fine": "2006-02-01"},  # Pakistan earthquake
         "ocean shield": {"data_inizio": "2009-08-17", "data_fine": "2016-12-15"},  # Anti-piracy
-        "baltic air policing": {"data_inizio": "2004-03-29"},  # ongoing rotational
+        "baltic air policing": {"data_inizio": "2004-03-29", "data_fine": "2023-12-31"},  # NATO, rotazione conclusa
         # Multinazionali storiche
         "enduring freedom - nibbio": {"data_inizio": "2001-11-18", "data_fine": "2014-12-28"},  # Afghanistan
         "antica babilonia": {"data_inizio": "2003-07-15", "data_fine": "2006-12-01"},  # Iraq
@@ -608,7 +610,7 @@ class ExcelAggregator:
         "eupol afghanistan": {"data_inizio": "2007-06-15", "data_fine": "2016-12-31"},
         "eupol rdc": {"data_inizio": "2007-07-01", "data_fine": "2014-09-30"},
         "eufor ciad": {"data_inizio": "2008-01-28", "data_fine": "2009-03-15"},  # Chad/RCA
-        "eumm georgia": {"data_inizio": "2008-10-01"},  # ongoing
+        "eumm georgia": {"data_inizio": "2008-10-01", "data_fine": "2025-12-31"},  # civile UE, non in difesa.it ops militari
         "eu amis ii sudan": {"data_inizio": "2005-07-18", "data_fine": "2007-12-31"},
         "artemis": {"data_inizio": "2003-06-12", "data_fine": "2003-09-01"},  # DRC
         "mare sicuro": {"data_inizio": "2015-03-12"},  # ongoing national op
@@ -663,6 +665,9 @@ class ExcelAggregator:
         "miadit",                           # duplicato di MIADIT Palestine (entrambi diventano MIADIT Palestina)
         "miadit palestine",                 # duplicato di MIADIT (69) che ha dati migliori
         "base gibuti",                      # duplicato: viene rinominato BMIS Gibuti ma c'è anche l'iniettato
+        "althea",                              # duplicato di EUFOR ALTHEA
+        "nato hq belgrado",                    # duplicato di NATO HQ Sarajevo (rinominato nel 2010)
+        "combined task force 153",             # duplicato di CTF153 Mar Rosso (iniettato)
     ]
 
     def _apply_official_corrections(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -849,6 +854,7 @@ class ExcelAggregator:
         "miadit",
         "mfo",
         "euma armenia",
+        "untso",
     ]
 
     # Keyword che richiedono match come parola intera (evita 'mfo' in 'comfort')

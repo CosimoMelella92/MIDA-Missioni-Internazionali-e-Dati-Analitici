@@ -22,8 +22,8 @@
   ![Python](https://img.shields.io/badge/Python-3.11+-3D4F1E?style=flat-square&logo=python&logoColor=white)
   ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-1B3A5C?style=flat-square&logo=streamlit&logoColor=white)
   ![Tests](https://img.shields.io/badge/Tests-188%20passing-6B8C2A?style=flat-square)
-  ![Missions](https://img.shields.io/badge/Missioni-237%20totali-8B1A1A?style=flat-square)
-  ![Active](https://img.shields.io/badge/Attive-39%20(2026)-4A5D23?style=flat-square)
+  ![Missions](https://img.shields.io/badge/Missioni-234%20totali-8B1A1A?style=flat-square)
+  ![Active](https://img.shields.io/badge/Attive-40%20(2026)-4A5D23?style=flat-square)
 </div>
 
 ---
@@ -34,16 +34,16 @@
 
 ## Panoramica
 
-MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset unificato di **237 missioni** dopo deduplicazione automatica, correzione dati vs fonti ufficiali ([difesa.it](https://www.difesa.it/operazionimilitari/)) e validazione Pydantic.
+MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset unificato di **234 missioni** dopo deduplicazione automatica, correzione dati vs fonti ufficiali ([difesa.it](https://www.difesa.it/operazionimilitari/)) e validazione Pydantic.
 
 | Metrica | Valore |
 |---------|--------|
 | Fonti aggregate | 5 (384 righe raw) |
-| Missioni dopo pipeline | **237** |
-| Missioni attive (2026) | **39** (verificate vs difesa.it) |
+| Missioni dopo pipeline | **234** |
+| Missioni attive (2026) | **40** (verificate vs difesa.it + analisidifesa.it) |
 | Personale totale | ~8.800 unità |
 | Paesi coinvolti | 75 |
-| Missioni con data | **237/237** (0 mancanti) |
+| Missioni con data | **234/234** (0 mancanti) |
 | Errori validazione | 0 |
 | Test | 188 passing |
 
@@ -120,7 +120,7 @@ graph LR
     A[5 fonti<br/>384 righe] --> B[Load]
     B --> C[Normalize<br/>312 righe]
     C --> D[Dedup<br/>273 righe]
-    D --> E[Enrich + Correzioni<br/>237 righe]
+    D --> E[Enrich + Correzioni<br/>234 righe]
     E --> F[Validate<br/>Pydantic 0 errori]
     F --> G[Save<br/>18 colonne]
     G --> H[Dashboard<br/>Streamlit]
@@ -131,7 +131,7 @@ graph LR
 1. **Load** — Carica fonti da `config/sources.yaml`, applica mapping colonne
 2. **Normalize** — Nomi missione, organizzazioni (ONU/NATO/UE), regioni (6 macro), commitment
 3. **Dedup** — Chiave = nome normalizzato strict. Vince la fonte con più dati
-4. **Enrich** — Correzioni ufficiali difesa.it (nomi, paesi, personale, costi), cross-reference 38 missioni attive, iniezione missioni mancanti
+4. **Enrich** — Correzioni ufficiali difesa.it (nomi, paesi, personale, costi), cross-reference 40 missioni attive, iniezione missioni mancanti
 5. **Validate** — Ogni record passa per il modello Pydantic `Mission`
 6. **Save** — 18 colonne canoniche in `data/processed/missioni_complete.csv`
 
