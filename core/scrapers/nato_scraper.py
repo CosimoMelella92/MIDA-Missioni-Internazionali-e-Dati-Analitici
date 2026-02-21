@@ -1,202 +1,103 @@
-import pandas as pd
-from bs4 import BeautifulSoup
-import re
-from datetime import datetime
-from typing import Dict, List
-import logging
-from .document_scraper import DocumentScraper
-import json
-import requests
-import yaml
-import os
-from urllib.parse import urljoin
+"""Scraper per NATO — nato.int"""
 
-class NatoScraper(DocumentScraper):
-    """Scraper per estrarre dati dal sito della NATO sulle missioni internazionali."""
-    
-    def __init__(self):
-        super().__init__()
-        self.fonte = "NATO"
-        
-        # Carica la configurazione
-        with open('config/config.yaml', 'r', encoding='utf-8') as f:
-            config = yaml.safe_load(f)
-            
-        # Estrai le configurazioni specifiche per NATO
-        nato_config = config['fonti_dati']['nato']
-        self.url_base = nato_config['url_base']
-        self.document_urls = nato_config['document_urls']
-        self.sections = nato_config['sections']
-        self.languages = nato_config['languages']
-        
-        # Pattern regex per l'estrazione dei dati in inglese e francese
-        self.patterns = {
-            'en': {
-                'nome_missione': r'Operation\s*:\s*([^\n]+)',
-                'paese': r'Location\s*:\s*([^\n]+)',
-                'data_inizio': r'Start\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
-                'data_fine': r'End\s*Date\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
-                'personale_totale': r'Total\s*Personnel\s*:\s*(\d+)',
-                'costo_totale': r'Total\s*Cost\s*:\s*€\s*([\d,.]+)',
-                'tipo_missione': r'Operation\s*Type\s*:\s*([^\n]+)',
-                'mandato': r'Mandate\s*:\s*([^\n]+)'
-            },
-            'fr': {
-                'nome_missione': r'Opération\s*:\s*([^\n]+)',
-                'paese': r'Lieu\s*:\s*([^\n]+)',
-                'data_inizio': r'Date\s*de\s*début\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
-                'data_fine': r'Date\s*de\s*fin\s*:\s*(\d{1,2}/\d{1,2}/\d{4})',
-                'personale_totale': r'Personnel\s*total\s*:\s*(\d+)',
-                'costo_totale': r'Coût\s*total\s*:\s*€\s*([\d,.]+)',
-                'tipo_missione': r'Type\s*d\'opération\s*:\s*([^\n]+)',
-                'mandato': r'Mandat\s*:\s*([^\n]+)'
-            }
-        }
-        
-        self.logger = logging.getLogger(__name__)
-        
-    def estrai_dati(self) -> List[Dict]:
-        """
-        Estrae i dati dalle fonti NATO in inglese e francese
-        """
-        self.logger.info("Inizio estrazione dati NATO")
-        dati = []
-        
+import re
+from typing import Dict, List, Optional
+from bs4 import BeautifulSoup
+
+from .base_scraper import BaseScraper
+
+
+class NATOScraper(BaseScraper):
+    """Estrae dati sulle operazioni NATO."""
+
+    fonte = "nato"
+
+    URLS = [
+        "https://www.nato.int/cps/en/natohq/topics_52060.htm",
+        "https://www.nato.int/cps/en/natohq/topics_37750.htm",
+    ]
+
+    def scrape(self) -> List[Dict]:
+        records: List[Dict] = []
+        for url in self.URLS:
+            is_past = "37750" in url
+            page_records = self._scrape_page(url, concluded=is_past)
+            records.extend(page_records)
+        self.logger.info(f"NATO: {len(records)} operazioni estratte")
+        return records
+
+    def _scrape_page(self, url: str, concluded: bool = False) -> List[Dict]:
+        resp = self.get(url)
+        if not resp:
+            return []
+        soup = BeautifulSoup(resp.text, "html.parser")
+        records = []
+
+        # NATO usa blocchi con titoli per ogni operazione
+        for heading in soup.find_all(["h2", "h3", "h4"]):
+            text = heading.get_text(strip=True)
+            if len(text) < 3:
+                continue
+
+            # Filtra solo heading che sembrano nomi di operazioni
+            if not re.search(
+                r"(operation|mission|KFOR|ISAF|Resolute|Sea Guardian|"
+                r"Active Endeavour|Unified Protector|Allied|Eagle|Ocean Shield|"
+                r"Essential Harvest|Amber Fox|Allied Harmony)",
+                text, re.IGNORECASE,
+            ):
+                continue
+
+            # Raccogli contesto dai siblings
+            context = self._get_sibling_text(heading, max_siblings=5)
+            full = text + " " + context
+
+            paese = self._extract(r"(?:in|deployed to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)", full)
+            year_start = self._extract(r"(?:since|from|launched|began)\s*:?\s*(\d{4})", full)
+            year_end = self._extract(r"(?:ended|concluded|terminated)\s*:?\s*(\d{4})", full) if concluded else None
+            personale = self._extract(r"([\d,]+)\s*(?:troops|personnel|soldiers)", full)
+
+            href = ""
+            link_el = heading.find("a", href=True)
+            if link_el:
+                h = link_el["href"]
+                href = h if h.startswith("http") else f"https://www.nato.int{h}"
+
+            records.append({
+                "nome": text.strip(),
+                "paese": (paese or "").strip(),
+                "data_inizio": f"01/01/{year_start}" if year_start else "",
+                "data_fine": f"31/12/{year_end}" if year_end else "",
+                "personale_totale": self._parse_int(personale),
+                "costo_totale": 0.0,
+                "tipo_missione": "NATO",
+                "mandato": "",
+                "link_documento": href or url,
+            })
+
+        return records
+
+    @staticmethod
+    def _get_sibling_text(el, max_siblings: int = 5) -> str:
+        parts = []
+        sib = el.find_next_sibling()
+        for _ in range(max_siblings):
+            if sib is None or sib.name in ("h1", "h2", "h3"):
+                break
+            parts.append(sib.get_text(" ", strip=True))
+            sib = sib.find_next_sibling()
+        return " ".join(parts)
+
+    @staticmethod
+    def _extract(pattern: str, text: str) -> Optional[str]:
+        m = re.search(pattern, text, re.IGNORECASE)
+        return m.group(1) if m else None
+
+    @staticmethod
+    def _parse_int(s: Optional[str]) -> int:
+        if not s:
+            return 0
         try:
-            # Estrai dati dai documenti per ogni lingua
-            for lang in self.languages:
-                for url in self.document_urls:
-                    if f"/{lang}/" in url:
-                        try:
-                            testo = self._scarica_documento(url)
-                            if testo:
-                                dati_documento = self._estrai_dati_da_testo(testo, self.patterns[lang])
-                                for dato in dati_documento:
-                                    dato['lingua'] = lang
-                                dati.extend(dati_documento)
-                        except Exception as e:
-                            self.logger.error(f"Errore nell'estrazione dati dal documento {url}: {str(e)}")
-                    
-            # Estrai dati dalle pagine web per ogni lingua
-            for lang in self.languages:
-                for section in self.sections:
-                    try:
-                        url = urljoin(self.url_base, f"nato/{lang}/{section}")
-                        html_content = self._scarica_pagina(url)
-                        if html_content:
-                            dati_pagina = self._estrai_dati_da_html(html_content, lang)
-                            dati.extend(dati_pagina)
-                    except Exception as e:
-                        self.logger.error(f"Errore nell'estrazione dati dalla sezione {section} ({lang}): {str(e)}")
-                    
-            # Valida e pulisci i dati
-            dati_validi = []
-            for dato in dati:
-                if self.valida_dati(dato):
-                    dato_pulito = self.pulisci_dati(dato)
-                    dato_pulito['fonte'] = self.fonte
-                    dati_validi.append(dato_pulito)
-                    
-            return dati_validi
-            
-        except Exception as e:
-            self.logger.error(f"Errore durante l'estrazione dati NATO: {str(e)}")
-            raise
-        
-    def _estrai_dati_da_html(self, html_content: str, lang: str) -> List[Dict]:
-        """
-        Estrae i dati da una pagina HTML
-        """
-        dati = []
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # Trova tutte le missioni nella pagina
-        missioni = self._trova_missioni(soup)
-        
-        for missione in missioni:
-            try:
-                dati_missione = self._estrai_dati_missione(missione, lang)
-                if dati_missione:
-                    dati.append(dati_missione)
-            except Exception as e:
-                self.logger.error(f"Errore nell'estrazione dati missione: {str(e)}")
-                
-        return dati
-        
-    def _trova_missioni(self, soup: BeautifulSoup) -> List:
-        """
-        Trova tutte le missioni in una pagina
-        """
-        return soup.find_all('div', class_='mission')
-        
-    def _estrai_dati_missione(self, missione, lang: str) -> Dict:
-        """
-        Estrae i dati da una singola missione
-        """
-        dati = {
-            'nome_missione': None,
-            'paese': None,
-            'data_inizio': None,
-            'data_fine': None,
-            'personale_totale': None,
-            'costo_totale': None,
-            'tipo_missione': None,
-            'mandato': None,
-            'fonte': self.fonte,
-            'lingua': lang,
-            'ultimo_aggiornamento': None,
-            'link_documento': None
-        }
-        
-        # Estrai il nome della missione
-        nome_elem = missione.find('h2')
-        if nome_elem:
-            dati['nome_missione'] = nome_elem.text.strip()
-            
-        # Estrai il paese
-        paese_elem = missione.find('div', class_='location')
-        if paese_elem:
-            dati['paese'] = paese_elem.text.strip()
-            
-        # Estrai le date
-        date_elem = missione.find('div', class_='dates')
-        if date_elem:
-            date_text = date_elem.text.strip()
-            date_match = re.search(r'(\d{1,2}/\d{1,2}/\d{4})\s*-\s*(\d{1,2}/\d{1,2}/\d{4})', date_text)
-            if date_match:
-                dati['data_inizio'] = date_match.group(1)
-                dati['data_fine'] = date_match.group(2)
-                
-        # Estrai il personale
-        personale_elem = missione.find('div', class_='personnel')
-        if personale_elem:
-            personale_text = personale_elem.text.strip()
-            personale_match = re.search(r'(\d+)', personale_text)
-            if personale_match:
-                dati['personale_totale'] = int(personale_match.group(1))
-                
-        # Estrai il costo
-        costo_elem = missione.find('div', class_='cost')
-        if costo_elem:
-            costo_text = costo_elem.text.strip()
-            costo_match = re.search(r'€\s*([\d,.]+)', costo_text)
-            if costo_match:
-                dati['costo_totale'] = float(costo_match.group(1).replace(',', ''))
-                
-        # Estrai il tipo di missione
-        tipo_elem = missione.find('div', class_='type')
-        if tipo_elem:
-            dati['tipo_missione'] = tipo_elem.text.strip()
-            
-        # Estrai il mandato
-        mandato_elem = missione.find('div', class_='mandate')
-        if mandato_elem:
-            dati['mandato'] = mandato_elem.text.strip()
-            
-        # Estrai il link al documento
-        link_elem = missione.find('a', href=True)
-        if link_elem:
-            dati['link_documento'] = urljoin(self.url_base, link_elem['href'])
-            
-        # Rimuovi i valori None
-        return {k: v for k, v in dati.items() if v is not None} 
+            return int(re.sub(r"[^\d]", "", s))
+        except ValueError:
+            return 0

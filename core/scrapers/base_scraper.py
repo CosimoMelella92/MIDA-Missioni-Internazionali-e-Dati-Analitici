@@ -1,162 +1,141 @@
-import yaml
+"""
+Base scraper per MIDA — classe astratta con HTTP session, retry, logging, salvataggio.
+Tutti gli scrapers ereditano da qui.
+"""
+
 import logging
-import requests
 import time
 import random
+import json
+from abc import ABC, abstractmethod
 from pathlib import Path
 from datetime import datetime
+from typing import Optional, Dict, List, Any
+
+import requests
 import pandas as pd
-from typing import Dict, List, Optional, Any
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-class BaseScraper:
-    def __init__(self, config_path: str = "config/config.yaml"):
-        """Inizializza lo scraper base con la configurazione"""
-        self.config = self._carica_configurazione(config_path)
-        self.setup_logging()
-        self.session = self._setup_session()
-        
-    def _carica_configurazione(self, config_path: str) -> Dict:
-        """Carica il file di configurazione YAML"""
-        try:
-            with open(config_path, 'r', encoding='utf-8') as file:
-                return yaml.safe_load(file)
-        except Exception as e:
-            raise Exception(f"Errore nel caricamento della configurazione: {str(e)}")
+logger = logging.getLogger(__name__)
 
-    def setup_logging(self):
-        """Configura il sistema di logging"""
-        log_dir = Path(self.config['percorsi']['logs'])
-        log_dir.mkdir(parents=True, exist_ok=True)
-        
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_dir / f'scraper_{datetime.now().strftime("%Y%m%d")}.log'),
-                logging.StreamHandler()
-            ]
-        )
+# Colonne standard output di ogni scraper
+SCRAPER_COLUMNS = [
+    "nome", "paese", "data_inizio", "data_fine",
+    "personale_totale", "costo_totale", "tipo_missione",
+    "mandato", "fonte", "link_documento",
+]
+
+
+class BaseScraper(ABC):
+    """Classe base per tutti gli scrapers MIDA."""
+
+    fonte: str = "base"
+
+    def __init__(
+        self,
+        user_agent: str = "MIDA-Bot/2.0 (+https://github.com/MIDA)",
+        timeout: int = 30,
+        max_retries: int = 3,
+        delay_range: tuple[float, float] = (1.0, 3.0),
+        data_dir: str = "data",
+    ):
+        self.timeout = timeout
+        self.max_retries = max_retries
+        self.delay_range = delay_range
+        self.data_dir = Path(data_dir)
+        self.raw_dir = self.data_dir / "raw"
+        self.documents_dir = self.data_dir / "documents"
+        self.raw_dir.mkdir(parents=True, exist_ok=True)
+        self.documents_dir.mkdir(parents=True, exist_ok=True)
+
+        self.session = self._build_session(user_agent)
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def _setup_session(self) -> requests.Session:
-        """Configura una sessione HTTP con i parametri appropriati"""
+    # ------------------------------------------------------------------
+    # HTTP
+    # ------------------------------------------------------------------
+    def _build_session(self, user_agent: str) -> requests.Session:
         session = requests.Session()
+        retry = Retry(
+            total=self.max_retries,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET", "HEAD"],
+        )
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
         session.headers.update({
-            'User-Agent': self.config['parametri_scraping']['user_agent']
+            "User-Agent": user_agent,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
         })
         return session
 
-    def _attendi(self):
-        """Attende un tempo casuale tra le richieste"""
-        delay = random.uniform(
-            self.config['parametri_scraping']['delay_min'],
-            self.config['parametri_scraping']['delay_max']
-        )
-        time.sleep(delay)
-
-    def _salva_dati_raw(self, dati: Dict, nome_file: str):
-        """Salva i dati grezzi in formato JSON"""
-        raw_dir = Path(self.config['percorsi']['raw_data'])
-        raw_dir.mkdir(parents=True, exist_ok=True)
-        
-        file_path = raw_dir / f"{nome_file}_{datetime.now().strftime('%Y%m%d')}.json"
-        pd.DataFrame(dati).to_json(file_path, orient='records', indent=2)
-        self.logger.info(f"Dati grezzi salvati in: {file_path}")
-
-    def _salva_dati_processati(self, df: pd.DataFrame, nome_file: str):
-        """Salva i dati processati in formato CSV"""
-        processed_dir = Path(self.config['percorsi']['processed_data'])
-        processed_dir.mkdir(parents=True, exist_ok=True)
-        
-        file_path = processed_dir / f"{nome_file}_{datetime.now().strftime('%Y%m%d')}.csv"
-        df.to_csv(file_path, index=False, encoding='utf-8')
-        self.logger.info(f"Dati processati salvati in: {file_path}")
-
-    def valida_dati(self, df: pd.DataFrame) -> bool:
-        """Valida che il DataFrame contenga tutte le colonne obbligatorie"""
-        colonne_obbligatorie = set(self.config['struttura_dati']['colonne_obbligatorie'])
-        colonne_presenti = set(df.columns)
-        
-        if not colonne_obbligatorie.issubset(colonne_presenti):
-            mancanti = colonne_obbligatorie - colonne_presenti
-            self.logger.error(f"Colonne obbligatorie mancanti: {mancanti}")
-            return False
-        return True
-
-    def pulisci_dati(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Pulisce e standardizza i dati"""
-        # Rimuovi spazi extra
-        for col in df.columns:
-            if df[col].dtype == 'object':
-                df[col] = df[col].str.strip()
-        
-        # Converti date
-        for col in ['data_inizio', 'data_fine', 'ultimo_aggiornamento']:
-            if col in df.columns:
-                df[col] = pd.to_datetime(df[col], errors='coerce')
-        
-        # Converti numeri
-        for col in ['personale_totale', 'costo_totale']:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        return df
-
-    def estrai_dati(self) -> pd.DataFrame:
-        """Metodo da implementare nelle classi figlie"""
-        raise NotImplementedError("Le classi figlie devono implementare questo metodo")
-
-    def _make_request(self, url: str, method: str = 'GET', params: Optional[Dict] = None, 
-                     data: Optional[Dict] = None, timeout: int = 30) -> Optional[requests.Response]:
-        """Esegue una richiesta HTTP con gestione degli errori e retry."""
-        max_attempts = self.config['parametri_scraping']['retry_attempts']
-        retry_delay = self.config['parametri_scraping']['retry_delay']
-        
-        for attempt in range(max_attempts):
-            try:
-                response = self.session.request(
-                    method=method,
-                    url=url,
-                    params=params,
-                    data=data,
-                    timeout=timeout
-                )
-                response.raise_for_status()
-                return response
-                
-            except requests.exceptions.RequestException as e:
-                self.logger.error(f"Errore nella richiesta HTTP: {str(e)}")
-                if attempt < max_attempts - 1:
-                    time.sleep(retry_delay)
-                    continue
-                return None
-
-    def _save_raw_data(self, data: Any, filename: str):
-        """Salva i dati grezzi in formato JSON."""
+    def get(self, url: str, **kwargs) -> Optional[requests.Response]:
+        """GET con delay, retry e logging."""
+        time.sleep(random.uniform(*self.delay_range))
         try:
-            output_dir = Path(self.config['percorsi']['data']) / 'raw'
-            output_dir.mkdir(parents=True, exist_ok=True)
-            
-            output_path = output_dir / filename
-            with open(output_path, 'w', encoding='utf-8') as f:
-                import json
-                json.dump(data, f, ensure_ascii=False, indent=2)
-                
-            self.logger.info(f"Dati grezzi salvati in: {output_path}")
-            
-        except Exception as e:
-            self.logger.error(f"Errore nel salvataggio dei dati grezzi: {str(e)}")
+            resp = self.session.get(url, timeout=self.timeout, **kwargs)
+            resp.raise_for_status()
+            self.logger.info(f"OK {resp.status_code} {url}")
+            return resp
+        except requests.RequestException as exc:
+            self.logger.error(f"FAIL {url}: {exc}")
+            return None
 
-    def _save_processed_data(self, df, filename: str):
-        """Salva i dati processati in formato CSV."""
+    # ------------------------------------------------------------------
+    # Salvataggio
+    # ------------------------------------------------------------------
+    def save_raw_json(self, data: Any, filename: str) -> Path:
+        path = self.raw_dir / filename
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+        self.logger.info(f"Saved raw JSON: {path}")
+        return path
+
+    def save_csv(self, df: pd.DataFrame, filename: str) -> Path:
+        path = self.data_dir / "processed" / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(path, index=False, encoding="utf-8")
+        self.logger.info(f"Saved CSV ({len(df)} rows): {path}")
+        return path
+
+    # ------------------------------------------------------------------
+    # Normalizzazione output
+    # ------------------------------------------------------------------
+    def to_dataframe(self, records: List[Dict]) -> pd.DataFrame:
+        """Converte una lista di dict in DataFrame con colonne standard."""
+        if not records:
+            return pd.DataFrame(columns=SCRAPER_COLUMNS)
+        df = pd.DataFrame(records)
+        for col in SCRAPER_COLUMNS:
+            if col not in df.columns:
+                df[col] = ""
+        df["fonte"] = self.fonte
+        return df[SCRAPER_COLUMNS]
+
+    # ------------------------------------------------------------------
+    # Interfaccia pubblica
+    # ------------------------------------------------------------------
+    @abstractmethod
+    def scrape(self) -> List[Dict]:
+        """Esegue lo scraping e restituisce una lista di dict (una per missione)."""
+        ...
+
+    def run(self) -> pd.DataFrame:
+        """Esegue scrape() → DataFrame → salva CSV. Entry point principale."""
+        self.logger.info(f"=== START {self.__class__.__name__} ===")
         try:
-            output_dir = Path(self.config['percorsi']['data']) / 'processed'
-            output_dir.mkdir(parents=True, exist_ok=True)
-            
-            output_path = output_dir / filename
-            df.to_csv(output_path, index=False, encoding='utf-8')
-            
-            self.logger.info(f"Dati processati salvati in: {output_path}")
-            
-        except Exception as e:
-            self.logger.error(f"Errore nel salvataggio dei dati processati: {str(e)}") 
+            records = self.scrape()
+            df = self.to_dataframe(records)
+            ts = datetime.now().strftime("%Y%m%d")
+            self.save_raw_json(records, f"{self.fonte}_raw_{ts}.json")
+            if not df.empty:
+                self.save_csv(df, f"{self.fonte}_{ts}.csv")
+            self.logger.info(f"=== DONE {self.__class__.__name__}: {len(df)} records ===")
+            return df
+        except Exception as exc:
+            self.logger.exception(f"=== FAIL {self.__class__.__name__}: {exc} ===")
+            return pd.DataFrame(columns=SCRAPER_COLUMNS)

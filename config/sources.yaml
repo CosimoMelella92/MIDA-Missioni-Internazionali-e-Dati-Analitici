@@ -1,0 +1,67 @@
+# Registro centralizzato delle fonti dati Excel/CSV per MIDA.
+# Ogni fonte definisce: percorso, mapping colonne, priorità, organizzazione di default.
+# La priorità determina quale dato prevale in caso di conflitto (1 = massima).
+
+sources:
+  - name: missioni_complete
+    path: data/processed/missioni_complete.csv
+    type: csv
+    priority: 1
+    default_org: Altro
+    column_mapping:
+      nome: nome
+      paese: paese
+      regione: regione
+      sub_regione: sub_regione
+      tipo_partecipazione: tipo_partecipazione
+      data_inizio: data_inizio
+      data_fine: data_fine
+      personale_militare: personale_militare
+      personale_civile: personale_civile
+      personale_totale: personale_totale
+      costo_totale: costo_totale
+      tipo_missione: tipo_missione
+      commitment: commitment
+      is_active: is_active
+
+  - name: missions_excel
+    path: data/raw/Excel/missions.xlsx
+    type: excel
+    priority: 2
+    default_org: ONU
+    column_mapping:
+      mission: nome
+      country: paese
+      region: regione
+      framework: tipo_missione
+      date_start: data_inizio
+      date_end: data_fine
+
+  # missions_expenditure_Italy.xlsx RIMOSSO: contiene dati di spesa annuale, non missioni
+
+  - name: matrice_dati
+    path: data/raw/Excel/Matrice dati.xlsx
+    type: excel
+    priority: 4
+    default_org: Altro
+    column_mapping:
+      Mission Name: nome
+      Type: tipo_missione
+      Starting Year: data_inizio
+      End/Extension Year: data_fine
+      Absolute Recorded Maximum Personnel: personale_totale
+      Notes: note
+
+  - name: matrice_dati_1agg
+    path: data/raw/Matrice dati 1AGG.xlsx
+    type: excel
+    skip_rows: 1
+    priority: 5
+    default_org: Altro
+    column_mapping:
+      Mission Name: nome
+      Type: tipo_missione
+      Starting Year: data_inizio
+      End/Extension Year: data_fine
+      Absolute Recorded Maximum Personnel: personale_totale
+      Notes: note

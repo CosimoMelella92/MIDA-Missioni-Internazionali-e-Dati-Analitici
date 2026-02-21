@@ -1,7 +1,7 @@
 import pandas as pd
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
-import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Dizionario di coordinate per i paesi più comuni nelle missioni italiane
 COUNTRY_COORDINATES = {
@@ -135,8 +135,80 @@ COUNTRY_COORDINATES = {
     'Morocco': (31.7917, -7.0926),
     'Egypt': (26.8206, 30.8025),
     
-    # Default per paesi non mappati
-    'Italy': (41.8719, 12.5674),  # Roma
+    # Italian names / aliases
+    'Libano': (33.8547, 35.8623),
+    'Libia': (26.3351, 17.2283),
+    'Egitto': (26.8206, 30.8025),
+    'Cipro': (35.1264, 33.4299),
+    'Turchia': (38.9637, 35.2433),
+    'Ucraina': (48.3794, 31.1656),
+    'Polonia': (51.9194, 19.1451),
+    'Slovacchia': (48.6690, 19.6990),
+    'Palestina': (31.9522, 35.2332),
+    'Mozambico': (18.6657, 35.5296),
+    'Bosnia ed Erzegovina': (43.9159, 17.6791),
+    "Costa d'Avorio": (7.5400, -5.5471),
+    'Repubblica Centrafricana': (6.6111, 20.9394),
+    'Timor Est': (-8.8742, 125.7275),
+    'Yugoslavia': (44.0165, 20.9030),
+
+    # Baltic / Nordic
+    'Estonia': (58.5953, 25.0136),
+    'Esthonia': (58.5953, 25.0136),
+    'Latvia': (56.8796, 24.6032),
+    'Lithuania': (55.1694, 23.8813),
+    'Estonia, Latvia, Lithuania': (56.8796, 24.6032),
+    'Iceland': (64.9631, -19.0208),
+    'Hungary': (47.1625, 19.5033),
+
+    # Regions / seas (approximate center)
+    'Adriatic Sea': (42.5, 16.0),
+    'Atlantico del Nord': (45.0, -30.0),
+    'Baltico': (57.0, 20.0),
+    'Mar Rosso': (20.0, 38.5),
+    'Mediterranean Sea': (35.0, 18.0),
+    'Mediterraneo': (35.0, 18.0),
+    'Golfo di Guinea': (3.0, 3.0),
+    'Medio Oriente': (30.0, 42.0),
+    'Europa': (50.0, 10.0),
+    'Sahara Occidentale': (24.2, -12.9),
+    'Stretto di Hormuz': (26.5, 56.3),
+    'Oceano Indiano': (-5.0, 55.0),
+
+    # Italian names - additional
+    'Lettonia': (56.8796, 24.6032),
+    'Lituania': (55.1694, 23.8813),
+    'Ungheria': (47.1625, 19.5033),
+    'Gibuti': (11.8251, 42.5903),
+    'India/Pakistan': (30.3753, 69.3451),
+    'Iraq, Kuwait': (30.5, 47.0),
+    'Iraq/Kuwait': (30.5, 47.0),
+    'Islanda': (64.9631, -19.0208),
+    'Cambogia': (12.5657, 104.9910),
+    'Ruanda': (-1.9403, 30.0596),
+    'Ciad': (15.4542, 18.7322),
+    'Siria': (34.8021, 38.9968),
+    'Marocco': (31.7917, -7.0926),
+    'Mare Adriatico': (42.5, 16.0),
+    'Sud Sudan': (6.8770, 31.3070),
+    'Sudan (Darfur)': (13.5, 25.0),
+    'Sudan (Abyei)': (9.5833, 28.4333),
+    'Paesi Baltici': (56.8796, 24.6032),
+    'Etiopia/Eritrea': (9.1450, 40.4897),
+    'Ex-Jugoslavia': (44.0165, 20.9030),
+    'Macedonia del Nord': (41.6086, 21.7453),
+    'Balcani': (43.0, 20.0),
+
+    # Specific locations
+    'Abyei': (9.5833, 28.4333),
+    'Darfur': (13.5, 25.0),
+    'Bruxelles': (50.8503, 4.3517),
+    'Qatar': (25.3548, 51.1839),
+
+    # Catch-all
+    'Varie': (41.8719, 12.5674),
+    'Non specificato': (41.8719, 12.5674),
+    'Italy': (41.8719, 12.5674),
 }
 
 def get_country_coordinates(country_name):
@@ -156,16 +228,8 @@ def get_country_coordinates(country_name):
         if country_name.lower() in key.lower() or key.lower() in country_name.lower():
             return coords
     
-    # Se non trovato, usa geocoding (con fallback)
-    try:
-        geolocator = Nominatim(user_agent="mida_dashboard")
-        location = geolocator.geocode(country_name, timeout=10)
-        if location:
-            return (location.latitude, location.longitude)
-    except (GeocoderTimedOut, GeocoderUnavailable):
-        pass
-    
-    # Fallback: coordinate di Roma
+    # Paese sconosciuto: log e fallback a Roma
+    logger.warning(f"Coordinate non trovate per: '{country_name}' — fallback Roma")
     return (41.8719, 12.5674)
 
 def add_coordinates_to_dataframe(df):

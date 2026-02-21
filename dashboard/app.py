@@ -1,165 +1,200 @@
+"""
+MIDA Dashboard - Entry Point Unico.
+Avvia con: streamlit run dashboard/app.py
+"""
+
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
-import os
+import sys
 from pathlib import Path
-import yaml
+from datetime import datetime
 
-# Configurazione
-config_path = Path(__file__).parent.parent.parent / 'config' / 'config.yaml'
-with open(config_path, 'r', encoding='utf-8') as f:
-    config = yaml.safe_load(f)
+# Aggiungi la root del progetto al path
+_project_root = Path(__file__).parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
 
-# Funzioni di utilità
-def carica_dati():
-    """Carica i dati più recenti dal file CSV"""
+from dashboard.data_loader import load_data, get_data_stats
+from dashboard.filters import render_sidebar_filters, apply_filters, render_debug_sidebar
+
+# Configurazione pagina
+st.set_page_config(
+    page_title="MIDA - Analisi Missioni Internazionali",
+    page_icon="🌍",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# CSS personalizzato — tema militare italiano
+st.markdown("""
+<style>
+    /* ── Font ── */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', sans-serif; }
+
+    /* ── Palette militare ──
+       Verde oliva:  #3D4F1E (scuro) / #4A5D23 (medio) / #6B8C2A (chiaro)
+       Blu marina:   #1B3A5C (scuro) / #2C5F8A (medio)
+       Sabbia:       #F5F3EE (chiaro) / #EAE6DC (medio) / #D4CFC3 (scuro)
+       Grigio acciaio: #5A5F63 / #8B9298
+       Rosso Esercito: #8B1A1A
+    */
+
+    /* ── Header ── */
+    @media (max-width: 768px) {
+        .main-header { font-size: 1.6rem !important; }
+    }
+    .main-header {
+        font-size: 2.4rem; font-weight: 700; text-align: center;
+        background: linear-gradient(135deg, #3D4F1E 0%, #1B3A5C 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem; letter-spacing: -0.5px;
+    }
+    .sub-header {
+        text-align: center; color: #5A5F63; font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+        background: linear-gradient(135deg, #EAE6DC 0%, #D4CFC3 100%);
+        padding: 1rem 1.2rem; border-radius: 10px;
+        border-left: 4px solid #4A5D23; margin: 0.5rem 0 1.5rem 0;
+        font-size: 0.9rem; color: #2C2C2C;
+    }
+
+    /* ── Sidebar — verde oliva scuro ── */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #3D4F1E 0%, #2A3614 100%) !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #EAE6DC !important;
+    }
+    [data-testid="stSidebar"] .stRadio label {
+        color: #F5F3EE !important; font-weight: 500;
+    }
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stSlider label {
+        color: #F5F3EE !important; font-size: 0.85rem; font-weight: 600;
+    }
+    /* Dropdown/select inputs — sfondo chiaro per leggibilità */
+    [data-testid="stSidebar"] [data-baseweb="select"],
+    [data-testid="stSidebar"] [data-baseweb="input"] {
+        background-color: #F5F3EE !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stSidebar"] [data-baseweb="select"] * {
+        color: #2C2C2C !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div {
+        background-color: #F5F3EE !important;
+        border: 1px solid #D4CFC3 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] > div {
+        background-color: #F5F3EE !important;
+        border: 1px solid #D4CFC3 !important;
+        border-radius: 8px !important;
+    }
+    /* Placeholder text più scuro */
+    [data-testid="stSidebar"] [data-baseweb="select"] [data-baseweb="tag"] {
+        background-color: #4A5D23 !important;
+        color: #F5F3EE !important;
+    }
+    [data-testid="stSidebar"] input::placeholder {
+        color: #5A5F63 !important; opacity: 1 !important;
+    }
+    /* Slider track */
+    [data-testid="stSidebar"] .stSlider [data-baseweb="slider"] div[role="slider"] {
+        background-color: #6B8C2A !important;
+    }
+
+    /* ── Tabs — blu marina ── */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px; border-bottom: 2px solid #D4CFC3;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px 8px 0 0; padding: 8px 20px;
+        font-weight: 500; color: #5A5F63;
+    }
+    .stTabs [aria-selected="true"] {
+        background: #1B3A5C !important; color: #F5F3EE !important;
+        border-bottom: 2px solid #6B8C2A;
+    }
+
+    /* ── Dataframes ── */
+    .stDataFrame { border-radius: 8px; overflow: hidden; }
+
+    /* ── Footer ── */
+    .mida-footer {
+        text-align: center; color: #8B9298; padding: 1.5rem 0 0.5rem 0;
+        font-size: 0.82rem; border-top: 1px solid #D4CFC3;
+    }
+    .mida-footer a { color: #4A5D23; text-decoration: none; font-weight: 500; }
+
+    /* ── Plotly chart containers ── */
+    .js-plotly-plot { border-radius: 8px; }
+</style>
+""", unsafe_allow_html=True)
+
+
+def main():
+    # Header
+    st.markdown(
+        '<h1 class="main-header">🌍 MIDA - Missioni Internazionali e Dati Analitici</h1>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<p class="sub-header">Analisi interattiva delle missioni internazionali italiane · 1948-2026 · 237 missioni · 38 attive</p>',
+        unsafe_allow_html=True,
+    )
+
+    # Carica dati
+    df = load_data()
+    if df is None or df.empty:
+        st.error("Impossibile caricare i dati delle missioni.")
+        return
+
+    # Filtri sidebar
+    filters = render_sidebar_filters(df)
+    df_filtered = apply_filters(df, filters)
+
+    # Debug sidebar
+    render_debug_sidebar(df, df_filtered)
+
+    # Navigazione pagine
+    page = st.sidebar.radio(
+        "📑 Navigazione",
+        ["📊 Panoramica", "🏛️ Missioni e Dati", "⏳ Timeline", "🗺️ Mappe"],
+        index=0,
+    )
+
     try:
-        data_path = Path(__file__).parent.parent.parent / 'data' / 'processed' / 'missioni.csv'
-        df = pd.read_csv(data_path)
-        # Converti le colonne delle date in datetime
-        df['data_inizio'] = pd.to_datetime(df['data_inizio']).dt.date
-        # Gestisci le date di fine vuote
-        df['data_fine'] = pd.to_datetime(df['data_fine'], errors='coerce').dt.date
-        # Converti le colonne numeriche
-        df['personale'] = pd.to_numeric(df['personale'], errors='coerce')
-        df['costo'] = pd.to_numeric(df['costo'], errors='coerce')
-        return df
+        if page == "📊 Panoramica":
+            from dashboard.views.overview import render as render_overview
+            render_overview(df_filtered)
+        elif page == "🏛️ Missioni e Dati":
+            from dashboard.views.missions import render as render_missions
+            render_missions(df_filtered)
+        elif page == "⏳ Timeline":
+            from dashboard.views.timeline import render as render_timeline
+            render_timeline(df_filtered)
+        elif page == "🗺️ Mappe":
+            from dashboard.views.maps_page import render as render_maps
+            render_maps(df_filtered)
     except Exception as e:
-        st.error(f"Errore nel caricamento dei dati: {str(e)}")
-        return pd.DataFrame()
+        st.error(f"Errore nel rendering della pagina: {e}")
+        import traceback
+        st.code(traceback.format_exc())
 
-def filtra_dati(df, date_range, tipi_missione, paesi):
-    """Filtra i dati in base ai parametri selezionati"""
-    mask = pd.Series(True, index=df.index)
-    
-    if date_range and len(date_range) == 2:
-        mask &= (df['data_inizio'] >= date_range[0]) & (df['data_inizio'] <= date_range[1])
-    
-    if tipi_missione:
-        mask &= df['tipo'].isin(tipi_missione)
-    
-    if paesi:
-        mask &= df['paese'].isin(paesi)
-    
-    return df[mask]
+    # Footer
+    st.markdown(f"""
+    <div class="mida-footer">
+        MIDA — Missioni Internazionali e Dati Analitici · Universit&agrave; di Catania<br>
+        <small>Dati: <a href="https://www.difesa.it/operazionimilitari/" target="_blank">Ministero della Difesa</a>
+        · Aggiornamento: {datetime.now().strftime('%d/%m/%Y %H:%M')}</small>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Layout principale
-st.set_page_config(page_title="Dashboard Missioni Internazionali", layout="wide")
 
-st.title("Dashboard Missioni Internazionali")
-
-# Carica dati
-df = carica_dati()
-if df.empty:
-    st.error("Nessun dato disponibile")
-    st.stop()
-
-# Sidebar per i filtri
-st.sidebar.header("Filtri")
-
-# Filtro date
-date_range = st.sidebar.date_input(
-    "Periodo",
-    value=(
-        datetime.now() - timedelta(days=365),
-        datetime.now()
-    )
-)
-
-# Filtro tipi missione
-tipi_missione = st.sidebar.multiselect(
-    "Tipo Missione",
-    options=sorted(df['tipo'].unique()),
-    default=[]
-)
-
-# Filtro paesi
-paesi = st.sidebar.multiselect(
-    "Paese",
-    options=sorted(df['paese'].unique()),
-    default=[]
-)
-
-# Applica filtri
-df_filtrato = filtra_dati(df, date_range, tipi_missione, paesi)
-
-# Layout principale
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Distribuzione Missioni per Tipo")
-    fig_tipo = px.pie(
-        df_filtrato,
-        names='tipo',
-        title='Distribuzione per Tipo Missione'
-    )
-    st.plotly_chart(fig_tipo)
-
-with col2:
-    st.subheader("Distribuzione Missioni per Paese")
-    df_paesi = df_filtrato['paese'].value_counts().reset_index()
-    df_paesi.columns = ['paese', 'count']  # Rinomina le colonne
-    fig_paese = px.bar(
-        df_paesi,
-        x='paese',
-        y='count',
-        title='Numero di Missioni per Paese'
-    )
-    st.plotly_chart(fig_paese)
-
-# Timeline delle missioni
-st.subheader("Timeline delle Missioni")
-df_timeline = df_filtrato.sort_values('data_inizio')
-fig_timeline = px.timeline(
-    df_timeline,
-    x_start='data_inizio',
-    x_end='data_fine',
-    y='nome',
-    color='tipo',
-    title='Timeline delle Missioni'
-)
-st.plotly_chart(fig_timeline)
-
-# Statistiche generali
-st.subheader("Statistiche Generali")
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric(
-        "Totale Missioni",
-        len(df_filtrato)
-    )
-
-with col2:
-    st.metric(
-        "Missioni Attive",
-        len(df_filtrato[df_filtrato['data_fine'].isna()])
-    )
-
-with col3:
-    st.metric(
-        "Totale Personale",
-        f"{df_filtrato['personale'].sum():,.0f}"
-    )
-
-with col4:
-    st.metric(
-        "Costo Totale (€)",
-        f"{df_filtrato['costo'].sum():,.2f}"
-    )
-
-# Tabella dettagliata
-st.subheader("Dettaglio Missioni")
-st.dataframe(
-    df_filtrato[[
-        'nome',
-        'paese',
-        'data_inizio',
-        'data_fine',
-        'tipo',
-        'personale',
-        'costo'
-    ]].sort_values('data_inizio', ascending=False)
-) 
+main()

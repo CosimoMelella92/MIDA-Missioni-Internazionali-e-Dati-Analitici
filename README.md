@@ -18,101 +18,93 @@
 ## 📊 Panoramica
 MIDA è una piattaforma avanzata per l'analisi e la visualizzazione delle missioni internazionali italiane. Il sistema è progettato per accogliere dati da fonti eterogenee (Excel, CSV, PDF, dati parlamentari) e strutturarli in modo robusto e coerente, garantendo qualità, deduplicazione automatica e analisi interattiva tramite dashboard.
 
-Attualmente il sistema gestisce **221 missioni** dal **1949 al 2027**, coprendo un arco temporale di **78 anni** di impegno internazionale dell'Italia, dalla Guerra Fredda ai giorni nostri.
+Il sistema aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset unificato di **237 missioni** dopo deduplicazione automatica, correzione dati vs fonti ufficiali (difesa.it) e validazione Pydantic, coprendo un arco temporale dal **1949 al 2027**.
 
-### 📈 Statistiche Chiave
-- **Totale missioni**: 221
-- **Missioni attive**: 39 (allineate con il sito ufficiale del Ministero della Difesa)
-- **Missioni terminate**: 182
-- **Periodo coperto**: 1949-2027 (78 anni)
-- **Personale totale**: ~114,000 unità
-- **Costo totale**: €22.7 miliardi
-- **Costo medio per missione**: €103 milioni
+### 📈 Statistiche Chiave (v3.0)
+- **Fonti dati aggregate**: 5 (384 righe raw → 237 dopo dedup + correzioni)
+- **Duplicati rimossi**: 147 (dedup su nome normalizzato + dedup post-correzioni)
+- **Errori validazione**: 0
+- **Missioni attive**: 38 (verificate vs Ministero della Difesa 2026)
+- **Personale totale impiegato**: ~8.800 unità
+- **Organizzazioni**: ONU (4), NATO (10), UE (11), ITA (3), Bilateral (6), Multinational (3), Coalizione (1)
+- **Regioni**: Africa, America, Asia, Europa, Medio Oriente
+- **Fonte ufficiale**: [difesa.it/operazionimilitari](https://www.difesa.it/operazionimilitari/op-intern-corso/operazioni-int/26752.html)
 
-**Nota**: Il conteggio delle missioni attive è basato sul campo `is_active`, che riflette l'elenco ufficiale delle operazioni in corso pubblicato sul sito del Ministero della Difesa. Questo garantisce allineamento preciso con le fonti ufficiali. La dashboard integra automaticamente dati aggiuntivi da fonti Excel, portando il totale visualizzato a ~350 missioni (includendo missioni storiche).
+**Nota**: La pipeline v3.0 (`core/aggregator.py`) carica tutte le fonti configurate in `config/sources.yaml`, normalizza colonne/organizzazioni/regioni, deduplica per nome missione, applica correzioni ufficiali (nomi, paesi, personale vs difesa.it), cross-referenzia con la lista ufficiale delle 38 missioni attive, arricchisce con campi calcolati, valida con Pydantic e salva solo le 18 colonne canoniche.
 
 ## 🏗️ Struttura del Progetto
 ```
 MIDA/
 ├── config/
-│   └── config.yaml           # Configurazione del sistema
+│   ├── config.yaml            # Configurazione scraping e sistema
+│   └── sources.yaml           # [v2.0] Registry fonti dati con mapping colonne
 ├── data/
-│   ├── raw/                  # Dati grezzi (Excel, PDF, JSON)
-│   ├── documents/            # Documenti PDF/DOCX centralizzati
-│   ├── processed/            # Dati elaborati intermedi
-│   └── final/                # Output finali (CSV, XLSX)
+│   ├── raw/                   # Dati grezzi (Excel, PDF, JSON)
+│   ├── documents/             # Documenti PDF/DOCX centralizzati
+│   └── processed/             # Output pipeline (missioni_complete.csv)
 ├── core/
-│   ├── scrapers/             # Web scrapers e document collectors
-│   │   ├── smart_document_fetcher.py
-│   │   ├── sitemap_document_collector.py
-│   │   ├── european_document_collector.py
-│   │   ├── document_collector.py
-│   │   ├── camera_scraper.py
-│   │   ├── document_scraper.py
-│   │   ├── web_scraper.py
-│   │   └── altri scrapers...
-│   ├── pdf_extractor/        # Sistema di estrazione e analisi documenti
-│   │   ├── data_extractor.py
-│   │   ├── pdf_parser.py
-│   │   ├── docx_parser.py
-│   │   ├── report_generator.py
-│   │   ├── web_interface/    # Interfaccia web Flask
-│   │   │   ├── app.py
-│   │   │   └── templates/
-│   │   ├── run_pdf_extractor.py
-│   │   ├── run_fast_extractor.py
-│   │   ├── run_ultra_fast_extractor.py
-│   │   └── run_document_extractor.py
-│   ├── processors/           # Processamento e normalizzazione dati
-│   ├── validators/           # Validazione dati
-│   ├── mergers/              # Unione dati da fonti diverse
-│   ├── classifiers/          # Classificazione missioni
-│   ├── utils/                # Utility condivise
-│   └── main.py               # Script principale di orchestrazione
+│   ├── models.py              # [v2.0] Modelli Pydantic (Mission, SourceConfig, PipelineResult)
+│   ├── normalizer.py          # [v2.0] Normalizzazioni unificate (nomi, org, regioni, commitment)
+│   ├── aggregator.py          # [v2.0] Pipeline aggregazione (load→normalize→dedup→enrich→validate→save)
+│   ├── scrapers/              # Web scrapers e document collectors
+│   ├── pdf_extractor/         # Sistema di estrazione e analisi documenti
+│   ├── processors/            # Processamento dati (legacy)
+│   ├── validators/            # Validazione dati (legacy)
+│   ├── mergers/               # Unione dati (legacy)
+│   ├── classifiers/           # Classificazione missioni
+│   └── main.py                # Script principale di orchestrazione
 ├── dashboard/
-│   ├── missioni_dashboard.py # Dashboard Streamlit principale
-│   ├── maps/                 # Componenti mappe avanzate
-│   │   ├── advanced_maps.py
-│   │   └── geocoding.py
-│   └── altri file dashboard  # Componenti e utility dashboard
-├── tests/                    # Test automatici e script di verifica
-│   ├── test_scrapers_update.py
-│   ├── test_extraction.py
-│   ├── benchmark_performance.py
-│   ├── quick_test.py
-│   └── altri test...
-├── reports/
-│   └── report_generator.py   # Generazione report e template
+│   ├── app.py                 # [v2.0] Entry point unico dashboard
+│   ├── data_loader.py         # [v2.0] Caricamento dati con cache Streamlit
+│   ├── filters.py             # [v2.0] Filtri sidebar
+│   ├── charts.py              # [v2.0] Grafici Plotly (vettorizzati, no iterrows)
+│   ├── analysis.py            # [v2.0] Funzioni analitiche pure
+│   ├── pages/                 # [v2.0] Pagine modulari
+│   │   ├── overview.py        #   Panoramica e metriche
+│   │   ├── missions.py        #   Dettaglio missioni e export
+│   │   ├── timeline.py        #   Timeline interattive
+│   │   └── maps_page.py       #   Mappe interattive
+│   ├── missioni_dashboard.py  # Dashboard legacy (preservata)
+│   └── maps/                  # Componenti mappe avanzate
+├── tests/
+│   ├── test_normalizer.py     # [v2.0] 51 test normalizzazione
+│   ├── test_models.py         # [v2.0] 21 test modelli Pydantic
+│   ├── test_aggregator.py     # [v2.0] 12 test pipeline aggregazione
+│   └── altri test legacy...
 ├── utils/
-│   └── notification_system.py, map_utils.py, ecc.
+│   └── map_utils.py           # Utility mappe (standalone)
+├── scripts/                   # [v2.0] Script legacy migrati
 ├── docs/
-│   └── images/, missioni_analizzate.md, ecc.
-├── requirements.txt
-├── run_dashboard.py
+├── requirements.txt           # Dipendenze (include pydantic, pytest)
 └── README.md
 ```
 
-## 🚀 Avvio Dashboard
+## 🚀 Avvio Rapido
 
-#### Metodo 1 (Consigliato)
+### Pipeline Aggregazione Dati
+```bash
+python -m core.aggregator
+```
+
+### Dashboard v2.0 (Consigliato)
+```bash
+streamlit run dashboard/app.py
+```
+
+### Dashboard Legacy
 ```bash
 python run_dashboard.py
 ```
 
-#### Metodo 2 (Alternativo)
+### Test
 ```bash
-python -m streamlit run dashboard/missioni_dashboard.py
+python -m pytest tests/test_normalizer.py tests/test_models.py tests/test_aggregator.py -v
 ```
 
 ### 🌐 Accesso Dashboard
 - **URL**: http://localhost:8501
-- **Porta**: 8501 (configurabile)
-- **Browser**: Apri il link nel tuo browser preferito
-
-### 🔄 Ricaricamento Dati
-- **Pulsante "🔄 Ricarica Dati"** nella sidebar per forzare l'aggiornamento
-- **Cache automatica**: I dati si aggiornano ogni 60 secondi
-- **Debug info**: Controlla la sidebar per informazioni tecniche
+- **Pagine**: Panoramica, Missioni e Dati, Timeline, Mappe
+- **Filtri**: Sidebar con anno, tipo partecipazione, regione, organizzazione
 
 ## 📄 Sistema di Estrazione Documenti
 
@@ -171,19 +163,21 @@ I scrapers sono configurati in `config/config.yaml` con:
 python tests/test_scrapers_update.py
 ```
 
-## 🔄 Flusso dei Dati
+## 🔄 Flusso dei Dati (v2.0)
 ```mermaid
 graph LR
-    A[Documenti PDF] --> B[Document Processor]
-    C[File Excel] --> D[Data Processor]
-    E[Fonti parlamentari 2025] --> D
-    F[Web Scrapers] --> G[data/documents/]
-    G --> B
-    B --> H[Data Enrichment]
-    D --> H
-    H --> I[Dashboard Interattiva]
-    I --> J[Mappe Avanzate]
-    I --> K[Analisi Organizzazioni]
+    A[config/sources.yaml] --> B[ExcelAggregator]
+    C[data/raw/Excel/*.xlsx] --> B
+    D[data/processed/missioni_complete.csv] --> B
+    B --> E[1. Load Sources]
+    E --> F[2. Normalize - normalizer.py]
+    F --> G[3. Deduplicate - nome_norm]
+    G --> H[4. Enrich - is_active, totali]
+    H --> I[5. Validate - Pydantic Mission]
+    I --> J[6. Save - 18 colonne canoniche]
+    J --> K[dashboard/app.py]
+    K --> L[data_loader.py + cache]
+    L --> M[pages/ overview, missions, timeline, maps]
 ```
 
 ## 📁 Struttura dei Dati
@@ -214,53 +208,37 @@ I documenti PDF vengono elaborati per estrarre:
 - Dettagli finanziari
 - Riferimenti normativi
 
-## 🧹 Pipeline Dati e Deduplicazione
-- **Caricamento**: I dati vengono caricati da `data/processed/missioni_complete.csv` e, se presenti, da nuovi file Excel in `data/raw/Excel/` e dalle fonti parlamentari 2025.
-- **Normalizzazione**: I dati vengono convertiti nel formato standard, con colonne e tipi coerenti.
-- **Deduplicazione automatica**: Missioni con nomi simili (ignorando spazi, trattini, maiuscole/minuscole), stesso paese vengono mantenute una sola volta.
-- **Pulizia colonne**: Vengono rimosse colonne duplicate e valori incoerenti.
-- **Validazione**: Il sistema segnala missioni con dati mancanti, date incoerenti o costi anomali.
+## 🧹 Pipeline Dati v3.0
 
-## 📊 Conteggio Missioni: 208 vs 218
+La pipeline centralizzata (`core/aggregator.py`) sostituisce la logica frammentata in 5+ file:
 
-Il sistema gestisce due conteggi diversi:
+1. **Load Sources**: Carica tutte le fonti da `config/sources.yaml` (CSV + Excel), applica mapping colonne
+2. **Normalize**: Nomi missione (lowercase), organizzazioni (pattern matching ONU/NATO/UE), regioni (6 macro-regioni), commitment, colonne
+3. **Deduplicate**: Chiave = `nome_normalizzato_strict`. Vince la fonte con priorità più alta + più dati non-null
+4. **Enrich**:
+   - Applica correzioni ufficiali (nomi, paesi, personale vs difesa.it)
+   - Rimuove record duplicati/obsoleti
+   - Cross-referenzia con lista ufficiale 38 missioni attive (Ministero Difesa)
+   - Inietta missioni mancanti dalle fonti ufficiali
+   - Calcola `is_active`, `personale_totale`, `dati_stimati`
+   - Dedup finale post-correzioni
+5. **Validate**: Ogni record passa per il modello Pydantic `Mission` con validazione date, numeri, stringhe
+6. **Save**: Output solo 18 colonne canoniche in `data/processed/missioni_complete.csv`
 
-### Dataset Principale (208 missioni)
-- **File**: `data/processed/missioni_complete.csv`
-- **Contenuto**: Missioni principali con dati completi e dettagliati
-- **Uso**: Dataset pulito e validato per analisi approfondite
+## 📊 Conteggio Missioni (v3.0)
 
-### Dashboard (218 missioni)
-- **Fonte**: Integrazione automatica del dataset principale + file Excel aggiuntivi
-- **Processo**: 
-  1. Carica 208 missioni dal dataset principale
-  2. Integra automaticamente `data/raw/Excel/missions.xlsx`
-  3. Rimuove duplicati usando `str.contains()` per il confronto
-  4. Risultato: 218 missioni uniche
-- **Vantaggio**: Dataset più completo con missioni aggiuntive
+Con la pipeline unificata e le correzioni ufficiali:
 
-### Missioni Aggiunte dalla Dashboard
-La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 missioni durante la deduplicazione finale:
-- Joint Forge (SFOR) (NATO)
-- UNMIBH (IPTF) (UN)
-- UNSOM (UN)
-- EUTM Mozambico (EU)
-- Enhanced Vigilance Activity Bulgaria (NATO)
-- Enhanced Vigilance Activity Hungary (NATO)
-- VJTF NATO (NATO)
-- Qatar World Cup (Bilateral)
-- TFA-R Gladiator Romania (NATO)
-- EUMAM Ukraine (EU)
-- EUMPM Niger (EU)
-- EMASoH (EU)
-- EUNAVFOR - Aspides (EU)
-- Combined Task Force 153 (Multinational)
-- Operazione Levante (Bilateral)
-- Bilateral mission in Burkina Faso (Bilateral)
+| Fase | Righe |
+|------|-------|
+| Raw (5 fonti) | 384 |
+| Dopo normalizzazione | 312 |
+| Dopo deduplicazione | 273 |
+| Dopo correzioni ufficiali + dedup | 237 |
+| Dopo validazione | 237 (0 errori) |
+| Missioni attive (difesa.it 2026) | 38 |
 
-**Calcolo finale**: 208 (file principale) + 16 (aggiunte) - 6 (rimosse) = 218 missioni
-
-**Entrambi i conteggi sono corretti** per il loro scopo specifico.
+**237 missioni** è il conteggio unico e definitivo, sia nel CSV che nella dashboard.
 
 ## ➕ Come aggiungere nuovi dati
 1. **Aggiungi il file Excel/CSV** in `data/raw/Excel/`.
@@ -276,7 +254,7 @@ La dashboard aggiunge automaticamente 16 missioni dal file Excel, ma rimuove 6 m
 ## 📈 Dashboard Avanzata
 
 ### 🎯 Metriche Principali
-- **📊 Missioni Totali**: Numero complessivo di missioni (**218 nella dashboard, 208 nel dataset principale**)
+- **📊 Missioni Totali**: Numero complessivo di missioni (**218 nella dashboard, 273 nel dataset unificato**)
 - **👥 Personale Totale**: Somma di tutto il personale impiegato
 - **💰 Costo Totale**: Budget complessivo investito
 - **🟢 Missioni Attive**: Missioni attualmente in corso
@@ -442,7 +420,8 @@ python run_dashboard.py
 
 #### Metodo 2 (Alternativo)
 ```bash
-python -m streamlit run dashboard/missioni_dashboard.py
+streamlit run dashboard/app.py  # v2.0
+# oppure legacy: streamlit run dashboard/missioni_dashboard.py
 ```
 
 ### 🌐 Accesso Dashboard
@@ -562,7 +541,7 @@ Tutti gli scrapers sono configurati per:
 - **Organizzazione**: Filtro specifico per organizzazione
 
 ### 📈 Visualizzazioni
-- **Grafici a barre**: Missioni per periodo/organizzazione (218 missioni nella dashboard)
+- **Grafici a barre**: Missioni per periodo/organizzazione (273 missioni nella dashboard)
 - **Grafici a torta**: Distribuzione budget e personale
 - **Timeline**: Evoluzione temporale delle missioni (1949-2027)
 - **Tabelle interattive**: Dati completi con formattazione
@@ -696,7 +675,7 @@ Questo progetto è distribuito con licenza MIT. Vedi il file `LICENSE` per maggi
 
 🌍 MIDA - Analisi completa delle missioni internazionali italiane dal 1949 al 2027
 
-📊 **Dataset integrato con 218 missioni nella dashboard** (208 nel dataset principale + 16 aggiunte - 6 rimosse) dal 1949 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
+📊 **Dataset integrato con 273 missioni nella dashboard** (273 nel dataset unificato + 16 aggiunte - 6 rimosse) dal 1949 al 2027, con normalizzazione organizzazioni e deduplicazione automatica.
 
 🚀 **Come si usa**
 1. **Avvia la dashboard**: `python run_dashboard.py`

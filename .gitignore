@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Temp files
+_audit.py
+_regen.py
+_audit_output.txt
+
+# Data (keep processed, ignore large raw/final)
+data/raw/*.json
+data/final/
+data/notifications.json
+
+# Reports
+reports/
+
+# Streamlit cache
+.streamlit/secrets.toml

@@ -1,270 +1,98 @@
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-from datetime import datetime
-from .document_scraper import DocumentScraper
-from pathlib import Path
-import re
-import time
-from typing import Dict, List
-import logging
-import json
-import os
+"""Scraper per la Camera dei Deputati — camera.it"""
 
-class CameraScraper(DocumentScraper):
-    def __init__(self):
-        super().__init__()
-        self.fonte = "camera_deputati"
-        self.url_base = self.config['fonti_dati']['camera_deputati']['url_base']
-        self.document_urls = self.config['fonti_dati']['camera_deputati'].get('document_urls', [])
-        
-        # Aggiornato per salvare nella cartella centralizzata
-        self.documents_dir = Path('data/documents')
-        self.documents_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Pattern per l'estrazione dei dati
-        self.patterns = {
-            'nome_missione': r'(?:Missione|Operazione)\s+([A-Za-z\s\-]+)',
-            'paese': r'(?:in|presso|nel|nella)\s+([A-Za-z\s\-]+)',
-            'data_inizio': r'(?:dal|a partire dal)\s+(\d{1,2}/\d{1,2}/\d{4})',
-            'data_fine': r'(?:al|fino al)\s+(\d{1,2}/\d{1,2}/\d{4})',
-            'personale_totale': r'(?:personale|effettivi|militari)\s*(?:totale)?\s*:\s*(\d+)',
-            'costo_totale': r'(?:costo|spesa)\s*(?:totale)?\s*:\s*€\s*([\d.,]+)',
-            'tipo_missione': r'(?:tipo|natura)\s*(?:della missione)?\s*:\s*([A-Za-z\s\-]+)',
-            'mandato': r'(?:mandato|risoluzione)\s*(?:ONU)?\s*:\s*([A-Za-z0-9\s\-]+)'
+import re
+from typing import Dict, List, Optional
+from bs4 import BeautifulSoup
+
+from .base_scraper import BaseScraper
+
+
+class CameraScraper(BaseScraper):
+    """Estrae dati sulle missioni dai documenti della Camera dei Deputati."""
+
+    fonte = "camera"
+
+    URLS = [
+        "https://www.camera.it/leg19/1132",
+        "https://temi.camera.it/leg19/temi/missioni-internazionali",
+    ]
+
+    PDF_URLS = [
+        "https://www.camera.it/application/xmanager/projects/leg19/attachments/upload_file_doc_acquisiti/pdfs/000/001/missioni_internazionali.pdf",
+    ]
+
+    def scrape(self) -> List[Dict]:
+        records: List[Dict] = []
+
+        # 1. Scrape pagine HTML
+        for url in self.URLS:
+            page_records = self._scrape_page(url)
+            records.extend(page_records)
+
+        self.logger.info(f"Camera: {len(records)} missioni estratte")
+        return records
+
+    def _scrape_page(self, url: str) -> List[Dict]:
+        resp = self.get(url)
+        if not resp:
+            return []
+        soup = BeautifulSoup(resp.text, "html.parser")
+        records = []
+
+        # Cerca sezioni missioni — la Camera usa div/section con titoli
+        sections = soup.find_all(["h2", "h3", "h4", "strong"])
+        for section in sections:
+            text = section.get_text(strip=True)
+            if not text or len(text) < 5:
+                continue
+
+            # Cerca pattern di nomi missione
+            if re.search(r"(missione|operazione|UNIFIL|KFOR|EUNAVFOR|EUTM|UNMISS)", text, re.IGNORECASE):
+                record = self._parse_mission_block(section, text, url)
+                if record and record.get("nome"):
+                    records.append(record)
+
+        return records
+
+    def _parse_mission_block(self, element, title: str, url: str) -> Optional[Dict]:
+        """Estrae dati da un blocco missione nella pagina."""
+        # Prendi il testo del blocco successivo
+        context = ""
+        sibling = element.find_next_sibling()
+        for _ in range(5):
+            if sibling:
+                context += " " + sibling.get_text(" ", strip=True)
+                sibling = sibling.find_next_sibling()
+
+        full_text = title + " " + context
+
+        nome = title.strip()
+        paese = self._extract(r"(?:in|presso|nel)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)", full_text)
+        data_inizio = self._extract(r"(\d{1,2}[/\-]\d{1,2}[/\-]\d{4})", full_text)
+        personale = self._extract(r"(\d[\d.]*)\s*(?:unit[àa]|militari|personale)", full_text)
+
+        return {
+            "nome": nome,
+            "paese": (paese or "").strip(),
+            "data_inizio": (data_inizio or "").strip(),
+            "data_fine": "",
+            "personale_totale": self._parse_int(personale),
+            "costo_totale": 0.0,
+            "tipo_missione": "",
+            "mandato": "",
+            "link_documento": url,
         }
 
-    def estrai_dati(self) -> pd.DataFrame:
-        self.logger.info("Inizio estrazione dati documenti Camera dei Deputati")
-        dati = []
-        
-        for url in self.document_urls:
-            try:
-                self.logger.info(f"Tentativo di download documento da: {url}")
-                local_path = self._scarica_documento(url)
-                if local_path:
-                    testo = self._estrai_testo_da_documento(local_path)
-                    if testo:
-                        dati_estratti = self._estrai_dati_da_testo(testo, self.patterns)
-                        dati_estratti['fonte'] = self.fonte
-                        dati_estratti['ultimo_aggiornamento'] = datetime.now().strftime('%Y-%m-%d')
-                        dati_estratti['link_documento'] = url
-                        dati_estratti['local_path'] = str(local_path)
-                        dati.append(dati_estratti)
-            except Exception as e:
-                self.logger.error(f"Errore nell'elaborazione del documento {url}: {str(e)}")
-                continue
-                
-        if not dati:
-            self.logger.error("Nessun dato estratto dai documenti")
-            return pd.DataFrame()
-            
-        df = pd.DataFrame(dati)
-        self._salva_dati_raw(dati, f"camera_documenti_raw")
-        df = self.pulisci_dati(df)
-        if self.valida_dati(df):
-            self._salva_dati_processati(df, "camera_documenti_processed")
-            return df
-        else:
-            self.logger.error("Validazione dati fallita")
-            return pd.DataFrame()
+    @staticmethod
+    def _extract(pattern: str, text: str) -> Optional[str]:
+        m = re.search(pattern, text, re.IGNORECASE)
+        return m.group(1) if m else None
 
-    def _scarica_documento(self, url: str) -> str:
-        """Scarica il documento e restituisce il path locale"""
-        # Genera un nome file più descrittivo basato sull'URL originale
-        original_filename = url.split('/')[-1]
-        if not original_filename or original_filename == '':
-            original_filename = 'document'
-        
-        # Rimuovi caratteri problematici dal nome file
-        safe_filename = re.sub(r'[<>:"/\\|?*]', '_', original_filename)
-        
-        # Se il file esiste già, aggiungi un suffisso
-        base_name = os.path.splitext(safe_filename)[0]
-        counter = 1
-        final_filename = safe_filename
-        
-        while (self.documents_dir / final_filename).exists():
-            name, ext_part = os.path.splitext(safe_filename)
-            final_filename = f"{name}_{counter}{ext_part}"
-            counter += 1
-        
-        local_path = self.documents_dir / final_filename
-        
-        if local_path.exists():
-            self.logger.info(f"Documento già presente in data/documents/: {local_path.name}")
-            return str(local_path)
-            
-        for tentativo in range(self.max_retries):
-            try:
-                self.logger.info(f"Tentativo {tentativo + 1} di download da {url}")
-                response = requests.get(url, timeout=self.timeout)
-                response.raise_for_status()
-                
-                with open(local_path, 'wb') as f:
-                    f.write(response.content)
-                    
-                self.logger.info(f"Documento scaricato con successo in data/documents/: {local_path.name}")
-                return str(local_path)
-                
-            except requests.Timeout:
-                self.logger.warning(f"Timeout al tentativo {tentativo + 1}")
-                if tentativo < self.max_retries - 1:
-                    time.sleep(2 ** tentativo)  # Exponential backoff
-                continue
-                
-            except requests.RequestException as e:
-                self.logger.error(f"Errore nella richiesta HTTP: {str(e)}")
-                if tentativo < self.max_retries - 1:
-                    time.sleep(2 ** tentativo)
-                continue
-                
-            except Exception as e:
-                self.logger.error(f"Errore imprevisto: {str(e)}")
-                return None
-                
-        self.logger.error(f"Impossibile scaricare il documento dopo {self.max_retries} tentativi")
-        return None
-
-    def _estrai_testo_da_documento(self, doc_path: str) -> str:
-        """Estrai testo dal documento"""
+    @staticmethod
+    def _parse_int(s: Optional[str]) -> int:
+        if not s:
+            return 0
         try:
-            with open(doc_path, 'r') as f:
-                return f.read()
-        except Exception as e:
-            self.logger.error(f"Errore nell'estrazione del testo dal documento {doc_path}: {str(e)}")
-            return None
-
-    def _estrai_dati_da_testo(self, testo: str, patterns: dict) -> dict:
-        """Estrai dati strutturati dal testo"""
-        missione = {}
-        for campo, pattern in patterns.items():
-            match = re.search(pattern, testo, re.IGNORECASE)
-            if match:
-                missione[campo] = match.group(1).strip()
-            else:
-                missione[campo] = ""
-        
-        # Aggiungi campi obbligatori mancanti
-        missione.update({
-            'fonte': self.fonte,
-            'ultimo_aggiornamento': datetime.now().strftime('%Y-%m-%d'),
-            'note': testo[:500],  # salva un estratto del testo per debug
-            'link_documento': doc_path
-        })
-        
-        # Pulisci e standardizza i dati
-        missione = self._pulisci_dati_missione(missione)
-        return missione
-
-    def _pulisci_dati_missione(self, missione: dict) -> dict:
-        """Pulisce e standardizza i dati estratti"""
-        # Rimuovi spazi extra
-        for key, value in missione.items():
-            if isinstance(value, str):
-                missione[key] = value.strip()
-        
-        # Converti date
-        for campo in ['data_inizio', 'data_fine']:
-            if missione[campo]:
-                try:
-                    data = datetime.strptime(missione[campo], '%d/%m/%Y')
-                    missione[campo] = data.strftime('%Y-%m-%d')
-                except ValueError:
-                    missione[campo] = ""
-        
-        # Converti numeri
-        if missione['personale_totale']:
-            try:
-                missione['personale_totale'] = int(re.sub(r'[^\d]', '', missione['personale_totale']))
-            except ValueError:
-                missione['personale_totale'] = 0
-                
-        if missione['costo_totale']:
-            try:
-                # Rimuovi punti e sostituisci virgole con punti
-                costo = missione['costo_totale'].replace('.', '').replace(',', '.')
-                missione['costo_totale'] = float(costo)
-            except ValueError:
-                missione['costo_totale'] = 0.0
-        
-        return missione
-
-    def _trova_documenti(self, soup: BeautifulSoup) -> list:
-        """Trova tutti i documenti relativi alle missioni"""
-        # TODO: Implementare la logica specifica per trovare i documenti
-        # Questo dipenderà dalla struttura HTML del sito
-        return soup.find_all('div', class_='documento-missione')
-
-    def _estrai_dati_documento(self, doc: BeautifulSoup) -> dict:
-        """Estrae i dati da un singolo documento"""
-        try:
-            # TODO: Implementare la logica specifica per estrarre i dati
-            # Questo è un esempio di struttura
-            return {
-                'nome_missione': self._estrai_nome_missione(doc),
-                'paese': self._estrai_paese(doc),
-                'data_inizio': self._estrai_data_inizio(doc),
-                'data_fine': self._estrai_data_fine(doc),
-                'personale_totale': self._estrai_personale(doc),
-                'costo_totale': self._estrai_costo(doc),
-                'fonte': self.fonte,
-                'ultimo_aggiornamento': datetime.now().strftime('%Y-%m-%d'),
-                'tipo_missione': self._estrai_tipo_missione(doc),
-                'mandato': self._estrai_mandato(doc),
-                'note': self._estrai_note(doc),
-                'link_documento': self._estrai_link(doc)
-            }
-        except Exception as e:
-            self.logger.error(f"Errore nell'estrazione dati dal documento: {str(e)}")
-            return None
-
-    def _estrai_nome_missione(self, doc: BeautifulSoup) -> str:
-        """Estrae il nome della missione"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_paese(self, doc: BeautifulSoup) -> str:
-        """Estrae il paese della missione"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_data_inizio(self, doc: BeautifulSoup) -> str:
-        """Estrae la data di inizio"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_data_fine(self, doc: BeautifulSoup) -> str:
-        """Estrae la data di fine"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_personale(self, doc: BeautifulSoup) -> int:
-        """Estrae il numero di personale"""
-        # TODO: Implementare logica specifica
-        return 0
-
-    def _estrai_costo(self, doc: BeautifulSoup) -> float:
-        """Estrae il costo totale"""
-        # TODO: Implementare logica specifica
-        return 0.0
-
-    def _estrai_tipo_missione(self, doc: BeautifulSoup) -> str:
-        """Estrae il tipo di missione"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_mandato(self, doc: BeautifulSoup) -> str:
-        """Estrae il mandato della missione"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_note(self, doc: BeautifulSoup) -> str:
-        """Estrae le note del documento"""
-        # TODO: Implementare logica specifica
-        return ""
-
-    def _estrai_link(self, doc: BeautifulSoup) -> str:
-        """Estrae il link del documento"""
-        # TODO: Implementare logica specifica
-        return "" 
+            return int(re.sub(r"[^\d]", "", s))
+        except ValueError:
+            return 0
