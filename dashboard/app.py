@@ -134,6 +134,26 @@ st.markdown("""
 
     /* ── Plotly chart containers ── */
     .js-plotly-plot { border-radius: 8px; }
+
+    /* ── Responsività ── */
+    @media (max-width: 768px) {
+        .main-header { font-size: 1.5rem !important; letter-spacing: 0; }
+        .sub-header { font-size: 0.8rem; }
+        .kpi-row { flex-direction: column; }
+        .kpi-card { min-width: 100% !important; }
+        .stTabs [data-baseweb="tab"] { padding: 6px 12px; font-size: 0.8rem; }
+        [data-testid="stSidebar"] { min-width: 240px !important; }
+    }
+    @media (max-width: 480px) {
+        .main-header { font-size: 1.2rem !important; }
+        .mida-footer { font-size: 0.7rem; }
+    }
+
+    /* ── Scrollbar personalizzata ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #EAE6DC; }
+    ::-webkit-scrollbar-thumb { background: #8B9298; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #5A5F63; }
 </style>
 """, unsafe_allow_html=True)
 

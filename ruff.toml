@@ -1,0 +1,11 @@
+[lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501", "E402", "F401"]
+
+[lint.per-file-ignores]
+"tests/*" = ["E501"]
+"dashboard/*" = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
