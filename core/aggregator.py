@@ -492,6 +492,162 @@ class ExcelAggregator:
         "nato ground forces europe": {"costo_totale": 80_000_000},    # quota ITA ~80M (non 1B NATO totale)
     }
 
+    # ── Date mancanti: fonti difesa.it, analisidifesa.it, EU CSDP factsheets ──
+    # Formato: "nome_lower": {"data_inizio": "YYYY-MM-DD", "data_fine": "YYYY-MM-DD", "paese": "..."}
+    DATE_CORRECTIONS = {
+        # NATO
+        "nato mission iraq": {"data_inizio": "2018-10-09"},
+        "resolute support": {"data_inizio": "2015-01-01", "data_fine": "2021-09-07"},
+        "unified protector": {"data_inizio": "2011-03-31", "data_fine": "2011-10-31"},
+        "cieli ghiacciati": {"data_inizio": "2013-05-01", "data_fine": "2013-09-30"},
+        "frontiera baltica": {"data_inizio": "2014-09-01", "data_fine": "2015-03-31"},
+        "enhanced forward presence - baltic guardian lettonia": {"data_inizio": "2017-06-19"},
+        "enhanced air policing bulgaria": {"data_inizio": "2014-09-01", "data_fine": "2022-12-31"},
+        "enhanced air policing romania": {"data_inizio": "2014-05-01"},
+        "northern ice": {"data_inizio": "2014-10-01", "data_fine": "2014-12-31"},
+        "northern stork": {"data_inizio": "2015-10-01", "data_fine": "2015-12-31"},
+        "northern lightning i": {"data_inizio": "2016-04-01", "data_fine": "2016-06-30"},
+        "northern lightning ii": {"data_inizio": "2017-04-01", "data_fine": "2017-06-30"},
+        "active fence": {"data_inizio": "2013-01-25", "data_fine": "2015-12-31"},
+        "nato standing naval forces med": {"data_inizio": "1968-01-01"},
+        "nato military liaison office belgrade": {"data_inizio": "2006-12-14"},
+        "nato multinational battle group bulgaria": {"data_inizio": "2022-06-29"},
+        "nato multinational battle group ungheria": {"data_inizio": "2022-06-29"},
+        "air policing": {"data_inizio": "2004-03-29"},
+        # ONU
+        "white crane": {"data_inizio": "2010-01-19", "data_fine": "2010-03-31"},
+        "caravella": {"data_inizio": "2010-01-19", "data_fine": "2010-02-28"},
+        "unsmis": {"data_inizio": "2012-04-21", "data_fine": "2012-08-19"},
+        # Bilateral / Nazionali
+        "cyrene": {"data_inizio": "2011-04-18", "data_fine": "2011-10-31"},
+        "miccd": {"data_inizio": "2020-01-01"},
+        "ippocrate": {"data_inizio": "2016-09-01", "data_fine": "2020-12-31"},
+        "emochm": {"data_inizio": "2022-07-01", "data_fine": "2023-12-31"},
+        "task force cedri": {"data_inizio": "2020-08-04", "data_fine": "2021-06-30"},
+        "operazione levante": {"data_inizio": "2023-10-15"},
+        "mediterraneo sicuro": {"data_inizio": "2015-03-12"},
+        # Multinazionali / Coalizione
+        "prima parthica": {"data_inizio": "2014-10-01"},
+        "task force takuba": {"data_inizio": "2020-07-15", "data_fine": "2022-06-30"},
+        "mtc4l libano": {"data_inizio": "2023-01-01"},
+        "ctf153 mar rosso": {"data_inizio": "2022-04-17"},
+        # EU CSDP (fonti: EU factsheets, eeas.europa.eu)
+        "aceh mission- amm": {"data_inizio": "2005-09-15", "data_fine": "2006-12-15", "paese": "Indonesia"},
+        "eu advisory mission in iraq": {"data_inizio": "2017-10-16", "paese": "Iraq"},
+        "eu aviation security south sudan (euavsec south sudan)": {"data_inizio": "2012-06-18", "data_fine": "2014-01-17", "paese": "Sud Sudan"},
+        "eu capacity building sahel niger (eucap niger)": {"data_inizio": "2012-08-16", "data_fine": "2024-06-30", "paese": "Niger"},
+        "eu integrated rule of law mission iraq (eujust lex-iraq)": {"data_inizio": "2005-07-01", "data_fine": "2013-12-31", "paese": "Iraq"},
+        "eu military advisory mission, central african republic, eumam rca": {"data_inizio": "2015-03-16", "data_fine": "2023-09-19", "paese": "Repubblica Centrafricana"},
+        "eu military bridging mission (eufor tchad/rca)": {"data_inizio": "2008-01-28", "data_fine": "2009-03-15", "paese": "Ciad"},
+        "eu military mission artemis, democratic republic of congo (drc)": {"data_inizio": "2003-06-12", "data_fine": "2003-09-01", "paese": "Repubblica Democratica del Congo"},
+        "eu military mission concordia/ fyrom, former yugoslav republic of macedonia": {"data_inizio": "2003-03-31", "data_fine": "2003-12-15", "paese": "Macedonia del Nord"},
+        "eu naval operation mediterranean sophia": {"data_inizio": "2015-06-22", "data_fine": "2020-03-31", "paese": "Mediterraneo"},
+        "eu police mission afghanistan (eupol)": {"data_inizio": "2007-06-15", "data_fine": "2016-12-31", "paese": "Afghanistan"},
+        "eu police mission bosnia and herzegovina (eupm bih)": {"data_inizio": "2003-01-01", "data_fine": "2012-06-30", "paese": "Bosnia Erzegovina"},
+        "eu police mission former republic of yugoslavia proxima  (proxima/ fyrom) 1 and 2": {"data_inizio": "2003-12-15", "data_fine": "2005-12-14", "paese": "Macedonia del Nord"},
+        "eu rule of law mission georgia (eujust themis)": {"data_inizio": "2004-07-16", "data_fine": "2005-07-14", "paese": "Georgia"},
+        "eu security sector reform mission in guinea-bissau (eu-ssr)": {"data_inizio": "2008-06-12", "data_fine": "2010-09-30", "paese": "Guinea-Bissau"},
+        "eu support to amis (darfur)": {"data_inizio": "2005-07-18", "data_fine": "2007-12-31", "paese": "Sudan"},
+        "eu military training mission in mozambique (eutm monzambique)": {"data_inizio": "2021-11-15", "data_fine": "2024-09-30", "paese": "Mozambico"},
+        "eudel": {"data_inizio": "2011-05-22", "data_fine": "2012-01-31", "paese": "Libia"},
+        "eudel libya": {"data_inizio": "2013-05-22", "data_fine": "2015-02-28", "paese": "Libia"},
+        "eufor rca": {"data_inizio": "2014-04-01", "data_fine": "2015-03-15", "paese": "Repubblica Centrafricana"},
+        "joint operation themis": {"data_inizio": "2018-02-01", "paese": "Mediterraneo"},
+        "eunavfor med - sophia": {"data_inizio": "2015-06-22", "data_fine": "2020-03-31"},
+        "eumam ucraina": {"data_inizio": "2022-11-15"},
+        # ── Missioni storiche (pre-2010) — fonti: difesa.it archivio, Wikipedia, EU CSDP ──
+        # Balcani anni '90
+        "upfm": {"data_inizio": "1998-01-15", "data_fine": "2000-06-30"},  # UN Police Force Macedonia
+        "deliberate force": {"data_inizio": "1995-08-30", "data_fine": "1995-09-20"},
+        "alba": {"data_inizio": "1997-04-15", "data_fine": "1997-08-12"},  # Op Alba Albania
+        "28esimo gruppo navale": {"data_inizio": "1997-03-14", "data_fine": "1997-08-20"},
+        "mape": {"data_inizio": "1997-05-15", "data_fine": "2001-05-31"},  # Multinational Advisory Police Element
+        "unmibh (iptf)": {"data_inizio": "1995-12-21", "data_fine": "2002-12-31"},
+        "die": {"data_inizio": "1997-11-01", "data_fine": "2001-12-31"},  # Delegazione Italiana Esperti Albania
+        "eagle eye": {"data_inizio": "1998-10-15", "data_fine": "1999-03-24"},  # Kosovo verification
+        "joint guarantor": {"data_inizio": "1998-10-15", "data_fine": "1999-03-24"},
+        "allied force": {"data_inizio": "1999-03-24", "data_fine": "1999-06-10"},  # Kosovo bombing
+        "allied harbour": {"data_inizio": "1999-04-04", "data_fine": "1999-09-01"},  # Albania refugees
+        "allied harvest": {"data_inizio": "1999-06-12", "data_fine": "1999-10-31"},  # Adriatic mine clearing
+        "albit": {"data_inizio": "1999-09-01", "data_fine": "2002-12-31"},  # Albania bilateral
+        "essential harvest": {"data_inizio": "2001-08-22", "data_fine": "2001-09-26"},  # Macedonia
+        "amber fox": {"data_inizio": "2001-09-27", "data_fine": "2003-03-31"},  # Macedonia
+        "allied harmony": {"data_inizio": "2002-12-16", "data_fine": "2003-03-31"},  # Macedonia
+        "eupm": {"data_inizio": "2003-01-01", "data_fine": "2012-06-30"},  # EU Police Mission BiH
+        "eu concordia": {"data_inizio": "2003-03-31", "data_fine": "2003-12-15"},  # Macedonia
+        "eupol proxima": {"data_inizio": "2003-12-15", "data_fine": "2005-12-14"},  # Macedonia
+        "eupat": {"data_inizio": "2005-12-15", "data_fine": "2006-06-14"},  # EU Police Advisory Team Macedonia
+        "eupt": {"data_inizio": "2006-04-10", "data_fine": "2008-12-04"},  # EU Planning Team Kosovo
+        "nato hq tirana": {"data_inizio": "2002-07-01", "data_fine": "2012-06-30"},
+        "nato hq skopje": {"data_inizio": "2002-04-03", "data_fine": "2012-06-30"},
+        "nato hq sarajevo": {"data_inizio": "2004-12-02"},  # still active
+        "nato hq belgrado": {"data_inizio": "2006-12-14"},  # MLO Belgrade
+        "tiph ii": {"data_inizio": "1997-01-21", "data_fine": "2019-01-31"},  # Temporary International Presence Hebron
+        # ONU storiche
+        "minugua": {"data_inizio": "1994-11-21", "data_fine": "2004-11-15"},  # Guatemala
+        "unavem iii": {"data_inizio": "1995-02-08", "data_fine": "1997-06-30"},  # Angola
+        "processo pace sudan": {"data_inizio": "2005-03-24", "data_fine": "2011-07-09"},  # UNMIS
+        "unowa": {"data_inizio": "2002-03-01", "data_fine": "2016-03-31"},  # UN Office West Africa
+        "amisom": {"data_inizio": "2007-03-06", "data_fine": "2022-03-31"},  # AU Mission Somalia
+        # NATO storiche
+        "active endeavour": {"data_inizio": "2001-10-26", "data_fine": "2016-11-09"},  # Mediterranean
+        "ntm i": {"data_inizio": "2004-08-14", "data_fine": "2011-12-31"},  # NATO Training Mission Iraq
+        "indus": {"data_inizio": "2005-10-08", "data_fine": "2006-02-01"},  # Pakistan earthquake
+        "ocean shield": {"data_inizio": "2009-08-17", "data_fine": "2016-12-15"},  # Anti-piracy
+        "baltic air policing": {"data_inizio": "2004-03-29"},  # ongoing rotational
+        # Multinazionali storiche
+        "enduring freedom - nibbio": {"data_inizio": "2001-11-18", "data_fine": "2014-12-28"},  # Afghanistan
+        "antica babilonia": {"data_inizio": "2003-07-15", "data_fine": "2006-12-01"},  # Iraq
+        "interfet": {"data_inizio": "1999-09-20", "data_fine": "2000-02-28"},  # East Timor
+        # UE storiche
+        "althea": {"data_inizio": "2004-12-02"},  # EUFOR Althea, ongoing
+        "eupol kinshasa": {"data_inizio": "2005-04-30", "data_fine": "2007-06-30"},
+        "eufor rdc": {"data_inizio": "2006-07-12", "data_fine": "2006-11-30"},  # DRC elections
+        "eusec rdc": {"data_inizio": "2005-06-08", "data_fine": "2016-06-30"},
+        "eupol afghanistan": {"data_inizio": "2007-06-15", "data_fine": "2016-12-31"},
+        "eupol rdc": {"data_inizio": "2007-07-01", "data_fine": "2014-09-30"},
+        "eufor ciad": {"data_inizio": "2008-01-28", "data_fine": "2009-03-15"},  # Chad/RCA
+        "eumm georgia": {"data_inizio": "2008-10-01"},  # ongoing
+        "eu amis ii sudan": {"data_inizio": "2005-07-18", "data_fine": "2007-12-31"},
+        "artemis": {"data_inizio": "2003-06-12", "data_fine": "2003-09-01"},  # DRC
+        "mare sicuro": {"data_inizio": "2015-03-12"},  # ongoing national op
+        # ── Missioni Guerra Fredda e anni '90 — fonti: difesa.it archivio storico ──
+        "mandato onu in somalia": {"data_inizio": "1950-01-01", "data_fine": "1960-12-31"},  # AFIS trust territory
+        "unef": {"data_inizio": "1956-11-15", "data_fine": "1967-06-17"},  # Suez crisis
+        "unogil": {"data_inizio": "1958-06-11", "data_fine": "1958-12-09"},  # Lebanon observation
+        "intervento in laos": {"data_inizio": "1961-05-01", "data_fine": "1962-12-31"},
+        "unoc": {"data_inizio": "1960-07-14", "data_fine": "1964-06-30"},  # Congo
+        "unyom": {"data_inizio": "1963-07-04", "data_fine": "1964-09-04"},  # Yemen
+        "mictm": {"data_inizio": "1967-01-01", "data_fine": "1979-12-31"},  # Malta bilateral
+        "diatm": {"data_inizio": "1973-01-01", "data_fine": "1979-12-31"},  # Malta bilateral
+        "libano i": {"data_inizio": "1982-08-21", "data_fine": "1982-09-13"},  # Beirut MNF I
+        "libano ii": {"data_inizio": "1982-09-29", "data_fine": "1984-02-26"},  # Beirut MNF II
+        "mine mar rosso": {"data_inizio": "1984-08-09", "data_fine": "1984-10-15"},  # Red Sea minesweeping
+        "miatm": {"data_inizio": "1980-01-01", "data_fine": "1988-12-31"},  # Malta bilateral
+        "uniimog": {"data_inizio": "1988-08-20", "data_fine": "1991-02-28"},  # Iran-Iraq
+        "untag": {"data_inizio": "1989-04-01", "data_fine": "1990-03-21"},  # Namibia
+        "unoca": {"data_inizio": "1988-05-15", "data_fine": "1990-03-15"},  # Afghanistan
+        "desert shield - golfo 2": {"data_inizio": "1990-08-07", "data_fine": "1991-01-16"},
+        "desert storm - locusta": {"data_inizio": "1991-01-17", "data_fine": "1991-02-28"},
+        "unosgi": {"data_inizio": "1991-04-09", "data_fine": "1991-10-31"},  # Iraq-Kuwait
+        "provide comfort i": {"data_inizio": "1991-04-07", "data_fine": "1991-07-15"},  # Kurdistan
+        "provide comfort ii": {"data_inizio": "1991-07-15", "data_fine": "1996-12-31"},
+        "eumm balcani": {"data_inizio": "1991-07-07", "data_fine": "2007-12-31"},  # EC/EU Monitor Mission
+        "onusal": {"data_inizio": "1991-07-26", "data_fine": "1995-04-30"},  # El Salvador
+        "pellicano": {"data_inizio": "1991-09-14", "data_fine": "1993-12-03"},  # Albania humanitarian
+        "sharp fence - maritime guard": {"data_inizio": "1992-07-16", "data_fine": "1993-06-15"},  # Adriatic
+        "untac": {"data_inizio": "1992-03-15", "data_fine": "1993-09-26"},  # Cambodia
+        "unitaf - restore hope - ibis i": {"data_inizio": "1992-12-09", "data_fine": "1993-05-04"},  # Somalia
+        "unomoz": {"data_inizio": "1992-12-16", "data_fine": "1994-12-09"},  # Mozambique
+        "unosom ii - ibis ii": {"data_inizio": "1993-05-04", "data_fine": "1995-03-28"},  # Somalia
+        "operazione danubio": {"data_inizio": "1993-04-17", "data_fine": "1996-06-18"},  # Danube patrol
+        "sharp guard": {"data_inizio": "1993-06-15", "data_fine": "1996-10-02"},  # Adriatic
+        "deny flight": {"data_inizio": "1993-04-12", "data_fine": "1995-12-20"},  # Bosnia no-fly
+        "ippocampo": {"data_inizio": "1994-07-01", "data_fine": "1994-12-31"},  # Rwanda humanitarian
+        "tiph i": {"data_inizio": "1994-05-12", "data_fine": "1997-01-17"},  # Hebron
+        "united shield": {"data_inizio": "1995-01-01", "data_fine": "1995-03-03"},  # Somalia withdrawal
+    }
+
     # Record da rimuovere (duplicati o dati storici erroneamente attivi)
     # NOTA: usare il nome ORIGINALE (prima delle correzioni) in lowercase
     RECORDS_TO_REMOVE = [
@@ -546,6 +702,30 @@ class ExcelAggregator:
 
         if corrections_applied:
             logger.info(f"Applicate correzioni ufficiali a {corrections_applied} record")
+
+        # 3b. Applica correzioni date (solo se data_inizio è NaT)
+        nomi = df["nome"].str.lower().str.strip()  # refresh after corrections
+        dates_applied = 0
+        for nome_key, date_corr in self.DATE_CORRECTIONS.items():
+            mask = nomi == nome_key
+            if not mask.any() and len(nome_key) >= 6:
+                mask = nomi.str.contains(nome_key, na=False, regex=False)
+            if mask.any():
+                for field, value in date_corr.items():
+                    if field in ("data_inizio", "data_fine"):
+                        # Solo se il campo è NaT (non sovrascrivere date esistenti)
+                        nat_mask = mask & df[field].isna()
+                        if nat_mask.any():
+                            df.loc[nat_mask, field] = pd.to_datetime(value)
+                            dates_applied += nat_mask.sum()
+                    else:
+                        # paese e altri campi: sovrascrivi solo se vuoto/nan
+                        empty_mask = mask & (df[field].isna() | (df[field].astype(str).str.strip() == "") | (df[field].astype(str).str.lower() == "nan"))
+                        if empty_mask.any():
+                            df.loc[empty_mask, field] = value
+                            dates_applied += empty_mask.sum()
+        if dates_applied:
+            logger.info(f"Applicate {dates_applied} correzioni date da fonti ufficiali")
 
         # 4. Normalizza TUTTI i nomi paese EN→IT
         COUNTRY_NORMALIZE = {
