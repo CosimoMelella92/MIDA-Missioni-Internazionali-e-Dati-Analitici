@@ -1,186 +1,267 @@
-# MIDA Frontend Uplift V2 — Prompt per Redesign Completo
+# MIDA Frontend V3 — Redesign Istituzionale Professionale
 
-## Contesto
+## Ruolo
 
-Sei un senior frontend engineer e UI/UX designer specializzato in **instructional design per applicazioni militari/istituzionali**. Devi fare un uplift importante del frontend React di MIDA (Missioni Internazionali e Dati Analitici), una piattaforma di analisi delle 234 missioni militari internazionali italiane dal 1948 al 2026.
+Sei un senior frontend engineer specializzato in **portali istituzionali governativi e militari**. Il tuo riferimento visivo sono:
+- Il portale dello **Stato Maggiore della Difesa** (difesa.it)
+- I report annuali del **Ministero della Difesa** (Documento Programmatico Pluriennale)
+- Le dashboard operative **NATO ACO** (Allied Command Operations)
+- I briefing paper dell'**ISPI** (Istituto per gli Studi di Politica Internazionale)
 
-## Stato Attuale
+NON sei un "vibe coder". NON usi emoji come decorazione, NON usi icone Lucide ovunque, NON usi effetti hover appariscenti. Produci interfacce **sobrie, dense di dati, tipograficamente impeccabili** — il tipo di cosa che un Generale di Corpo d'Armata guarderebbe senza alzare un sopracciglio.
 
-Il frontend è funzionante ma visivamente basico:
-- **Stack**: React 18 + TypeScript + Vite 5 + Tailwind CSS 3 + Recharts + Leaflet + Framer Motion
-- **Dati**: JSON statici pre-generati (missions.json, active.json, stats.json) — nessun backend
-- **5 pagine**: Home (Situazione), Dashboard (Analisi), Missioni, Timeline (Cronologia), Mappa (Teatro Operativo)
-- **Tema**: Palette militare italiana (olive #4A5D23, navy #1B3A5C, sand #F5F3EE, red #8B1A1A, steel #5A5F63)
-- **Problemi attuali**: Layout piatto, card tutte uguali, nessuna gerarchia visiva forte, grafici generici Recharts, mappa basica, nessun storytelling
+---
 
-## Dati Disponibili (JSON)
+## Progetto
 
-```typescript
-interface Mission {
-  nome: string           // "UNIFIL", "KFOR", "Mare Sicuro"...
-  paese: string          // "Libano", "Kosovo", "Mediterraneo"...
-  regione: string        // "Europa", "Medio Oriente", "Africa", "Asia"
-  tipo_missione: string  // "ONU", "NATO", "UE", "ITA", "Bilateral", "Multinational", "Coalizione"
-  data_inizio: string    // "1978-03-19"
-  data_fine: string|null // "2024-12-31" o null se attiva
-  personale_totale: number
-  personale_militare: number
-  personale_civile: number
-  costo_totale: number
-  is_active: boolean
-  commitment: string     // "Troops", "Advisory/Training"...
-  tipo_partecipazione: string // "mil", "civ", "civmil"
-}
+MIDA (Missioni Internazionali e Dati Analitici) — piattaforma di analisi delle **234 missioni militari internazionali italiane** dal 1948 al 2026. 40 missioni attualmente in corso, 8.526 unità di personale impiegato.
 
-interface Stats {
-  total: 234, active: 40, personnel: 8526, countries: 26, organizations: 7, regions: 5,
-  by_org: { NATO: 10, UE: 11, ONU: 5, Bilateral: 6, ITA: 3, Multinational: 4, Coalizione: 1 },
-  by_region: { Europa: 14, "Medio Oriente": 15, Africa: 10, Asia: 1 },
-  by_decade: { "1940": 6, "1950": 3, "1960": 7, "1970": 2, "1980": 11, "1990": 53, "2000": 61, "2010": 60, "2020": 31 }
-}
-```
+## Stack Tecnico (non modificare)
 
-## Obiettivo dell'Uplift
+- React 18 + TypeScript + Vite 5 + Tailwind CSS 3
+- Recharts (grafici), Leaflet (mappe), Framer Motion (animazioni sobrie)
+- Dati: JSON statici in `/public/data/` — nessun backend
 
-Trasformare il frontend da "dashboard funzionale" a **piattaforma di intelligence militare visivamente impressionante** che:
+## Cosa NON Fare
 
-1. **Racconta una storia** — Progressive disclosure: prima il quadro strategico, poi i dettagli operativi
-2. **Sembra un sistema C4I** — Command, Control, Communications, Computers & Intelligence
-3. **È istituzionale** — Adatto a una presentazione al Ministero della Difesa o in ambito accademico
-4. **È data-dense** — Mostra molte informazioni senza sembrare caotico
+1. **NO emoji nelle UI** — Niente bandiere emoji (🇮🇹), niente onde (🌊), niente icone decorative sparse. Le bandiere si rappresentano con il nome del paese, punto.
+2. **NO icone Lucide ovunque** — Le icone si usano SOLO nella navbar e nei bottoni azione. Mai come decorazione di card o sezioni.
+3. **NO effetti "wow"** — Niente animazioni appariscenti, niente glow, niente pulse esagerato. Le animazioni sono solo: fade-in al caricamento, contatori numerici, transizioni pagina.
+4. **NO colori saturi** — La palette è desaturata, istituzionale. Mai colori pieni al 100% di opacità su grandi superfici.
+5. **NO card con bordi arrotondati grandi** — Bordi `rounded` (4px), mai `rounded-xl` o `rounded-2xl`. Questo è un portale governativo, non un'app consumer.
+6. **NO font display** — Solo Inter per il testo, JetBrains Mono per i numeri. Nessun font decorativo.
 
-## Requisiti Specifici per Pagina
+## Cosa Fare
 
-### 1. HOME — "Rapporto Situazione" (la pagina più importante)
+### Identità Visiva Istituzionale
 
-**Layout target**: Ispirato a un briefing room militare / situation report
+1. **Emblema della Repubblica Italiana** — Scaricare il file SVG ufficiale dell'emblema e posizionarlo nella navbar accanto al nome MIDA. Dimensione: 28x28px. File: `frontend/public/emblema_repubblica.svg`. Se non disponibile, creare un componente SVG inline semplificato (stella + corona d'alloro + ruota dentata) in monocromo bianco.
 
-- **Hero Section**: Background con pattern topografico militare sottile (CSS only, no immagini). Titolo con effetto "classified document" — linea rossa sopra, timbro "RAPPORTO SITUAZIONE" stilizzato
-- **KPI Strip**: 5 card con micro-sparkline dentro (trend ultimi decenni), non solo numeri piatti. Ogni card ha un bordo sinistro colorato per org, icona militare, numero grande animato, label piccola uppercase
-- **Mini-mappa inline**: Piccola mappa Leaflet embedded (300px altezza) che mostra i 26 teatri operativi con marker proporzionali al personale. Non una pagina separata — è il "colpo d'occhio" strategico
-- **Dispositivo Operativo**: Le 40 missioni attive raggruppate per organizzazione (ONU, NATO, UE, ITA, Bilateral, Multinational, Coalizione) con header colorato per ogni gruppo. Ogni missione mostra: nome, paese, personale, barra proporzionale al personale
-- **Sezione "Impegno Storico"**: Area chart (Recharts AreaChart) che mostra il numero di missioni attive per anno dal 1948 al 2026 — il "battito cardiaco" dell'impegno italiano. Colore olive con gradient trasparente
-- **Footer sezione**: Citazione istituzionale + fonti ufficiali
+2. **Foto istituzionali** — Aggiungere 2-3 foto nella HomePage come elementi di contesto visivo:
+   - Hero background: foto sfocata (CSS blur + overlay scuro) di militari italiani in operazione (usare un placeholder gradient se la foto non è disponibile — NON lasciare spazi vuoti)
+   - Le foto vanno in `frontend/public/images/` e devono essere referenziate con path relativo
+   - Se le foto non sono disponibili, usare un **gradient istituzionale** navy→olive come fallback, MAI un pattern decorativo
 
-### 2. DASHBOARD — "Analisi Operativa"
+3. **Tipografia da documento ufficiale**:
+   - Titoli sezione: `font-size: 14px`, `font-weight: 700`, `text-transform: uppercase`, `letter-spacing: 0.12em`, `color: #1B3A5C`, con una linea sottile sotto (`border-bottom: 1px solid #D4CFC3`)
+   - NON usare font-size grandi per i titoli sezione (mai > 16px). I titoli grandi sono SOLO per il numero nelle KPI card.
+   - Corpo testo: 13px, colore #5A5F63
+   - Numeri/dati: JetBrains Mono 500, colore #1B3A5C
 
-- **Sidebar filtri collassabile** (non inline): Filtri per organizzazione, regione, periodo, stato (attiva/conclusa). Sidebar scura (olive-dark) con toggle per aprire/chiudere
-- **Grid 2x2 grafici principali**: Donut org (con percentuali dentro), barre regione orizzontali, area chart decennale, treemap paesi (top 15 per numero missioni)
-- **Sezione "Top 10"**: Barre orizzontali per le 10 missioni con più personale, con foto-bandiera del paese (emoji flag) e barra proporzionale
-- **Tutti i grafici reagiscono ai filtri** in tempo reale
-
-### 3. MISSIONI — "Registro Operazioni"
-
-- **Tabella professionale**: Header fisso, righe alternate (sand/white), sorting su tutte le colonne, ricerca globale
-- **Colonna "Stato"**: Indicatore LED verde pulsante per attive, grigio per concluse
-- **Colonna "Durata"**: Barra orizzontale proporzionale alla durata (anni)
-- **Click su riga**: Pannello laterale (drawer) con dettaglio completo della missione: mappa del paese, timeline, tutti i dati
-- **Export**: Bottoni CSV + Excel styled come bottoni militari (olive, uppercase, icona)
-- **Contatore in tempo reale**: "Mostrando X di 234 missioni" che si aggiorna con i filtri
-
-### 4. CRONOLOGIA — "Linea del Tempo Operativa"
-
-- **Gantt chart orizzontale**: Ogni missione è una barra colorata per organizzazione. Asse X = anni (1948-2026). Asse Y = missioni raggruppate per org
-- **Zoom**: Slider per selezionare range temporale (es. 1990-2010)
-- **Hover**: Tooltip ricco con nome, paese, durata, personale
-- **Marker eventi chiave**: Linee verticali per eventi storici (Guerra del Golfo 1991, 11 Settembre 2001, Primavera Araba 2011, etc.)
-- **Contatore missioni attive per anno**: Linea sovrapposta che mostra quante missioni erano attive in ogni momento
-
-### 5. MAPPA — "Teatro Operativo Globale"
-
-- **Mappa full-bleed** (edge-to-edge, no padding): Occupa tutto lo schermo sotto la navbar
-- **Tile layer scuro**: CartoDB dark_matter o Stamen Toner per effetto "war room"
-- **Marker proporzionali**: Cerchi la cui dimensione è proporzionale al personale totale nel paese
-- **Linee animate**: Polyline da Roma (COI) a ogni teatro con animazione CSS (dash-offset)
-- **Pannello laterale sovrapposto**: Lista missioni attive raggruppate per regione, semi-trasparente, scrollabile
-- **Cluster per paesi con più missioni**: Es. Libano ha UNIFIL + MIBIL + MTC4L → un unico marker grande con popup che lista tutte
-- **Legenda**: Overlay in basso a sinistra con colori per organizzazione + scala dimensioni
-
-## Design System
-
-### Palette (mantenere quella esistente, raffinare)
-```
-Olive:  #3D4F1E (dark), #4A5D23 (primary), #6B8C2A (light)
-Navy:   #1B3A5C (primary), #2C5F8A (light)
-Sand:   #F5F3EE (bg), #EAE6DC (card), #D4CFC3 (border)
-Red:    #8B1A1A (accent, alert)
-Steel:  #5A5F63 (text), #8B9298 (muted)
-Khaki:  #7D6B3A (secondary accent)
-```
-
-### Tipografia
-- **Headings**: Inter 700, uppercase, letter-spacing: 0.05em
-- **Body**: Inter 400
-- **Data/numeri**: JetBrains Mono 500
-- **Labels**: Inter 600, 10-11px, uppercase, tracking-widest
-
-### Componenti UI da creare
-- `StatusLed` — Pallino verde pulsante (attiva) o grigio (conclusa)
-- `OrgBadge` — Badge colorato per organizzazione con bordo arrotondato
-- `PersonnelBar` — Barra orizzontale proporzionale al personale
-- `MiniMap` — Mappa Leaflet inline piccola (per HomePage)
-- `FilterSidebar` — Sidebar scura collassabile con filtri
-- `MissionDrawer` — Pannello laterale per dettaglio missione
-- `SparkLine` — Mini grafico inline per trend nelle KPI card
-- `TopoBg` — Pattern topografico CSS per background hero
-
-### Animazioni (Framer Motion)
-- KPI counter: Conteggio animato da 0 al valore finale (ease-out cubic)
-- Card stagger: Le card appaiono una dopo l'altra con 50ms di delay
-- Page transition: Fade + slide-up leggero (200ms)
-- Mappa: Marker che appaiono con scale animation dal centro
-- Hover card: Leggero lift (translateY -2px) + shadow increase
-
-## Vincoli Tecnici
-
-- **NO backend** — Tutti i dati vengono da JSON statici in `/public/data/`
-- **NO API key** — Usare Leaflet + OpenStreetMap/CARTO (no Mapbox)
-- **NO nuove dipendenze pesanti** — Usare solo: React, Recharts, Leaflet, Framer Motion, Lucide, Tailwind
-- **Build deve passare** — `npx tsc --noEmit` deve dare 0 errori
-- **Responsive** — Mobile-first, ma ottimizzato per desktop (target: presentazione su schermo grande)
-- **Performance** — 234 missioni non sono tante, ma evitare re-render inutili
-
-## File da modificare
+### Palette (invariata, ma usata con disciplina)
 
 ```
-frontend/src/
-├── index.css                    # Aggiungere pattern topografico, animazioni CSS
-├── App.tsx                      # Invariato
-├── components/
-│   ├── layout/Navbar.tsx        # Raffinare con logo SVG inline
-│   ├── layout/Footer.tsx        # Aggiungere citazione istituzionale
-│   ├── cards/KpiCard.tsx        # Aggiungere sparkline + bordo sinistro colorato
-│   ├── charts/OrgDonut.tsx      # Aggiungere percentuali al centro
-│   ├── charts/RegionBar.tsx     # Barre orizzontali con label inline
-│   ├── charts/DecadeBar.tsx     # Convertire in AreaChart con gradient
-│   └── [NUOVI] StatusLed, OrgBadge, PersonnelBar, MiniMap, FilterSidebar, MissionDrawer
-├── pages/
-│   ├── HomePage.tsx             # Redesign completo (hero + mini-mappa + grouped missions + area chart)
-│   ├── DashboardPage.tsx        # Aggiungere sidebar filtri + treemap + top 10
-│   ├── MissionsPage.tsx         # Aggiungere drawer dettaglio + barra durata + LED stato
-│   ├── TimelinePage.tsx         # Gantt chart + zoom + eventi storici
-│   └── MapPage.tsx              # Full-bleed + dark tiles + pannello laterale + cluster
-├── hooks/
-│   ├── useMissions.ts           # Invariato
-│   └── useAnimatedCounter.ts    # Invariato
-└── lib/
-    ├── constants.ts             # Aggiungere HISTORICAL_EVENTS, COUNTRY_FLAGS
-    ├── types.ts                 # Invariato
-    └── utils.ts                 # Aggiungere formatDuration, getCountryFlag
+Navy:   #1B3A5C — titoli, header tabelle, navbar
+Olive:  #4A5D23 — accenti positivi, barre, indicatori "attivo"
+Sand:   #F5F3EE — sfondo pagina
+White:  #FFFFFF — sfondo card
+Border: #D4CFC3 — bordi card, separatori
+Steel:  #5A5F63 — testo corpo
+Muted:  #8B9298 — testo secondario, label
+Red:    #8B1A1A — SOLO per alert, errori, o il marker Roma sulla mappa
+```
+
+Regola d'oro: **il 90% della pagina è bianco/sabbia/grigio**. I colori si usano con parsimonia chirurgica.
+
+---
+
+## Specifiche per Pagina
+
+### 1. HOME — "Quadro Situazione"
+
+**Riferimento**: Prima pagina di un Documento Programmatico Pluriennale della Difesa.
+
+**Struttura dall'alto in basso:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ HERO: Gradient navy→olive, titolo bianco, sottotitolo   │
+│ "MINISTERO DELLA DIFESA — QUADRO SITUAZIONE FEB 2026"   │
+│ Emblema Repubblica in alto a destra (piccolo, 24px)      │
+│ Nessuna foto se non disponibile — solo gradient pulito   │
+├─────────────────────────────────────────────────────────┤
+│ KPI: 5 numeri in riga, sfondo bianco, bordo sottile      │
+│ Solo numero grande (JetBrains Mono 700, 28px) + label    │
+│ sotto (10px uppercase tracking-widest). NESSUNA icona.   │
+│ Separati da linee verticali sottili, non da gap.         │
+├─────────────────────────────────────────────────────────┤
+│ DUE COLONNE:                                             │
+│ [Sinistra 60%] Tabella missioni attive (compatta)        │
+│   - Colonne: Nome | Teatro | Org | Personale             │
+│   - Header navy, righe alternate, font 11px              │
+│   - Indicatore pallino 6px (olive=attiva) prima del nome │
+│   - Ordinata per personale decrescente                   │
+│                                                          │
+│ [Destra 40%] Mini-mappa Leaflet (dark tiles)             │
+│   - Altezza fissa 400px, bordo 1px #D4CFC3               │
+│   - Marker cerchio proporzionali, colore per org         │
+│   - Roma: quadrato rosso piccolo                         │
+│   - Linee tratteggiate Roma→teatri (opacity 0.15)        │
+│   - NO popup, NO interazione — è una mappa di contesto  │
+├─────────────────────────────────────────────────────────┤
+│ GRAFICO: Area chart "Missioni attive per anno"           │
+│ Sfondo bianco, bordo sottile. Titolo 14px uppercase.     │
+│ Area olive con opacity 0.15, linea olive 1.5px.          │
+│ Asse X: anni (ogni 10), asse Y: numeri. Font 10px.      │
+│ Altezza: 180px. Nessun tooltip appariscente.             │
+├─────────────────────────────────────────────────────────┤
+│ TRE COLONNE: Donut org | Barre regione | Barre decennio │
+│ Ogni grafico in card bianca con bordo, titolo 14px.      │
+│ Altezza uniforme 240px. Colori desaturati.               │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Cosa NON deve avere la HomePage:**
+- Nessun "stamp" o effetto documento classificato (è kitsch)
+- Nessuna emoji bandiera
+- Nessun LED pulsante (troppo appariscente per la home)
+- Nessun raggruppamento per organizzazione con header colorati (troppo pesante visivamente)
+
+### 2. DASHBOARD — "Analisi"
+
+**Riferimento**: Dashboard analitica NATO/ISPI.
+
+- **Barra filtri orizzontale** in alto (NON sidebar): 3 select inline (Org, Regione, Stato) + bottone "Reset" + contatore "234 missioni"
+- **Grid 2×2 grafici**: Donut org, barre regione, barre decennio, barre top 10 personale
+- **Sotto**: Tabella riassuntiva per organizzazione (righe: ONU, NATO, UE... | colonne: Totali, Attive, Personale, % del totale)
+- Tutti i grafici reagiscono ai filtri
+- Nessun treemap (troppo decorativo) — usare tabelle e barre
+
+### 3. MISSIONI — "Registro"
+
+- **Tabella densa**: font 11px, righe alte 32px, header fisso navy
+- **Colonne**: Stato (pallino 6px) | Nome | Teatro | Org (testo, non badge colorato) | Inizio | Fine | Personale | Durata (testo "12 anni", non barra)
+- **Click riga** → drawer laterale (320px) con scheda missione:
+  - Header navy con nome missione
+  - Griglia dati: Teatro, Regione, Organizzazione, Periodo, Personale (mil/civ/tot), Costo, Commitment
+  - Ogni dato su una riga: label a sinistra (10px uppercase muted), valore a destra (13px navy)
+  - Nessuna icona nel drawer
+- **Filtri**: Search + select org + checkbox "Solo attive" — inline, compatti
+- **Export CSV**: Bottone piccolo, testo "ESPORTA CSV", olive, uppercase 10px
+
+### 4. CRONOLOGIA — "Timeline"
+
+- **Gantt chart**: Barre orizzontali, colore per org (opacity 0.7 concluse, 1.0 attive)
+- **Asse X**: anni con tick ogni 10 anni, font mono 9px
+- **Zoom**: Due input range per selezionare periodo (start/end)
+- **Linee verticali** per eventi storici: tratteggio sottile (#8B1A1A opacity 0.2), label 7px in alto
+- **Tooltip on hover**: Box bianco con bordo, nome + teatro + periodo + personale. Font 11px. Nessuna emoji.
+- **NO overlay SVG area** (troppo decorativo per questa vista)
+
+### 5. MAPPA — "Dispositivo"
+
+- **Full-bleed**: La mappa occupa tutto lo spazio sotto la navbar
+- **Tile**: CartoDB dark_all (war room)
+- **Marker**: Cerchi proporzionali al personale. Colore per org principale del paese. Bordo bianco 1.5px.
+- **Roma**: Quadrato rosso 10px, tooltip "COI — Comando Operativo di Vertice Interforze"
+- **Linee**: Roma→teatri, olive opacity 0.15, tratteggio 4 6
+- **Popup on click**: Box con sfondo scuro (#1A1A1A 90%), testo chiaro. Nome paese (uppercase 9px muted), lista missioni con org + personale. Font 10-11px.
+- **Pannello laterale** (280px, sfondo #1A1A1A 85%, backdrop-blur):
+  - Header: "DISPOSITIVO OPERATIVO" + contatore missioni + personale totale
+  - Lista missioni raggruppate per regione
+  - Ogni missione: pallino org + nome + personale (font 10px)
+  - Scrollabile, nessuna animazione
+- **Legenda**: In basso a sinistra, sfondo scuro, pallini colorati + nome org (font 8px)
+
+---
+
+## Navbar
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ [Emblema 24px] MIDA  │ Situazione │ Analisi │ Registro │ │
+│                       │ Timeline │ Dispositivo           │
+│                                          Stato Maggiore  │
+└──────────────────────────────────────────────────────────┘
+```
+
+- Sfondo: #1B3A5C (navy pieno)
+- Altezza: 48px
+- Logo: Emblema Repubblica (SVG bianco 24px) + "MIDA" (Inter 700, 14px, bianco, tracking 0.15em)
+- Link: Inter 600, 11px, uppercase, tracking 0.1em, colore #D4CFC3, attivo: sfondo #4A5D23
+- "Stato Maggiore Difesa" a destra: 9px, uppercase, tracking 0.2em, #8B9298
+- **NESSUNA icona** nei link di navigazione — solo testo
+
+## Footer
+
+- Sfondo: #1B3A5C
+- Altezza: 40px
+- Testo: "MIDA — Missioni Internazionali e Dati Analitici · Università di Catania · Dati: Ministero della Difesa"
+- Font: 9px, uppercase, tracking 0.15em, #8B9298
+- Nessun link, nessuna icona
+
+---
+
+## Immagini da Aggiungere
+
+### 1. Emblema della Repubblica Italiana
+- File: `frontend/public/emblema_repubblica.svg`
+- Usato in: Navbar (24px), Hero HomePage (opzionale, 40px in alto a destra)
+- Se non hai il file SVG, crea un componente React `EmblemaSvg` con un SVG inline semplificato: stella a 5 punte bianca dentro corona d'alloro, tutto monocromo bianco. Non deve essere perfetto — deve essere riconoscibile.
+
+### 2. Foto hero (opzionale)
+- File: `frontend/public/images/hero_military.jpg`
+- Usato in: HomePage hero come background-image con `filter: blur(2px) brightness(0.3)` e overlay gradient navy→transparent
+- Se la foto non è disponibile: gradient lineare `#1B3A5C → #3D4F1E` (navy→olive). MAI lasciare il fallback come sfondo piatto monocolore.
+- La foto deve essere di militari italiani in operazione (caschi blu, mezzi militari, etc.) — NON foto generiche stock
+
+### 3. Nessun'altra immagine
+- Il resto dell'interfaccia è puro dato + tipografia + colore. Le immagini sono SOLO per il contesto istituzionale (emblema + hero).
+
+---
+
+## Animazioni (Framer Motion — uso MINIMO)
+
+- **Contatori KPI**: Da 0 al valore finale in 800ms, ease-out. UNICA animazione visibile.
+- **Fade-in pagina**: opacity 0→1 in 200ms al mount. Nessun slide.
+- **Nessun stagger** sulle card o righe tabella.
+- **Nessun hover lift** sulle card.
+- **Nessun pulse** tranne il pallino stato attivo (e anche quello: `animation-duration: 3s`, molto lento e sottile).
+
+---
+
+## Vincoli
+
+- **NO nuove dipendenze** — Usa solo React, Recharts, Leaflet, Framer Motion, Tailwind
+- **NO backend** — JSON statici in `/public/data/`
+- **NO API key** — Leaflet + CARTO tiles
+- **Build pulita**: `npx tsc --noEmit` = 0 errori, `npm run build` = successo
+- **Responsive**: Funziona su mobile, ma ottimizzato per desktop 1440px+
+- **Performance**: <2s load su localhost
+
+## File da Modificare
+
+```
+frontend/
+├── public/
+│   ├── emblema_repubblica.svg       # NUOVO — Emblema Repubblica
+│   └── images/
+│       └── hero_military.jpg        # NUOVO — Foto hero (opzionale)
+├── src/
+│   ├── index.css                    # Rimuovere stamp, topo-bg. Aggiungere stili sobri.
+│   ├── App.tsx                      # Invariato
+│   ├── components/
+│   │   ├── layout/Navbar.tsx        # Emblema + no icone link
+│   │   ├── layout/Footer.tsx        # Testo semplice navy
+│   │   ├── cards/KpiCard.tsx        # Solo numero + label, no icona
+│   │   ├── charts/OrgDonut.tsx      # Colori desaturati
+│   │   ├── charts/RegionBar.tsx     # Barre con label inline
+│   │   └── charts/DecadeBar.tsx     # Area chart con gradient sottile
+│   ├── pages/
+│   │   ├── HomePage.tsx             # Hero gradient + tabella attive + mini-mappa + grafici
+│   │   ├── DashboardPage.tsx        # Filtri inline + 2x2 grafici + tabella org
+│   │   ├── MissionsPage.tsx         # Tabella densa + drawer senza icone
+│   │   ├── TimelinePage.tsx         # Gantt + zoom + eventi storici
+│   │   └── MapPage.tsx              # Full-bleed dark + pannello laterale
+│   ├── hooks/                       # Invariati
+│   └── lib/
+│       ├── constants.ts             # Rimuovere COUNTRY_FLAGS emoji
+│       ├── types.ts                 # Invariato
+│       └── utils.ts                 # Invariato
 ```
 
 ## Risultato Atteso
 
-Un frontend che quando lo apri dici "wow, sembra un sistema di intelligence militare vero". Professionale, data-dense, con storytelling visivo che guida l'utente dal quadro strategico (Home) ai dettagli operativi (Missioni/Mappa). Adatto a:
-- Presentazione accademica (tesi, conferenza)
-- Briefing istituzionale (Ministero della Difesa)
-- Portfolio professionale di data visualization
+Un portale che sembra prodotto dal **Centro Innovazione Difesa** o dall'**ISPI**. Quando un professore universitario, un ufficiale dello Stato Maggiore, o un analista di politica internazionale lo apre, la reazione deve essere: "questo è un lavoro serio". Non "wow che bello" — ma "questo è credibile, professionale, e i dati sono immediatamente leggibili".
 
-## Istruzioni di Implementazione
-
-1. Modifica i file esistenti — NON creare un progetto nuovo
-2. Mantieni la struttura attuale (5 pagine, stesso routing)
-3. I dati JSON non cambiano — usa quelli esistenti
-4. Ogni pagina deve funzionare indipendentemente
-5. Testa con `npx tsc --noEmit` e `npm run build` prima di considerare finito
-6. Il frontend deve caricare in <2 secondi su localhost
+Il test finale: stampa una pagina in PDF. Se sembra un documento ufficiale del Ministero della Difesa, hai fatto bene. Se sembra uno screenshot di un'app web, devi rifare.
