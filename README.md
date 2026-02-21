@@ -20,6 +20,7 @@
   <p><b>Piattaforma di analisi delle missioni internazionali italiane (1948-2026)</b></p>
 
   ![Python](https://img.shields.io/badge/Python-3.11+-3D4F1E?style=flat-square&logo=python&logoColor=white)
+  ![React](https://img.shields.io/badge/React-18_Frontend-61DAFB?style=flat-square&logo=react&logoColor=white)
   ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-1B3A5C?style=flat-square&logo=streamlit&logoColor=white)
   ![Tests](https://img.shields.io/badge/Tests-188%20passing-6B8C2A?style=flat-square)
   ![Missions](https://img.shields.io/badge/Missioni-234%20totali-8B1A1A?style=flat-square)
@@ -50,26 +51,33 @@ MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset uni
 ## Avvio Rapido
 
 ```bash
-# Installa dipendenze
+# Installa dipendenze Python
 pip install -r requirements.txt
 
 # Rigenera il dataset
 python -m core.aggregator
 
-# Avvia la dashboard
+# Esporta dati JSON per il frontend React
+python export_frontend_data.py
+
+# Avvia la dashboard Streamlit
 streamlit run dashboard/app.py
+
+# Avvia il frontend React
+cd frontend && npm install && npm run dev
 
 # Esegui i test
 python -m pytest tests/ -v
 ```
 
-Dashboard disponibile su **http://localhost:8501**
+- Dashboard Streamlit: **http://localhost:8501**
+- Frontend React: **http://localhost:5173**
 
 ## Struttura del Progetto
 
 ```
 MIDA/
-├── .github/workflows/       # CI/CD GitHub Actions
+├── .github/workflows/       # CI/CD + scraping automatico settimanale
 ├── .streamlit/config.toml   # Tema militare italiano
 ├── config/
 │   └── sources.yaml         # Registry fonti dati con mapping colonne
@@ -79,41 +87,32 @@ MIDA/
 │   ├── aggregator.py        # Pipeline: load → normalize → dedup → enrich → validate → save
 │   ├── scrapers/            # Web scrapers (difesa, camera, senato, NATO, ONU, UE, esteri)
 │   └── pdf_extractor/       # Estrazione documenti PDF/DOCX
-├── dashboard/
+├── dashboard/               # Dashboard Streamlit (Python)
 │   ├── app.py               # Entry point + tema CSS militare
 │   ├── data_loader.py       # Caricamento dati con cache Streamlit
-│   ├── filters.py           # Filtri sidebar
-│   ├── charts.py            # Grafici Plotly con palette militare
-│   ├── analysis.py          # Funzioni analitiche
+│   ├── filters.py, charts.py, analysis.py
 │   ├── pdf_report.py        # Generatore report PDF (fpdf2)
-│   ├── views/               # Pagine modulari
-│   │   ├── overview.py      #   KPI + grafici panoramica
-│   │   ├── missions.py      #   Tabella missioni + export CSV/Excel/PDF
-│   │   ├── timeline.py      #   Timeline interattive
-│   │   └── maps_page.py     #   5 tab mappe (Attive, Mondo, Calore, Timeline, Cluster)
-│   └── maps/                # Componenti Folium
-│       ├── active_missions_map.py
-│       ├── world_map.py
-│       ├── heatmap.py
-│       ├── timeline_map.py
-│       ├── cluster_map.py
-│       └── geocoding.py     # 200+ coordinate paesi
+│   ├── views/               # overview, missions, timeline, maps_page
+│   └── maps/                # Componenti Folium (5 mappe)
+├── frontend/                # Frontend React (TypeScript)
+│   ├── src/
+│   │   ├── App.tsx              # Router + Layout
+│   │   ├── pages/               # Home, Dashboard, Missions, Timeline, Map
+│   │   ├── components/          # KpiCard, OrgDonut, RegionBar, Navbar, Footer
+│   │   ├── hooks/               # useMissions, useAnimatedCounter
+│   │   └── lib/                 # types, constants, utils
+│   └── public/data/             # missions.json, stats.json (generati da pipeline)
 ├── data/
 │   ├── raw/                 # Fonti Excel/CSV originali
 │   └── processed/           # missioni_complete.csv (output pipeline)
-├── tests/
-│   ├── test_normalizer.py   # 51 test
-│   ├── test_models.py       # 21 test
-│   ├── test_aggregator.py   # 12 test
-│   ├── test_scrapers.py     # Test scrapers
-│   ├── test_dashboard.py    # Test dashboard
-│   └── test_commitment_dashboard.py
+├── tests/                   # 188 test (normalizer, models, aggregator, scrapers, E2E)
+├── export_frontend_data.py  # CSV → JSON per frontend React
 ├── docs/images/             # Banner istituzionali
 ├── requirements.txt
 └── README.md
 ```
 
-## Pipeline Dati (v3.3)
+## Pipeline Dati (v3.7)
 
 ```mermaid
 graph LR
@@ -124,6 +123,7 @@ graph LR
     E --> F[Validate<br/>Pydantic 0 errori]
     F --> G[Save<br/>18 colonne]
     G --> H[Dashboard<br/>Streamlit]
+    G --> I[Frontend<br/>React]
 ```
 
 ### Step della pipeline
@@ -149,7 +149,44 @@ graph LR
 | `costo_totale` | float | Costo in euro (quota italiana) |
 | `is_active` | bool | Attiva nel 2026 (verificata vs difesa.it) |
 
-## Dashboard
+## Frontend React
+
+SPA moderna costruita con **React 18 + TypeScript + Vite + Tailwind CSS**.
+
+### Pagine
+
+| Pagina | Descrizione |
+|--------|-------------|
+| **Home** | Hero, 5 KPI animati, lista missioni attive, grafici donut/barre/decennio |
+| **Dashboard** | Grafici Recharts interattivi con filtri per org/regione/stato |
+| **Missioni** | Tabella sortabile con ricerca, filtri, export CSV |
+| **Timeline** | Barre orizzontali colorate per durata (1948-2026), tooltip hover |
+| **Mappa** | Leaflet full-screen, marker missioni attive, linee Roma → missioni |
+
+### Stack Frontend
+
+| Tecnologia | Uso |
+|------------|-----|
+| React 18 + TypeScript | Framework UI |
+| Vite 5 | Build tool |
+| Tailwind CSS 3 | Styling utility-first |
+| Recharts | Grafici (donut, barre, treemap) |
+| Leaflet | Mappe interattive (no API key) |
+| Framer Motion | Animazioni KPI |
+| Lucide React | Icone |
+
+### Architettura dati
+
+```
+Pipeline Python → missioni_complete.csv → export_frontend_data.py → JSON statici
+                                                                    ├─ missions.json (234 missioni)
+                                                                    ├─ active.json (40 attive)
+                                                                    └─ stats.json (KPI pre-calcolati)
+```
+
+Nessun backend necessario — i dati sono pre-processati e serviti come JSON statici.
+
+## Dashboard Streamlit
 
 ### Pagine
 
@@ -160,21 +197,13 @@ graph LR
 
 ### Tema visivo
 
-Palette militare italiana: verde oliva, blu marina, sabbia, rosso esercito, grigio acciaio. Sidebar scura con dropdown leggibili, KPI con accenti colorati, grafici Plotly con colori coerenti. **Dark mode** attivabile dal toggle nella sidebar.
+Palette militare italiana: verde oliva, blu marina, sabbia, rosso esercito, grigio acciaio. **Dark mode** attivabile dal toggle nella sidebar.
 
 ### Export
 
 - **CSV** — Dataset filtrato
 - **Excel** — Multi-sheet (Missioni, Organizzazioni, Commitment, Regioni)
 - **PDF** — Report sintetico con KPI, distribuzione org/regione, missioni attive, top 10 personale
-
-### Filtri
-
-- Anno di inizio (periodi storici)
-- Tipo partecipazione (mil/civ/civmil)
-- Regione
-- Organizzazione
-- Tipo commitment
 
 ## Test
 
@@ -197,8 +226,10 @@ python -m pytest tests/test_aggregator.py -v
 | Categoria | Tecnologie |
 |-----------|------------|
 | **Core** | Python 3.11+, Pandas, NumPy, Pydantic |
+| **Frontend** | React 18, TypeScript, Vite 5, Tailwind CSS, Recharts, Leaflet, Framer Motion |
 | **Dashboard** | Streamlit, Plotly, Folium |
 | **Test** | pytest (188 test) |
+| **CI/CD** | GitHub Actions (lint + test + scraping settimanale) |
 | **Scraping** | requests, BeautifulSoup, lxml |
 | **Documenti** | PyMuPDF, python-docx |
 
@@ -214,12 +245,23 @@ python -m pytest tests/test_aggregator.py -v
 | [NATO](https://www.nato.int/) | Scraper | Operazioni e missioni NATO |
 | [ONU](https://peacekeeping.un.org/) | Scraper | Peacekeeping operations |
 
+## Scraping Automatico
+
+GitHub Actions esegue ogni lunedì alle 06:00 UTC:
+1. Scraping difesa.it per aggiornamenti missioni
+2. Rigenerazione dataset via pipeline
+3. Esecuzione test suite
+4. Auto-commit se il dataset è cambiato
+
+Configurazione: `.github/workflows/scrape.yml`
+
 ## Come aggiungere dati
 
 1. Aggiungi il file Excel/CSV in `data/raw/Excel/`
 2. Registra la fonte in `config/sources.yaml` con il mapping colonne
 3. Esegui `python -m core.aggregator` — la pipeline normalizza, deduplica e valida automaticamente
-4. Avvia `streamlit run dashboard/app.py` per visualizzare
+4. Esegui `python export_frontend_data.py` per aggiornare i JSON del frontend
+5. Avvia `streamlit run dashboard/app.py` o `cd frontend && npm run dev` per visualizzare
 
 ## Contribuire
 
