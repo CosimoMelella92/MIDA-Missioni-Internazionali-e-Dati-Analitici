@@ -14,6 +14,8 @@ export interface Mission {
   tipo_partecipazione: string
   sub_regione: string
   fonte: string
+  note: string | null
+  link_documento: string | null
 }
 
 export interface Stats {

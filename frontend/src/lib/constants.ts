@@ -68,3 +68,32 @@ export const GEOCODING: Record<string, [number, number]> = {
 }
 
 export const ROMA: [number, number] = [41.9028, 12.4964]
+
+export const HISTORICAL_EVENTS: { year: number; label: string }[] = [
+  { year: 1948, label: 'Nascita ONU Peacekeeping' },
+  { year: 1949, label: 'Fondazione NATO' },
+  { year: 1956, label: 'Crisi di Suez' },
+  { year: 1982, label: 'Libano (MNF)' },
+  { year: 1991, label: 'Guerra del Golfo' },
+  { year: 1992, label: 'Somalia (UNOSOM)' },
+  { year: 1995, label: 'Bosnia (IFOR)' },
+  { year: 1999, label: 'Kosovo (KFOR)' },
+  { year: 2001, label: '11 Settembre' },
+  { year: 2003, label: 'Iraq (Antica Babilonia)' },
+  { year: 2011, label: 'Primavera Araba' },
+  { year: 2014, label: 'ISIS / Inherent Resolve' },
+  { year: 2022, label: 'Ucraina / NATO eFP' },
+  { year: 2024, label: 'Mar Rosso (Aspides)' },
+]
+
+export const COUNTRY_FLAGS: Record<string, string> = {
+  'Libano': '🇱🇧', 'Kosovo': '🇽🇰', 'Iraq': '🇮🇶', 'Somalia': '🇸🇴',
+  'Bosnia ed Erzegovina': '🇧🇦', 'Egitto': '🇪🇬', 'Cipro': '🇨🇾',
+  'Niger': '🇳🇪', 'Libia': '🇱🇾', 'Palestina': '🇵🇸', 'Malta': '🇲🇹',
+  'Gibuti': '🇩🇯', 'Lettonia': '🇱🇻', 'Estonia': '🇪🇪', 'Bulgaria': '🇧🇬',
+  'Ungheria': '🇭🇺', 'Armenia': '🇦🇲', 'Mozambico': '🇲🇿', 'Serbia': '🇷🇸',
+  'Israele': '🇮🇱', 'India/Pakistan': '🇮🇳', 'Sahara Occidentale': '🇲🇦',
+  'Mediterraneo': '🌊', 'Mar Rosso': '🌊', 'Oceano Indiano': '🌊',
+  'Stretto di Hormuz': '🌊', 'Afghanistan': '🇦🇫', 'Siria': '🇸🇾',
+  'Mali': '🇲🇱', 'Ucraina': '🇺🇦', 'Romania': '🇷🇴', 'Polonia': '🇵🇱',
+}

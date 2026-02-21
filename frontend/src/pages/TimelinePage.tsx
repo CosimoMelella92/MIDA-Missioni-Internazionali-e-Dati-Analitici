@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useMissions } from '../hooks/useMissions'
-import { ORG_COLORS } from '../lib/constants'
+import { ORG_COLORS, HISTORICAL_EVENTS, COUNTRY_FLAGS } from '../lib/constants'
 
 export default function TimelinePage() {
   const { missions, loading } = useMissions()
   const [orgFilter, setOrgFilter] = useState('')
+  const [rangeStart, setRangeStart] = useState(1948)
+  const [rangeEnd, setRangeEnd] = useState(2026)
 
   const data = useMemo(() => {
     let m = missions.filter(x => x.data_inizio)
@@ -15,70 +17,133 @@ export default function TimelinePage() {
         startYear: new Date(x.data_inizio).getFullYear(),
         endYear: x.data_fine && x.data_fine !== 'NaT' ? new Date(x.data_fine).getFullYear() : 2026,
       }))
-      .sort((a, b) => a.startYear - b.startYear)
-  }, [missions, orgFilter])
+      .filter(x => x.endYear >= rangeStart && x.startYear <= rangeEnd)
+      .sort((a, b) => a.startYear - b.startYear || a.endYear - b.endYear)
+  }, [missions, orgFilter, rangeStart, rangeEnd])
 
-  const minYear = 1948
-  const maxYear = 2026
-  const range = maxYear - minYear
+  // Active missions count per year for overlay line
+  const activePerYear = useMemo(() => {
+    const counts: Record<number, number> = {}
+    for (let y = rangeStart; y <= rangeEnd; y++) counts[y] = 0
+    data.forEach(m => {
+      for (let y = Math.max(m.startYear, rangeStart); y <= Math.min(m.endYear, rangeEnd); y++) counts[y]++
+    })
+    return counts
+  }, [data, rangeStart, rangeEnd])
+  const maxActive = Math.max(...Object.values(activePerYear), 1)
 
+  const range = rangeEnd - rangeStart || 1
   const orgs = [...new Set(missions.map(m => m.tipo_missione))].sort()
+  const visibleEvents = HISTORICAL_EVENTS.filter(e => e.year >= rangeStart && e.year <= rangeEnd)
 
-  if (loading) return <div className="flex items-center justify-center h-96"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mida-teal" /></div>
+  // Decade ticks
+  const ticks: number[] = []
+  for (let y = Math.ceil(rangeStart / 10) * 10; y <= rangeEnd; y += 10) ticks.push(y)
+
+  if (loading) return <div className="flex items-center justify-center h-96 bg-mil-sand"><div className="animate-spin rounded-full h-10 w-10 border-2 border-mil-olive border-t-transparent" /></div>
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-mida-navy dark:text-white">Timeline ({data.length})</h1>
-        <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
-          <option value="">Tutte le org.</option>
-          {orgs.map(o => <option key={o} value={o}>{o}</option>)}
-        </select>
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-mil-navy uppercase tracking-wide">Cronologia Operativa</h1>
+          <p className="text-xs text-mil-steel">{data.length} missioni nel periodo {rangeStart}-{rangeEnd}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-3 py-1.5 rounded border border-mil-sand-deep bg-white text-sm">
+            <option value="">Tutte le org.</option>
+            {orgs.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
       </div>
 
-      {/* Year axis */}
-      <div className="relative">
-        <div className="flex justify-between text-xs text-gray-400 mb-2 px-1">
-          {[1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020].map(y => (
-            <span key={y} style={{ position: 'absolute', left: `${((y - minYear) / range) * 100}%` }}>{y}</span>
-          ))}
-        </div>
+      {/* Zoom slider */}
+      <div className="card flex items-center gap-4">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-mil-steel">Periodo</span>
+        <input type="range" min={1948} max={2020} value={rangeStart} onChange={e => setRangeStart(+e.target.value)} className="flex-1 accent-mil-olive" />
+        <span className="text-xs font-mono font-bold text-mil-navy w-10 text-center">{rangeStart}</span>
+        <span className="text-xs text-mil-steel">—</span>
+        <span className="text-xs font-mono font-bold text-mil-navy w-10 text-center">{rangeEnd}</span>
+        <input type="range" min={rangeStart + 1} max={2026} value={rangeEnd} onChange={e => setRangeEnd(+e.target.value)} className="flex-1 accent-mil-olive" />
+      </div>
 
-        <div className="space-y-1 mt-6">
-          {data.map(m => {
-            const left = ((m.startYear - minYear) / range) * 100
-            const width = Math.max(((m.endYear - m.startYear) / range) * 100, 0.5)
+      {/* Gantt Chart */}
+      <div className="card-elevated overflow-x-auto">
+        <div className="relative min-w-[800px]" style={{ minHeight: data.length * 18 + 60 }}>
+          {/* Year axis */}
+          <div className="sticky top-0 z-10 h-6 border-b border-mil-sand-deep bg-white">
+            {ticks.map(y => (
+              <span key={y} className="absolute text-[9px] font-mono text-mil-steel-light" style={{ left: `${((y - rangeStart) / range) * 100}%`, transform: 'translateX(-50%)' }}>{y}</span>
+            ))}
+          </div>
+
+          {/* Historical event markers */}
+          {visibleEvents.map(ev => {
+            const left = ((ev.year - rangeStart) / range) * 100
             return (
-              <div key={m.nome} className="relative h-6 group">
-                <div
-                  className="absolute h-5 rounded-sm cursor-pointer transition-all hover:h-6 hover:shadow-md"
-                  style={{
-                    left: `${left}%`,
-                    width: `${width}%`,
-                    backgroundColor: ORG_COLORS[m.tipo_missione] || '#999',
-                    opacity: m.is_active ? 1 : 0.6,
-                  }}
-                  title={`${m.nome} (${m.startYear}-${m.is_active ? 'attiva' : m.endYear}) · ${m.tipo_missione} · ${m.paese}`}
-                />
-                <div className="absolute hidden group-hover:block z-10 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 text-xs -top-16 whitespace-nowrap border border-gray-200 dark:border-gray-600"
-                  style={{ left: `${left}%` }}>
-                  <p className="font-bold">{m.nome}</p>
-                  <p>{m.paese} · {m.tipo_missione} · {m.startYear}-{m.is_active ? 'attiva' : m.endYear}</p>
-                </div>
+              <div key={ev.year} className="absolute top-6 bottom-0 z-[5]" style={{ left: `${left}%` }}>
+                <div className="w-px h-full bg-mil-red/20" />
+                <div className="absolute top-0 -translate-x-1/2 bg-mil-red/90 text-white text-[7px] px-1 py-px rounded-b font-bold uppercase tracking-wider whitespace-nowrap">{ev.label}</div>
               </div>
             )
           })}
+
+          {/* Active count overlay (mini area) */}
+          <svg className="absolute top-6 left-0 w-full pointer-events-none" style={{ height: data.length * 18 }} viewBox={`0 0 1000 100`} preserveAspectRatio="none">
+            <path
+              d={`M ${Object.entries(activePerYear).map(([y, v]) => `${((+y - rangeStart) / range) * 1000},${100 - (v / maxActive) * 80}`).join(' L ')} L 1000,100 L 0,100 Z`}
+              fill="rgba(74,93,35,0.06)" stroke="rgba(74,93,35,0.15)" strokeWidth="1"
+            />
+          </svg>
+
+          {/* Mission bars */}
+          <div className="relative" style={{ paddingTop: 28 }}>
+            {data.map((m, i) => {
+              const left = Math.max(((m.startYear - rangeStart) / range) * 100, 0)
+              const right = Math.min(((m.endYear - rangeStart) / range) * 100, 100)
+              const width = Math.max(right - left, 0.3)
+              return (
+                <div key={m.nome + i} className="relative group" style={{ height: 16, marginBottom: 2 }}>
+                  <div
+                    className="absolute top-0.5 h-3.5 rounded-sm cursor-pointer transition-all hover:h-4 hover:top-0 hover:shadow-md"
+                    style={{
+                      left: `${left}%`,
+                      width: `${width}%`,
+                      backgroundColor: ORG_COLORS[m.tipo_missione] || '#8B9298',
+                      opacity: m.is_active ? 1 : 0.55,
+                    }}
+                  />
+                  {/* Tooltip */}
+                  <div className="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded p-2.5 text-[10px] whitespace-nowrap border border-mil-sand-deep"
+                    style={{ left: `${left}%`, top: -48 }}>
+                    <p className="font-bold text-mil-navy text-xs">{COUNTRY_FLAGS[m.paese] || ''} {m.nome}</p>
+                    <p className="text-mil-steel">{m.paese} · {m.tipo_missione} · {m.startYear}-{m.is_active ? <span className="text-mil-olive font-bold">in corso</span> : m.endYear}</p>
+                    {m.personale_totale ? <p className="font-mono font-bold text-mil-navy">{Math.round(m.personale_totale).toLocaleString('it-IT')} pers.</p> : null}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-3 mt-4">
-        {Object.entries(ORG_COLORS).map(([org, color]) => (
-          <div key={org} className="flex items-center gap-1.5 text-xs">
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
-            <span>{org}</span>
-          </div>
-        ))}
+      {/* Legend + stats */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-3">
+          {Object.entries(ORG_COLORS).filter(([k]) => k !== 'Altro').map(([org, color]) => (
+            <div key={org} className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-mil-steel">{org}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-px bg-mil-red/40" />
+          <span className="text-[9px] text-mil-steel uppercase tracking-wider">Eventi storici</span>
+          <div className="w-6 h-3 bg-mil-olive/10 rounded-sm ml-2" />
+          <span className="text-[9px] text-mil-steel uppercase tracking-wider">Missioni attive (area)</span>
+        </div>
       </div>
     </div>
   )

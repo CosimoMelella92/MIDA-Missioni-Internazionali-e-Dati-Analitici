@@ -25,6 +25,56 @@
     @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide;
   }
   .section-title {
-    @apply text-xl font-bold uppercase tracking-wide text-mil-navy border-b-2 border-mil-olive pb-2 mb-4;
+    @apply text-lg font-bold uppercase tracking-wide text-mil-navy border-b-2 border-mil-olive pb-2 mb-4;
   }
 }
+
+/* Topographic pattern background */
+.topo-bg {
+  background-color: #1B3A5C;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(74,93,35,0.08) 40px, rgba(74,93,35,0.08) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(74,93,35,0.08) 40px, rgba(74,93,35,0.08) 41px),
+    radial-gradient(ellipse 600px 200px at 20% 50%, rgba(107,140,42,0.12), transparent),
+    radial-gradient(ellipse 400px 300px at 80% 30%, rgba(44,95,138,0.15), transparent);
+}
+
+/* Pulsing LED */
+.led-active {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #4A5D23;
+  box-shadow: 0 0 4px #4A5D23, 0 0 8px rgba(74,93,35,0.4);
+  animation: led-pulse 2s ease-in-out infinite;
+}
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px #4A5D23, 0 0 8px rgba(74,93,35,0.4); }
+  50% { opacity: 0.5; box-shadow: 0 0 2px #4A5D23; }
+}
+
+.led-inactive {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #8B9298;
+}
+
+/* Personnel bar */
+.personnel-bar {
+  height: 6px; border-radius: 3px; background: #EAE6DC; overflow: hidden;
+}
+.personnel-bar-fill {
+  height: 100%; border-radius: 3px; transition: width 0.6s ease-out;
+}
+
+/* Classified stamp effect */
+.stamp {
+  display: inline-block; padding: 2px 10px;
+  border: 2px solid #8B1A1A; color: #8B1A1A;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.15em;
+  text-transform: uppercase; transform: rotate(-2deg);
+  opacity: 0.8;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F5F3EE; }
+::-webkit-scrollbar-thumb { background: #D4CFC3; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8B9298; }
