@@ -23,7 +23,7 @@
   ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-1B3A5C?style=flat-square&logo=streamlit&logoColor=white)
   ![Tests](https://img.shields.io/badge/Tests-188%20passing-6B8C2A?style=flat-square)
   ![Missions](https://img.shields.io/badge/Missioni-237%20totali-8B1A1A?style=flat-square)
-  ![Active](https://img.shields.io/badge/Attive-38%20(2026)-4A5D23?style=flat-square)
+  ![Active](https://img.shields.io/badge/Attive-39%20(2026)-4A5D23?style=flat-square)
 </div>
 
 ---
@@ -40,7 +40,7 @@ MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset uni
 |---------|--------|
 | Fonti aggregate | 5 (384 righe raw) |
 | Missioni dopo pipeline | **237** |
-| Missioni attive (2026) | **38** (verificate vs difesa.it) |
+| Missioni attive (2026) | **39** (verificate vs difesa.it) |
 | Personale totale | ~8.800 unità |
 | Paesi coinvolti | 75 |
 | Missioni con data | **237/237** (0 mancanti) |

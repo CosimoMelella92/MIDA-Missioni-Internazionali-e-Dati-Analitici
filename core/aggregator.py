@@ -401,6 +401,7 @@ class ExcelAggregator:
             "provide comfort i", "provide comfort ii",
             "eunavfor med - sophia", "eunavfor med",
             "nato standing naval forces (storico)",
+            "eumm georgia",  # missione civile UE, non in lista difesa.it operazioni militari
         ])
         df.loc[concluded, "is_active"] = False
 
@@ -846,6 +847,8 @@ class ExcelAggregator:
         "miadit somalia",
         "miadit palestina",
         "miadit",
+        "mfo",
+        "euma armenia",
     ]
 
     # Keyword che richiedono match come parola intera (evita 'mfo' in 'comfort')
