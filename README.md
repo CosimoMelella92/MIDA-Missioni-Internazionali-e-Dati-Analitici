@@ -40,6 +40,7 @@ MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset uni
 | Missioni attive (2026) | **38** (verificate vs difesa.it) |
 | Personale totale | ~8.800 unità |
 | Paesi coinvolti | 75 |
+| Missioni con data | **237/237** (0 mancanti) |
 | Errori validazione | 0 |
 | Test | 165 passing |
 
@@ -108,7 +109,7 @@ MIDA/
 └── README.md
 ```
 
-## Pipeline Dati (v3.1)
+## Pipeline Dati (v3.3)
 
 ```mermaid
 graph LR

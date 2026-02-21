@@ -158,7 +158,69 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# ── Dark mode CSS override ──
+_DARK_CSS = """
+<style>
+    /* ── Dark mode overrides ── */
+    .stApp, [data-testid="stAppViewContainer"] {
+        background-color: #1A1F25 !important;
+    }
+    .stApp [data-testid="stHeader"] { background-color: #1A1F25 !important; }
+    .main-header {
+        background: linear-gradient(135deg, #6B8C2A 0%, #2C5F8A 100%) !important;
+        -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+    }
+    .sub-header { color: #8B9298 !important; }
+    .info-box {
+        background: linear-gradient(135deg, #2A2F35 0%, #1F242A 100%) !important;
+        border-left-color: #6B8C2A !important; color: #D4CFC3 !important;
+    }
+    /* Text */
+    .stApp, .stApp p, .stApp span, .stApp label, .stApp div,
+    .stApp h1, .stApp h2, .stApp h3, .stApp h4 {
+        color: #D4CFC3 !important;
+    }
+    .stApp a { color: #6B8C2A !important; }
+    /* Tabs */
+    .stTabs [data-baseweb="tab"] { color: #8B9298 !important; }
+    .stTabs [aria-selected="true"] {
+        background: #2C5F8A !important; color: #F5F3EE !important;
+    }
+    .stTabs [data-baseweb="tab-list"] { border-bottom-color: #3A3F45 !important; }
+    /* Dataframes */
+    .stDataFrame, [data-testid="stDataFrame"] {
+        background-color: #22272E !important;
+    }
+    /* KPI cards */
+    .kpi-card {
+        background: linear-gradient(135deg, #22272E 0%, #2A2F35 100%) !important;
+        border-color: #3A3F45 !important;
+    }
+    .kpi-card .label { color: #8B9298 !important; }
+    /* Footer */
+    .mida-footer { color: #5A5F63 !important; border-top-color: #3A3F45 !important; }
+    .mida-footer a { color: #6B8C2A !important; }
+    /* Scrollbar dark */
+    ::-webkit-scrollbar-track { background: #1A1F25 !important; }
+    ::-webkit-scrollbar-thumb { background: #3A3F45 !important; }
+    ::-webkit-scrollbar-thumb:hover { background: #5A5F63 !important; }
+    /* Markdown containers */
+    .stMarkdown, [data-testid="stMarkdownContainer"] { color: #D4CFC3 !important; }
+    /* Download buttons */
+    .stDownloadButton button {
+        background-color: #2A2F35 !important; color: #D4CFC3 !important;
+        border: 1px solid #3A3F45 !important;
+    }
+</style>
+"""
+
+
 def main():
+    # Dark mode toggle in sidebar
+    dark_mode = st.sidebar.toggle("🌙 Dark Mode", value=False, key="dark_mode")
+    if dark_mode:
+        st.markdown(_DARK_CSS, unsafe_allow_html=True)
+
     # Header
     st.markdown(
         '<h1 class="main-header">🌍 MIDA - Missioni Internazionali e Dati Analitici</h1>',

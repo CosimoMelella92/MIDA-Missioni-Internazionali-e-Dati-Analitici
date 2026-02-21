@@ -69,9 +69,36 @@ MIDA_LAYOUT = dict(
 )
 
 
+MIDA_LAYOUT_DARK = dict(
+    font=dict(family="Inter, Segoe UI, sans-serif", size=12, color="#D4CFC3"),
+    title_font=dict(size=15, color="#6B8C2A"),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    margin=dict(l=40, r=20, t=50, b=30),
+    hovermode="x unified",
+    legend=dict(
+        orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+        bgcolor="rgba(34,39,46,0.9)", bordercolor="#3A3F45", borderwidth=1,
+        font=dict(size=11, color="#D4CFC3"),
+    ),
+    xaxis=dict(gridcolor="#3A3F45", linecolor="#3A3F45", zeroline=False),
+    yaxis=dict(gridcolor="#3A3F45", linecolor="#3A3F45", zeroline=False),
+)
+
+
+def _is_dark_mode() -> bool:
+    """Check if dark mode is active via Streamlit session state."""
+    try:
+        import streamlit as st
+        return st.session_state.get("dark_mode", False)
+    except Exception:
+        return False
+
+
 def _apply_theme(fig: go.Figure) -> go.Figure:
     """Applica il tema MIDA a qualsiasi figura."""
-    fig.update_layout(**MIDA_LAYOUT)
+    layout = MIDA_LAYOUT_DARK if _is_dark_mode() else MIDA_LAYOUT
+    fig.update_layout(**layout)
     return fig
 
 
