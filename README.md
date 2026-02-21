@@ -45,7 +45,7 @@ MIDA aggrega dati da **5 fonti** (CSV + 4 file Excel), producendo un dataset uni
 | Paesi coinvolti | 75 |
 | Missioni con data | **237/237** (0 mancanti) |
 | Errori validazione | 0 |
-| Test | 165 passing |
+| Test | 188 passing |
 
 ## Avvio Rapido
 
@@ -85,9 +85,10 @@ MIDA/
 │   ├── filters.py           # Filtri sidebar
 │   ├── charts.py            # Grafici Plotly con palette militare
 │   ├── analysis.py          # Funzioni analitiche
+│   ├── pdf_report.py        # Generatore report PDF (fpdf2)
 │   ├── views/               # Pagine modulari
 │   │   ├── overview.py      #   KPI + grafici panoramica
-│   │   ├── missions.py      #   Tabella missioni + export CSV
+│   │   ├── missions.py      #   Tabella missioni + export CSV/Excel/PDF
 │   │   ├── timeline.py      #   Timeline interattive
 │   │   └── maps_page.py     #   5 tab mappe (Attive, Mondo, Calore, Timeline, Cluster)
 │   └── maps/                # Componenti Folium
@@ -159,7 +160,13 @@ graph LR
 
 ### Tema visivo
 
-Palette militare italiana: verde oliva, blu marina, sabbia, rosso esercito, grigio acciaio. Sidebar scura con dropdown leggibili, KPI con accenti colorati, grafici Plotly con colori coerenti.
+Palette militare italiana: verde oliva, blu marina, sabbia, rosso esercito, grigio acciaio. Sidebar scura con dropdown leggibili, KPI con accenti colorati, grafici Plotly con colori coerenti. **Dark mode** attivabile dal toggle nella sidebar.
+
+### Export
+
+- **CSV** — Dataset filtrato
+- **Excel** — Multi-sheet (Missioni, Organizzazioni, Commitment, Regioni)
+- **PDF** — Report sintetico con KPI, distribuzione org/regione, missioni attive, top 10 personale
 
 ### Filtri
 
@@ -191,9 +198,21 @@ python -m pytest tests/test_aggregator.py -v
 |-----------|------------|
 | **Core** | Python 3.11+, Pandas, NumPy, Pydantic |
 | **Dashboard** | Streamlit, Plotly, Folium |
-| **Test** | pytest (165 test) |
+| **Test** | pytest (188 test) |
 | **Scraping** | requests, BeautifulSoup, lxml |
 | **Documenti** | PyMuPDF, python-docx |
+
+## Fonti Dati
+
+| Fonte | Tipo | Contenuto |
+|-------|------|----------|
+| [difesa.it](https://www.difesa.it/operazionimilitari/) | Scraper + manuale | Missioni in corso, personale, costi |
+| [analisidifesa.it](https://www.analisidifesa.it/) | Manuale | Analisi annuali missioni, dati Delibera CdM |
+| [Camera dei Deputati](https://www.camera.it/) | Scraper | Delibere missioni internazionali |
+| [Senato](https://www.senato.it/) | Scraper | Documenti parlamentari |
+| [EEAS (UE)](https://www.eeas.europa.eu/) | Scraper | Missioni CSDP civili e militari |
+| [NATO](https://www.nato.int/) | Scraper | Operazioni e missioni NATO |
+| [ONU](https://peacekeeping.un.org/) | Scraper | Peacekeeping operations |
 
 ## Come aggiungere dati
 
