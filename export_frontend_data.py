@@ -1,6 +1,7 @@
 """Export dataset to JSON for React frontend."""
 import pandas as pd
 import json
+import math
 import os
 
 df = pd.read_csv("data/processed/missioni_complete.csv")
@@ -8,13 +9,29 @@ df = pd.read_csv("data/processed/missioni_complete.csv")
 out_dir = "frontend/public/data"
 os.makedirs(out_dir, exist_ok=True)
 
+
+def clean_value(v):
+    """Convert NaN/NaT to None for valid JSON."""
+    if v is None:
+        return None
+    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+        return None
+    if isinstance(v, str) and v in ("NaT", "nan", "NaN", ""):
+        return None
+    return v
+
+
+def clean_record(rec):
+    return {k: clean_value(v) for k, v in rec.items()}
+
+
 # missions.json — full dataset
-missions = df.to_dict(orient="records")
+missions = [clean_record(r) for r in df.to_dict(orient="records")]
 with open(f"{out_dir}/missions.json", "w", encoding="utf-8") as f:
     json.dump(missions, f, default=str, ensure_ascii=False)
 
 # active.json — active only
-active = df[df["is_active"] == True].to_dict(orient="records")
+active = [clean_record(r) for r in df[df["is_active"] == True].to_dict(orient="records")]
 with open(f"{out_dir}/active.json", "w", encoding="utf-8") as f:
     json.dump(active, f, default=str, ensure_ascii=False)
 

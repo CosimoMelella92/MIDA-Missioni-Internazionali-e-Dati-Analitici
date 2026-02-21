@@ -1,21 +1,39 @@
+// Palette militare italiana
+export const MILITARY = {
+  olive: '#4A5D23',
+  oliveDark: '#3D4F1E',
+  oliveLight: '#6B8C2A',
+  navy: '#1B3A5C',
+  navyLight: '#2C5F8A',
+  sand: '#F5F3EE',
+  sandDark: '#EAE6DC',
+  sandDeep: '#D4CFC3',
+  red: '#8B1A1A',
+  steel: '#5A5F63',
+  steelLight: '#8B9298',
+  khaki: '#7D6B3A',
+  black: '#1A1A1A',
+  white: '#FAFAF8',
+}
+
 export const ORG_COLORS: Record<string, string> = {
-  ONU: '#1F77B4',
-  NATO: '#2CA02C',
-  UE: '#FF7F0E',
-  ITA: '#D62728',
-  Bilateral: '#9467BD',
-  Multinational: '#8C564B',
-  Coalizione: '#E377C2',
-  Altro: '#7F7F7F',
+  ONU: '#1B3A5C',
+  NATO: '#4A5D23',
+  UE: '#2C5F8A',
+  ITA: '#8B1A1A',
+  Bilateral: '#7D6B3A',
+  Multinational: '#5A5F63',
+  Coalizione: '#6B8C2A',
+  Altro: '#8B9298',
 }
 
 export const REGION_COLORS: Record<string, string> = {
-  Europa: '#264653',
-  'Medio Oriente': '#2A9D8F',
-  Africa: '#E9C46A',
-  Asia: '#F4A261',
-  America: '#E76F51',
-  'Non specificata': '#999999',
+  Europa: '#1B3A5C',
+  'Medio Oriente': '#8B1A1A',
+  Africa: '#7D6B3A',
+  Asia: '#4A5D23',
+  America: '#2C5F8A',
+  'Non specificata': '#8B9298',
 }
 
 export const GEOCODING: Record<string, [number, number]> = {

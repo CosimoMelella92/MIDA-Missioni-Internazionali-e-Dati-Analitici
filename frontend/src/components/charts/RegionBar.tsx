@@ -11,8 +11,8 @@ export default function RegionBar({ data }: Props) {
     .sort((a, b) => b.value - a.value)
 
   return (
-    <div className="kpi-card">
-      <h3 className="text-lg font-semibold mb-4">Per Regione</h3>
+    <div className="card-elevated">
+      <h3 className="section-title">Per Teatro Operativo</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData} layout="vertical" margin={{ left: 80 }}>
           <XAxis type="number" />

@@ -51,11 +51,11 @@ export default function MissionsPage() {
 
   const orgs = [...new Set(missions.map(m => m.tipo_missione))].sort()
 
-  if (loading) return <div className="flex items-center justify-center h-96"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mida-teal" /></div>
+  if (loading) return <div className="flex items-center justify-center h-96 bg-mil-sand"><div className="animate-spin rounded-full h-10 w-10 border-2 border-mil-olive border-t-transparent" /></div>
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-3xl font-bold text-mida-navy dark:text-white">Missioni ({filtered.length})</h1>
+      <h1 className="text-2xl font-bold text-mil-navy uppercase tracking-wide">Registro Missioni ({filtered.length})</h1>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
@@ -66,13 +66,13 @@ export default function MissionsPage() {
             placeholder="Cerca missione o paese..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-mida-teal focus:border-transparent outline-none"
+            className="w-full pl-10 pr-4 py-2 rounded border border-mil-sand-deep bg-white focus:ring-2 focus:ring-mil-olive focus:border-transparent outline-none text-sm"
           />
         </div>
         <select
           value={orgFilter}
           onChange={e => setOrgFilter(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+          className="px-4 py-2 rounded border border-mil-sand-deep bg-white text-sm"
         >
           <option value="">Tutte le org.</option>
           {orgs.map(o => <option key={o} value={o}>{o}</option>)}
@@ -81,18 +81,18 @@ export default function MissionsPage() {
           <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="rounded text-mida-teal" />
           <span className="text-sm">Solo attive</span>
         </label>
-        <button onClick={exportCsv} className="flex items-center gap-2 px-4 py-2 bg-mida-navy text-white rounded-lg hover:bg-mida-navy/90 transition-colors">
+        <button onClick={exportCsv} className="flex items-center gap-2 px-4 py-2 bg-mil-olive text-white rounded hover:bg-mil-olive-dark transition-colors text-sm font-semibold uppercase tracking-wider">
           <Download className="w-4 h-4" /> CSV
         </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto kpi-card !p-0">
+      <div className="overflow-x-auto card-elevated !p-0">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-mida-navy text-white">
+            <tr className="bg-mil-navy text-white">
               {([['nome', 'Missione'], ['paese', 'Paese'], ['tipo_missione', 'Org.'], ['data_inizio', 'Inizio'], ['personale_totale', 'Personale']] as [SortKey, string][]).map(([key, label]) => (
-                <th key={key} onClick={() => toggleSort(key)} className="px-4 py-3 text-left cursor-pointer hover:bg-mida-navy/80 select-none">
+                <th key={key} onClick={() => toggleSort(key)} className="px-4 py-3 text-left cursor-pointer hover:bg-mil-navy-light select-none text-xs uppercase tracking-wider">
                   {label} <SortIcon col={key} />
                 </th>
               ))}
@@ -101,7 +101,7 @@ export default function MissionsPage() {
           </thead>
           <tbody>
             {filtered.map((m, i) => (
-              <tr key={m.nome} className={`border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-gray-800/30'}`}>
+              <tr key={m.nome} className={`border-b border-mil-sand-dark hover:bg-mil-sand-dark/50 transition-colors ${i % 2 === 0 ? '' : 'bg-mil-sand/50'}`}>
                 <td className="px-4 py-3 font-medium">{m.nome}</td>
                 <td className="px-4 py-3">{m.paese}</td>
                 <td className="px-4 py-3">
@@ -113,8 +113,8 @@ export default function MissionsPage() {
                 <td className="px-4 py-3 font-mono">{m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}</td>
                 <td className="px-4 py-3">
                   {m.is_active
-                    ? <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 dark:text-green-400"><span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />Attiva</span>
-                    : <span className="text-xs text-gray-400">Conclusa</span>
+                    ? <span className="inline-flex items-center gap-1 text-xs font-bold text-mil-olive"><span className="w-2 h-2 rounded-full bg-mil-olive animate-pulse" />IN CORSO</span>
+                    : <span className="text-xs text-mil-steel-light">CONCLUSA</span>
                   }
                 </td>
               </tr>
