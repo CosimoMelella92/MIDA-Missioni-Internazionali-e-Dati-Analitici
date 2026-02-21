@@ -471,8 +471,8 @@ class ExcelAggregator:
                    "tipo_missione": "Multinational"},
         "misin": {"personale_totale": 350, "personale_militare": 350, "paese": "Niger",
                   "tipo_missione": "Bilateral"},
-        "miasit": {"personale_totale": 400, "personale_militare": 400, "paese": "Libia",
-                   "tipo_missione": "Bilateral"},
+        "miasit": {"personale_totale": 233, "personale_militare": 233, "paese": "Libia",
+                   "tipo_missione": "Bilateral"},  # Delibera CdM scheda 6/2025: max 233
         "mibil": {"personale_totale": 200, "personale_militare": 200, "paese": "Libano",
                   "tipo_missione": "Bilateral"},
         "miccd": {"personale_totale": 30, "personale_militare": 30, "paese": "Malta",
@@ -487,6 +487,8 @@ class ExcelAggregator:
         "mfo": {"personale_totale": 75, "personale_militare": 75, "paese": "Egitto",
                 "tipo_missione": "Multinational"},
         "untso": {"paese": "Israele", "personale_totale": 7, "personale_militare": 7},
+        "euma armenia": {"personale_totale": 40, "personale_militare": 40, "paese": "Armenia",
+                         "tipo_missione": "UE"},  # Delibera CdM scheda 14/2025: max 52 per 12 missioni civili
         "eutm somalia": {"personale_totale": 250, "personale_militare": 250, "paese": "Somalia"},
         "irini": {"nome": "EUNAVFOR MED Irini", "paese": "Mediterraneo",
                   "personale_totale": 350, "personale_militare": 350, "tipo_missione": "UE"},
@@ -705,6 +707,21 @@ class ExcelAggregator:
                 for field, value in corrections.items():
                     df.loc[mask, field] = value
                 corrections_applied += mask.sum()
+
+        # 3a-bis. Correzioni date forzate (sovrascrivono anche valori esistenti)
+        # Fonte: Wikipedia, Delibera CdM — date errate nei dati originali
+        FORCED_DATE_FIXES = {
+            "miadit palestina": {"data_inizio": "2010-01-01"},  # Wikipedia: MIADIT dal 2010, non 2015
+        }
+        nomi_post = df["nome"].str.lower().str.strip()
+        for nome_key, date_fix in FORCED_DATE_FIXES.items():
+            mask = nomi_post == nome_key
+            if not mask.any() and len(nome_key) >= 6:
+                mask = nomi_post.str.contains(nome_key, na=False, regex=False)
+            if mask.any():
+                for field, value in date_fix.items():
+                    df.loc[mask, field] = pd.to_datetime(value)
+                    corrections_applied += mask.sum()
 
         if corrections_applied:
             logger.info(f"Applicate correzioni ufficiali a {corrections_applied} record")

@@ -1,0 +1,54 @@
+name: Scrape & Update Data
+
+on:
+  schedule:
+    # Ogni lunedì alle 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:  # Permette esecuzione manuale
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scrapers
+        run: |
+          python -c "
+          from core.scrapers.difesa_scraper import DifesaScraper
+          s = DifesaScraper()
+          data = s.scrape()
+          print(f'DifesaScraper: {len(data)} missioni trovate')
+          "
+        continue-on-error: true
+
+      - name: Regenerate dataset
+        run: python -m core.aggregator
+
+      - name: Run tests
+        run: python -m pytest tests/ -q --tb=short
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/processed/missioni_complete.csv || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit & push if changed
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/processed/missioni_complete.csv
+          git commit -m "chore(data): aggiornamento automatico dataset [skip ci]"
+          git push
