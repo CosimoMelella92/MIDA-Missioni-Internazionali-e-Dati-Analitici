@@ -1,14 +1,17 @@
-![Sponsorship Banner](docs/images/banner_sponsor.png)
+<p align="center">
+  <a href="https://www.difesa.it/operazionimilitari/">
+    <img src="docs/images/banner_sponsor.png" alt="Finanziato dall'Unione Europea – NextGenerationEU, MUR, Italia Domani PNRR" width="700"/>
+  </a>
+</p>
+<p align="center">
+  <em>Progetto finanziato dall'Unione Europea – NextGenerationEU, Ministero dell'Università e della Ricerca, Italia Domani – PNRR</em>
+</p>
 
-<div align="center">
-  <b>Progetto finanziato dall'Unione Europea – NextGenerationEU, Ministero dell'Università e della Ricerca, Italia Domani – PNRR</b>
-</div>
-
-<div align="center">
-  <img src="docs/images/logo_unict.jpg" alt="Università di Catania" width="200"/>
+<p align="center">
+  <img src="docs/images/logo_unict.jpg" alt="Università di Catania" width="180"/>
   <br/>
   <b>Progetto sviluppato presso l'Università di Catania</b>
-</div>
+</p>
 
 <br/>
 
@@ -18,7 +21,7 @@
 
   ![Python](https://img.shields.io/badge/Python-3.11+-3D4F1E?style=flat-square&logo=python&logoColor=white)
   ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-1B3A5C?style=flat-square&logo=streamlit&logoColor=white)
-  ![Tests](https://img.shields.io/badge/Tests-165%20passing-6B8C2A?style=flat-square)
+  ![Tests](https://img.shields.io/badge/Tests-188%20passing-6B8C2A?style=flat-square)
   ![Missions](https://img.shields.io/badge/Missioni-237%20totali-8B1A1A?style=flat-square)
   ![Active](https://img.shields.io/badge/Attive-38%20(2026)-4A5D23?style=flat-square)
 </div>

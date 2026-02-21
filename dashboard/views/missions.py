@@ -160,7 +160,7 @@ def _render_data_table(df: pd.DataFrame) -> None:
 def _render_export(df: pd.DataFrame, org_stats: pd.DataFrame,
                    commit_stats: pd.DataFrame, regional_stats: pd.DataFrame) -> None:
     """Renderizza i pulsanti di esportazione."""
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         csv_data = df.to_csv(index=False, encoding="utf-8")
@@ -188,3 +188,16 @@ def _render_export(df: pd.DataFrame, org_stats: pd.DataFrame,
             )
         except ImportError:
             st.warning("Per l'esportazione Excel, installa: pip install openpyxl")
+
+    with col3:
+        try:
+            from dashboard.pdf_report import generate_report
+            pdf_bytes = generate_report(df)
+            st.download_button(
+                label="📕 Scarica PDF",
+                data=pdf_bytes,
+                file_name=f"MIDA_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                mime="application/pdf",
+            )
+        except ImportError:
+            st.warning("Per l'esportazione PDF, installa: pip install fpdf2")

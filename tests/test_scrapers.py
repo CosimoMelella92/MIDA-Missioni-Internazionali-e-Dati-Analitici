@@ -134,12 +134,54 @@ class TestDifesaScraper:
         assert DifesaScraper._parse_float("1.500,50") == 1500.50
         assert DifesaScraper._parse_float(None) == 0.0
 
+    def test_extract_date_start(self):
+        assert DifesaScraper._extract_date("operativa dal 15/06/2015", start=True) == "15/06/2015"
+        assert DifesaScraper._extract_date("inizio 2018", start=True) == "2018"
+        assert DifesaScraper._extract_date("nessuna data", start=True) is None
+
+    def test_extract_date_end(self):
+        assert DifesaScraper._extract_date("conclusa 31/12/2020", start=False) == "31/12/2020"
+        assert DifesaScraper._extract_date("nessuna data", start=False) is None
+
+    def test_guess_org(self):
+        scraper = DifesaScraper()
+        assert scraper._guess_org("KFOR", "Kosovo - KFOR") == "NATO"
+        assert scraper._guess_org("EUNAVFOR Atalanta", "Oceano Indiano") == "UE"
+        assert scraper._guess_org("UNIFIL", "Libano - UNIFIL") == "ONU"
+        assert scraper._guess_org("MIASIT", "Libia") == "Bilateral"
+        assert scraper._guess_org("Sconosciuta", "link generico") == ""
+
     @patch.object(DifesaScraper, "get")
     def test_scrape_empty_response(self, mock_get):
         mock_get.return_value = None
         scraper = DifesaScraper()
         records = scraper.scrape()
         assert records == []
+
+    @patch.object(DifesaScraper, "get")
+    def test_scrape_with_mock_index(self, mock_get):
+        index_html = """
+        <html><body>
+        <a href="/operazionimilitari/op-intern-corso/unifil/default/27993.html">Libano - UNIFIL</a>
+        <a href="/operazionimilitari/op-intern-corso/kfor/default/27717.html">Kosovo - KFOR - Joint Enterprise</a>
+        </body></html>
+        """
+        detail_html = """
+        <html><body>
+        <h1>UNIFIL</h1>
+        <article><p>La missione UNIFIL è operativa dal 1978 in Libano con circa 1.200 militari italiani.</p></article>
+        </body></html>
+        """
+        mock_resp_index = MagicMock()
+        mock_resp_index.text = index_html
+        mock_resp_detail = MagicMock()
+        mock_resp_detail.text = detail_html
+        mock_get.side_effect = [mock_resp_index, mock_resp_detail, mock_resp_detail]
+
+        scraper = DifesaScraper()
+        records = scraper.scrape()
+        assert len(records) == 2
+        assert any("UNIFIL" in r["nome"] for r in records)
 
 
 # =========================================================================
