@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMissions } from '../hooks/useMissions'
-import { ORG_COLORS, HISTORICAL_EVENTS, COUNTRY_FLAGS } from '../lib/constants'
+import { ORG_COLORS, HISTORICAL_EVENTS } from '../lib/constants'
 
 export default function TimelinePage() {
   const { missions, loading } = useMissions()
@@ -117,7 +117,7 @@ export default function TimelinePage() {
                   {/* Tooltip */}
                   <div className="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded p-2.5 text-[10px] whitespace-nowrap border border-mil-sand-deep"
                     style={{ left: `${left}%`, top: -48 }}>
-                    <p className="font-bold text-mil-navy text-xs">{COUNTRY_FLAGS[m.paese] || ''} {m.nome}</p>
+                    <p className="font-bold text-mil-navy text-xs">{m.nome}</p>
                     <p className="text-mil-steel">{m.paese} · {m.tipo_missione} · {m.startYear}-{m.is_active ? <span className="text-mil-olive font-bold">in corso</span> : m.endYear}</p>
                     {m.personale_totale ? <p className="font-mono font-bold text-mil-navy">{Math.round(m.personale_totale).toLocaleString('it-IT')} pers.</p> : null}
                   </div>

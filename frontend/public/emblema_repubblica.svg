@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white">
+  <!-- Ruota dentata (cerchio esterno) -->
+  <circle cx="50" cy="50" r="46" fill="none" stroke="white" stroke-width="3"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="white" stroke-width="1"/>
+  <!-- Denti ruota -->
+  <g stroke="white" stroke-width="3">
+    <line x1="50" y1="2" x2="50" y2="10"/>
+    <line x1="73" y1="8" x2="69" y2="15"/>
+    <line x1="90" y1="25" x2="84" y2="30"/>
+    <line x1="98" y1="50" x2="90" y2="50"/>
+    <line x1="90" y1="75" x2="84" y2="70"/>
+    <line x1="73" y1="92" x2="69" y2="85"/>
+    <line x1="50" y1="98" x2="50" y2="90"/>
+    <line x1="27" y1="92" x2="31" y2="85"/>
+    <line x1="10" y1="75" x2="16" y2="70"/>
+    <line x1="2" y1="50" x2="10" y2="50"/>
+    <line x1="10" y1="25" x2="16" y2="30"/>
+    <line x1="27" y1="8" x2="31" y2="15"/>
+  </g>
+  <!-- Corona d'alloro (archi) -->
+  <path d="M 25 70 Q 20 50 30 32" fill="none" stroke="white" stroke-width="2.5"/>
+  <path d="M 22 65 Q 18 48 28 35" fill="none" stroke="white" stroke-width="1.5"/>
+  <path d="M 75 70 Q 80 50 70 32" fill="none" stroke="white" stroke-width="2.5"/>
+  <path d="M 78 65 Q 82 48 72 35" fill="none" stroke="white" stroke-width="1.5"/>
+  <!-- Nastro alla base -->
+  <rect x="35" y="72" width="30" height="4" rx="1" fill="white" opacity="0.8"/>
+  <!-- Stella a 5 punte (centro) -->
+  <polygon points="50,22 54,38 70,38 57,48 62,64 50,54 38,64 43,48 30,38 46,38" fill="white"/>
+</svg>

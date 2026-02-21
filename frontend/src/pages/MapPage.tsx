@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useMissions } from '../hooks/useMissions'
-import { GEOCODING, ROMA, ORG_COLORS, MILITARY, COUNTRY_FLAGS } from '../lib/constants'
+import { GEOCODING, ROMA, ORG_COLORS } from '../lib/constants'
 import L from 'leaflet'
 
 export default function MapPage() {
@@ -121,7 +121,7 @@ export default function MapPage() {
               <div key={m.nome} className="px-3 py-1.5 flex items-center gap-2 hover:bg-mil-olive-dark/20 transition-colors cursor-default">
                 <div className="led-active flex-shrink-0" style={{ width: 5, height: 5 }} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold truncate">{COUNTRY_FLAGS[m.paese] || ''} {m.nome}</p>
+                  <p className="text-[10px] font-semibold truncate">{m.nome}</p>
                   <p className="text-[8px] text-mil-sand-deep">{m.paese} · <span className="font-mono">{m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}</span></p>
                 </div>
                 <div className="w-1.5 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: ORG_COLORS[m.tipo_missione] || '#999' }} />

@@ -1,18 +1,17 @@
 import { useState, useMemo } from 'react'
-import { Filter, X } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useMissions } from '../hooks/useMissions'
 import OrgDonut from '../components/charts/OrgDonut'
 import RegionBar from '../components/charts/RegionBar'
 import DecadeBar from '../components/charts/DecadeBar'
-import { ORG_COLORS, COUNTRY_FLAGS } from '../lib/constants'
+import { ORG_COLORS } from '../lib/constants'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts'
 
 export default function DashboardPage() {
-  const { missions, loading } = useMissions()
+  const { missions, active, loading } = useMissions()
   const [orgFilter, setOrgFilter] = useState('')
   const [regionFilter, setRegionFilter] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const filtered = useMemo(() => {
     let m = missions
@@ -50,115 +49,71 @@ export default function DashboardPage() {
       .sort((a, b) => (b.personale_totale || 0) - (a.personale_totale || 0))
       .slice(0, 10)
       .map(m => ({
-        name: (COUNTRY_FLAGS[m.paese] || '') + ' ' + (m.nome.length > 22 ? m.nome.slice(0, 20) + '…' : m.nome),
+        name: m.nome.length > 25 ? m.nome.slice(0, 23) + '…' : m.nome,
         value: Math.round(m.personale_totale || 0),
         org: m.tipo_missione,
       }))
   }, [filtered])
 
-  // Treemap data — top 15 countries by mission count
-  const treemapData = useMemo(() => {
-    const c: Record<string, number> = {}
-    filtered.forEach(m => { c[m.paese] = (c[m.paese] || 0) + 1 })
-    return Object.entries(c)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 15)
-      .map(([name, size]) => ({ name: (COUNTRY_FLAGS[name] || '') + ' ' + name, size }))
+  // Org summary table
+  const orgTable = useMemo(() => {
+    const order = ['ONU', 'NATO', 'UE', 'ITA', 'Bilateral', 'Multinational', 'Coalizione']
+    return order.map(org => {
+      const all = filtered.filter(m => m.tipo_missione === org)
+      const act = all.filter(m => m.is_active)
+      const pers = all.reduce((s, m) => s + (m.personale_totale || 0), 0)
+      return { org, total: all.length, active: act.length, personnel: Math.round(pers), pct: filtered.length ? Math.round((all.length / filtered.length) * 100) : 0 }
+    }).filter(r => r.total > 0)
   }, [filtered])
 
   const orgs = [...new Set(missions.map(m => m.tipo_missione))].sort()
   const regions = [...new Set(missions.map(m => m.regione))].sort()
-  const activeFilters = [orgFilter, regionFilter, activeOnly].filter(Boolean).length
 
-  if (loading) return <div className="flex items-center justify-center h-96 bg-mil-sand"><div className="animate-spin rounded-full h-10 w-10 border-2 border-mil-olive border-t-transparent" /></div>
+  if (loading) return <div className="flex items-center justify-center h-96 bg-[#F5F3EE]"><p className="text-[11px] text-[#8B9298] uppercase tracking-[0.15em]">Caricamento dati...</p></div>
 
   return (
-    <div className="flex">
-      {/* Sidebar Filters */}
-      <div className={`${sidebarOpen ? 'w-56' : 'w-0'} flex-shrink-0 transition-all duration-200 overflow-hidden`}>
-        <div className="w-56 bg-mil-olive-dark min-h-[calc(100vh-56px)] p-4 space-y-5">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-mil-sand-deep">Filtri</span>
-            <button onClick={() => setSidebarOpen(false)} className="text-mil-sand-deep hover:text-white"><X className="w-4 h-4" /></button>
-          </div>
-
-          <div>
-            <label className="text-[9px] uppercase tracking-widest text-mil-sand-deep font-bold block mb-1">Organizzazione</label>
-            <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="w-full px-2 py-1.5 rounded bg-mil-sand-dark text-mil-black text-xs">
-              <option value="">Tutte</option>
-              {orgs.map(o => <option key={o} value={o}>{o}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label className="text-[9px] uppercase tracking-widest text-mil-sand-deep font-bold block mb-1">Regione</label>
-            <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className="w-full px-2 py-1.5 rounded bg-mil-sand-dark text-mil-black text-xs">
-              <option value="">Tutte</option>
-              {regions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </div>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="rounded accent-mil-olive" />
-            <span className="text-xs text-mil-sand-dark">Solo in corso</span>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      {/* Header + inline filters */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C]">Analisi Operativa</h1>
+          <p className="text-[11px] text-[#8B9298]">{filtered.length} missioni</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-1 rounded border border-[#D4CFC3] bg-white text-[11px]">
+            <option value="">Tutte le org.</option>
+            {orgs.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+          <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className="px-2 py-1 rounded border border-[#D4CFC3] bg-white text-[11px]">
+            <option value="">Tutte le regioni</option>
+            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="accent-[#4A5D23]" />
+            <span className="text-[11px] text-[#5A5F63]">Solo in corso</span>
           </label>
-
-          {activeFilters > 0 && (
-            <button onClick={() => { setOrgFilter(''); setRegionFilter(''); setActiveOnly(false) }} className="w-full text-[10px] uppercase tracking-widest text-mil-sand-deep hover:text-white border border-mil-sand-deep/30 rounded py-1">
-              Reset filtri
+          {(orgFilter || regionFilter || activeOnly) && (
+            <button onClick={() => { setOrgFilter(''); setRegionFilter(''); setActiveOnly(false) }} className="text-[10px] uppercase tracking-[0.1em] text-[#8B9298] hover:text-[#1B3A5C]">
+              Reset
             </button>
           )}
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 max-w-7xl mx-auto px-4 py-6 space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {!sidebarOpen && (
-              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded bg-mil-olive text-white hover:bg-mil-olive-dark transition-colors">
-                <Filter className="w-4 h-4" />
-              </button>
-            )}
-            <div>
-              <h1 className="text-2xl font-bold text-mil-navy uppercase tracking-wide">Analisi Operativa</h1>
-              <p className="text-xs text-mil-steel">{filtered.length} missioni {activeFilters > 0 ? `(${activeFilters} filtri attivi)` : ''}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Charts 2x2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <OrgDonut data={byOrg} />
-          <RegionBar data={byRegion} />
-          <DecadeBar data={byDecade} />
-          {/* Country Grid */}
-          <div className="card-elevated">
-            <h3 className="section-title">Teatri Operativi (Top 15)</h3>
-            <div className="flex flex-wrap gap-1.5">
-              {treemapData.map(d => {
-                const maxSize = treemapData[0]?.size || 1
-                const opacity = 0.5 + (d.size / maxSize) * 0.5
-                return (
-                  <div key={d.name} className="rounded px-2.5 py-2 text-white text-center" style={{ backgroundColor: `rgba(74,93,35,${opacity})`, minWidth: d.size > 5 ? 100 : 70, flex: `${d.size} 1 0` }}>
-                    <p className="text-[10px] font-bold truncate">{d.name}</p>
-                    <p className="text-sm font-mono font-bold">{d.size}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-
+      {/* Charts 2x2 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <OrgDonut data={byOrg} />
+        <RegionBar data={byRegion} />
+        <DecadeBar data={byDecade} />
         {/* Top 10 Personnel */}
-        <div className="card-elevated">
-          <h3 className="section-title">Top 10 — Personale Impiegato</h3>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={topPersonnel} layout="vertical" margin={{ left: 140 }}>
-              <XAxis type="number" tick={{ fontSize: 10 }} tickLine={false} axisLine={{ stroke: '#D4CFC3' }} />
-              <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-              <Tooltip formatter={(v: number) => [v.toLocaleString('it-IT'), 'Personale']} contentStyle={{ fontSize: 11, borderRadius: 4 }} />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+        <div className="bg-white border border-[#D4CFC3] rounded p-4">
+          <h3 className="text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C] border-b border-[#D4CFC3] pb-2 mb-3">Top 10 — Personale</h3>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={topPersonnel} layout="vertical" margin={{ left: 130 }}>
+              <XAxis type="number" tick={{ fontSize: 9 }} tickLine={false} axisLine={{ stroke: '#D4CFC3' }} />
+              <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip formatter={(v: number) => [v.toLocaleString('it-IT'), 'Personale']} contentStyle={{ fontSize: 11, borderRadius: 2, border: '1px solid #D4CFC3' }} />
+              <Bar dataKey="value" radius={[0, 2, 2, 0]}>
                 {topPersonnel.map((entry) => (
                   <Cell key={entry.name} fill={ORG_COLORS[entry.org] || '#8B9298'} />
                 ))}
@@ -167,6 +122,33 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+
+      {/* Org summary table */}
+      <div className="bg-white border border-[#D4CFC3] rounded overflow-hidden">
+        <h3 className="text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C] border-b border-[#D4CFC3] p-4 pb-2">Riepilogo per Organizzazione</h3>
+        <table className="w-full text-[11px]">
+          <thead>
+            <tr className="bg-[#1B3A5C] text-white">
+              <th className="px-4 py-2 text-left text-[9px] uppercase tracking-[0.1em]">Organizzazione</th>
+              <th className="px-4 py-2 text-right text-[9px] uppercase tracking-[0.1em]">Totali</th>
+              <th className="px-4 py-2 text-right text-[9px] uppercase tracking-[0.1em]">Attive</th>
+              <th className="px-4 py-2 text-right text-[9px] uppercase tracking-[0.1em]">Personale</th>
+              <th className="px-4 py-2 text-right text-[9px] uppercase tracking-[0.1em]">%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orgTable.map((r, i) => (
+              <tr key={r.org} className={`border-b border-[#EAE6DC] ${i % 2 ? 'bg-[#F5F3EE]' : ''}`}>
+                <td className="px-4 py-1.5 font-medium text-[#1B3A5C]">{r.org}</td>
+                <td className="px-4 py-1.5 text-right font-mono text-[#5A5F63]">{r.total}</td>
+                <td className="px-4 py-1.5 text-right font-mono text-[#4A5D23] font-bold">{r.active}</td>
+                <td className="px-4 py-1.5 text-right font-mono text-[#1B3A5C]">{r.personnel.toLocaleString('it-IT')}</td>
+                <td className="px-4 py-1.5 text-right font-mono text-[#8B9298]">{r.pct}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
   )
 }

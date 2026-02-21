@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
-import { Search, Download, ChevronUp, ChevronDown, X, MapPin, Calendar, Users, Shield } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Search, Download, ChevronUp, ChevronDown, X } from 'lucide-react'
 import { useMissions } from '../hooks/useMissions'
-import { ORG_COLORS, COUNTRY_FLAGS } from '../lib/constants'
+import { ORG_COLORS } from '../lib/constants'
 import type { Mission } from '../lib/types'
 
 type SortKey = 'nome' | 'paese' | 'tipo_missione' | 'personale_totale' | 'data_inizio'
@@ -67,13 +68,13 @@ export default function MissionsPage() {
   return (
     <div className="flex">
       {/* Main table area */}
-      <div className={`flex-1 max-w-7xl mx-auto px-4 py-6 space-y-4 transition-all ${selected ? 'mr-80' : ''}`}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className={`flex-1 max-w-7xl mx-auto px-4 py-6 space-y-4 transition-all ${selected ? 'mr-80' : ''}`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-mil-navy uppercase tracking-wide">Registro Operazioni</h1>
-            <p className="text-xs text-mil-steel">Mostrando {filtered.length} di {missions.length} missioni</p>
+            <h1 className="text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C]">Registro Operazioni</h1>
+            <p className="text-[11px] text-[#8B9298]">Mostrando {filtered.length} di {missions.length} missioni</p>
           </div>
-          <button onClick={exportCsv} className="flex items-center gap-2 px-3 py-1.5 bg-mil-olive text-white rounded hover:bg-mil-olive-dark transition-colors text-[10px] font-bold uppercase tracking-widest">
+          <button onClick={exportCsv} className="flex items-center gap-2 px-3 py-1.5 bg-[#4A5D23] text-white rounded hover:bg-[#3D4F1E] transition-colors text-[10px] font-bold uppercase tracking-[0.1em]">
             <Download className="w-3.5 h-3.5" /> Export CSV
           </button>
         </div>
@@ -119,7 +120,7 @@ export default function MissionsPage() {
                     <td className="px-2 py-2 text-center">
                       <div className={m.is_active ? 'led-active mx-auto' : 'led-inactive mx-auto'} />
                     </td>
-                    <td className="px-3 py-2 font-semibold text-mil-navy">{COUNTRY_FLAGS[m.paese] || ''} {m.nome}</td>
+                    <td className="px-3 py-2 font-medium text-[#1B3A5C]">{m.nome}</td>
                     <td className="px-3 py-2 text-mil-steel">{m.paese}</td>
                     <td className="px-3 py-2">
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: ORG_COLORS[m.tipo_missione] || '#8B9298' }}>
@@ -128,105 +129,44 @@ export default function MissionsPage() {
                     </td>
                     <td className="px-3 py-2 font-mono text-mil-steel">{startY}–{endY}</td>
                     <td className="px-3 py-2 font-mono font-bold text-mil-navy">{m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}</td>
-                    <td className="px-3 py-2 w-28">
-                      <div className="personnel-bar">
-                        <div className="personnel-bar-fill" style={{ width: `${(dur / maxDuration) * 100}%`, backgroundColor: ORG_COLORS[m.tipo_missione] || '#8B9298' }} />
-                      </div>
-                      <span className="text-[8px] text-mil-steel-light">{dur} anni</span>
-                    </td>
+                    <td className="px-3 py-2 font-mono text-[#8B9298]">{dur} anni</td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Drawer — Mission Detail */}
+      {/* Drawer */}
       {selected && (
-        <div className="fixed top-14 right-0 w-80 h-[calc(100vh-56px)] bg-white border-l-2 border-mil-olive shadow-xl z-50 overflow-y-auto">
-          <div className="bg-mil-navy p-4 text-white">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.2em] text-mil-sand-deep">Scheda Missione</p>
-                <h2 className="text-base font-bold mt-1">{selected.nome}</h2>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-mil-sand-deep hover:text-white"><X className="w-4 h-4" /></button>
+        <div className="fixed top-12 right-0 w-80 h-[calc(100vh-48px)] bg-white border-l border-[#D4CFC3] shadow-lg z-50 overflow-y-auto">
+          <div className="bg-[#1B3A5C] p-4 text-white flex items-start justify-between">
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.15em] text-[#8B9298]">Scheda Missione</p>
+              <h2 className="text-[13px] font-bold mt-1">{selected.nome}</h2>
             </div>
+            <button onClick={() => setSelected(null)} className="text-[#8B9298] hover:text-white"><X className="w-4 h-4" /></button>
           </div>
-          <div className="p-4 space-y-4">
-            {/* Status */}
-            <div className="flex items-center gap-2">
-              <div className={selected.is_active ? 'led-active' : 'led-inactive'} />
-              <span className={`text-xs font-bold uppercase tracking-widest ${selected.is_active ? 'text-mil-olive' : 'text-mil-steel-light'}`}>
-                {selected.is_active ? 'In Corso' : 'Conclusa'}
-              </span>
-            </div>
-
-            {/* Info grid */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-mil-steel" />
-                <div>
-                  <p className="text-[9px] uppercase tracking-widest text-mil-steel">Teatro</p>
-                  <p className="text-sm font-semibold text-mil-navy">{COUNTRY_FLAGS[selected.paese] || ''} {selected.paese}</p>
-                  <p className="text-[10px] text-mil-steel">{selected.regione}</p>
-                </div>
+          <div className="p-4 space-y-3">
+            {[['Stato', selected.is_active ? 'In corso' : 'Conclusa'],
+              ['Teatro', selected.paese],
+              ['Regione', selected.regione],
+              ['Organizzazione', selected.tipo_missione],
+              ['Inizio', selected.data_inizio?.slice(0, 10) || '—'],
+              ['Fine', selected.is_active ? 'In corso' : (selected.data_fine?.slice(0, 10) || '—')],
+              ['Durata', `${durationYears(selected)} anni`],
+              ['Personale totale', selected.personale_totale ? Math.round(selected.personale_totale).toLocaleString('it-IT') : '—'],
+              ['Personale militare', selected.personale_militare ? Math.round(selected.personale_militare).toLocaleString('it-IT') : '—'],
+              ['Personale civile', selected.personale_civile ? Math.round(selected.personale_civile).toLocaleString('it-IT') : '—'],
+              ['Commitment', selected.commitment || '—'],
+              ['Costo (quota ITA)', selected.costo_totale && selected.costo_totale > 0 ? `€ ${Math.round(selected.costo_totale).toLocaleString('it-IT')}` : '—'],
+            ].map(([label, val]) => (
+              <div key={label} className="flex justify-between items-baseline border-b border-[#EAE6DC] pb-1.5">
+                <span className="text-[9px] uppercase tracking-[0.1em] text-[#8B9298] font-semibold">{label}</span>
+                <span className="text-[13px] font-mono text-[#1B3A5C]">{val}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-3.5 h-3.5 text-mil-steel" />
-                <div>
-                  <p className="text-[9px] uppercase tracking-widest text-mil-steel">Organizzazione</p>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-white mt-0.5" style={{ backgroundColor: ORG_COLORS[selected.tipo_missione] || '#8B9298' }}>
-                    {selected.tipo_missione}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-3.5 h-3.5 text-mil-steel" />
-                <div>
-                  <p className="text-[9px] uppercase tracking-widest text-mil-steel">Periodo</p>
-                  <p className="text-sm font-mono font-bold text-mil-navy">
-                    {selected.data_inizio?.slice(0, 10) || '—'} → {selected.is_active ? <span className="text-mil-olive">in corso</span> : (selected.data_fine?.slice(0, 10) || '—')}
-                  </p>
-                  <p className="text-[10px] text-mil-steel">{durationYears(selected)} anni</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-3.5 h-3.5 text-mil-steel" />
-                <div>
-                  <p className="text-[9px] uppercase tracking-widest text-mil-steel">Personale</p>
-                  <p className="text-lg font-mono font-bold text-mil-navy">{selected.personale_totale ? Math.round(selected.personale_totale).toLocaleString('it-IT') : '—'}</p>
-                  {(selected.personale_militare || selected.personale_civile) && (
-                    <p className="text-[10px] text-mil-steel">
-                      {selected.personale_militare ? `Mil: ${Math.round(selected.personale_militare).toLocaleString('it-IT')}` : ''}
-                      {selected.personale_militare && selected.personale_civile ? ' · ' : ''}
-                      {selected.personale_civile ? `Civ: ${Math.round(selected.personale_civile).toLocaleString('it-IT')}` : ''}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Additional info */}
-            {selected.commitment && (
-              <div className="border-t border-mil-sand-dark pt-3">
-                <p className="text-[9px] uppercase tracking-widest text-mil-steel mb-1">Tipo Impegno</p>
-                <p className="text-xs text-mil-navy">{selected.commitment}</p>
-              </div>
-            )}
-            {selected.costo_totale && selected.costo_totale > 0 && (
-              <div className="border-t border-mil-sand-dark pt-3">
-                <p className="text-[9px] uppercase tracking-widest text-mil-steel mb-1">Costo (quota ITA)</p>
-                <p className="text-sm font-mono font-bold text-mil-navy">€ {Math.round(selected.costo_totale).toLocaleString('it-IT')}</p>
-              </div>
-            )}
-            {selected.note && (
-              <div className="border-t border-mil-sand-dark pt-3">
-                <p className="text-[9px] uppercase tracking-widest text-mil-steel mb-1">Note</p>
-                <p className="text-[10px] text-mil-steel leading-relaxed">{selected.note}</p>
-              </div>
-            )}
+            ))}
           </div>
         </div>
       )}
