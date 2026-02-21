@@ -192,12 +192,14 @@ def _render_export(df: pd.DataFrame, org_stats: pd.DataFrame,
     with col3:
         try:
             from dashboard.pdf_report import generate_report
-            pdf_bytes = generate_report(df)
-            st.download_button(
-                label="📕 Scarica PDF",
-                data=pdf_bytes,
-                file_name=f"MIDA_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                mime="application/pdf",
-            )
+            if st.button("📕 Genera PDF", key="gen_pdf"):
+                with st.spinner("Generazione report PDF..."):
+                    pdf_bytes = bytes(generate_report(df))
+                    st.download_button(
+                        label="⬇️ Scarica PDF",
+                        data=pdf_bytes,
+                        file_name=f"MIDA_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                        mime="application/pdf",
+                    )
         except ImportError:
             st.warning("Per l'esportazione PDF, installa: pip install fpdf2")
