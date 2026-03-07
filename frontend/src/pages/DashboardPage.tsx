@@ -5,7 +5,10 @@ import OrgDonut from '../components/charts/OrgDonut'
 import RegionBar from '../components/charts/RegionBar'
 import DecadeBar from '../components/charts/DecadeBar'
 import { ORG_COLORS, REGION_COLORS, HISTORICAL_EVENTS } from '../lib/constants'
+import { SkeletonKpiStrip, SkeletonChart } from '../components/ui/Skeleton'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Area, ReferenceLine, ComposedChart } from 'recharts'
+
+function fmtNum(n: number) { return Math.round(n).toLocaleString('it-IT') }
 
 export default function DashboardPage() {
   const { missions, active, loading } = useData()
@@ -99,6 +102,14 @@ export default function DashboardPage() {
     return Object.entries(c).sort((a, b) => b[1].personnel - a[1].personnel)
   }, [active])
 
+  // Force composition
+  const forceComp = useMemo(() => {
+    const mil = active.reduce((s, m) => s + (m.personale_militare || 0), 0)
+    const civ = active.reduce((s, m) => s + (m.personale_civile || 0), 0)
+    const tot = active.reduce((s, m) => s + (m.personale_totale || 0), 0)
+    return { mil, civ, tot }
+  }, [active])
+
   // Org summary table
   const orgTable = useMemo(() => {
     const order = ['ONU', 'NATO', 'UE', 'ITA', 'Bilateral', 'Multinational', 'Coalizione']
@@ -106,7 +117,8 @@ export default function DashboardPage() {
       const all = filtered.filter(m => m.tipo_missione === org)
       const act = all.filter(m => m.is_active)
       const pers = all.reduce((s, m) => s + (m.personale_totale || 0), 0)
-      return { org, total: all.length, active: act.length, personnel: Math.round(pers), pct: filtered.length ? Math.round((all.length / filtered.length) * 100) : 0 }
+      const mil = all.reduce((s, m) => s + (m.personale_militare || 0), 0)
+      return { org, total: all.length, active: act.length, personnel: Math.round(pers), mil: Math.round(mil), pct: filtered.length ? Math.round((all.length / filtered.length) * 100) : 0 }
     }).filter(r => r.total > 0)
   }, [filtered])
 
@@ -114,41 +126,69 @@ export default function DashboardPage() {
   const regions = [...new Set(missions.map(m => m.regione))].sort()
 
   if (loading) return (
-    <div className="flex items-center justify-center h-96 bg-[#F5F3EE]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4A5D23] border-t-transparent mx-auto" />
-        <p className="mt-3 text-[10px] text-[#8B9298] uppercase tracking-[0.15em]">Elaborazione intelligence...</p>
+    <div className="max-w-7xl mx-auto px-4 py-4 md:py-6 space-y-5">
+      <div className="h-5 w-48 bg-[#EAE6DC] rounded animate-pulse" />
+      <SkeletonKpiStrip />
+      <SkeletonChart />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SkeletonChart /><SkeletonChart />
       </div>
     </div>
   )
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="max-w-7xl mx-auto px-4 py-4 md:py-6 space-y-5">
-      {/* Header + inline filters */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1 className="text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C]">Intelligence Dashboard</h1>
-          <p className="text-[11px] text-[#8B9298]">{filtered.length} missioni · {active.length} in corso · Dati 1948–2026</p>
+      {/* INTELLIGENCE HEADER */}
+      <div className="bg-[#0F1419] rounded-lg overflow-hidden border border-[#3D4F1E]/30">
+        <div className="px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#4A5D23] animate-pulse" />
+              <h1 className="text-[13px] font-bold uppercase tracking-[0.15em] text-white">Intelligence Dashboard</h1>
+            </div>
+            <p className="text-[9px] text-[#8B9298] mt-0.5 ml-4">{filtered.length} missioni · {active.length} in corso · Dati 1948–2026</p>
+          </div>
+          <div className="flex gap-3 ml-4 md:ml-0">
+            <div className="bg-[#1A2332] rounded px-3 py-1.5 text-center">
+              <p className="text-[16px] font-mono font-bold text-white leading-none">{fmtNum(forceComp.tot)}</p>
+              <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298] mt-0.5">Forza totale</p>
+            </div>
+            <div className="bg-[#1A2332] rounded px-3 py-1.5 text-center">
+              <p className="text-[16px] font-mono font-bold text-[#4A5D23] leading-none">{fmtNum(forceComp.mil)}</p>
+              <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298] mt-0.5">Militari</p>
+            </div>
+            <div className="bg-[#1A2332] rounded px-3 py-1.5 text-center">
+              <p className="text-[16px] font-mono font-bold text-[#2C5F8A] leading-none">{fmtNum(forceComp.civ)}</p>
+              <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298] mt-0.5">Civili</p>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-[11px]">
-            <option value="">Tutte le org.</option>
-            {orgs.map(o => <option key={o} value={o}>{o}</option>)}
-          </select>
-          <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-[11px]">
-            <option value="">Tutte le regioni</option>
-            {regions.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="accent-[#4A5D23]" />
-            <span className="text-[11px] text-[#5A5F63]">Solo in corso</span>
-          </label>
-          {(orgFilter || regionFilter || activeOnly) && (
-            <button onClick={() => { setOrgFilter(''); setRegionFilter(''); setActiveOnly(false) }} className="text-[10px] uppercase tracking-[0.1em] text-[#8B1A1A] font-bold hover:text-[#1B3A5C]">
-              Reset filtri
-            </button>
-          )}
+        {/* Force bar */}
+        <div className="flex h-1 mx-4 mb-3 rounded-full overflow-hidden">
+          <div className="bg-[#4A5D23]" style={{ width: forceComp.tot ? `${(forceComp.mil / forceComp.tot) * 100}%` : '0' }} />
+          <div className="bg-[#2C5F8A]" style={{ width: forceComp.tot ? `${(forceComp.civ / forceComp.tot) * 100}%` : '0' }} />
         </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-[11px] min-w-0">
+          <option value="">Tutte le org.</option>
+          {orgs.map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-[11px] min-w-0">
+          <option value="">Tutte le regioni</option>
+          {regions.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+        <label className="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="accent-[#4A5D23]" />
+          <span className="text-[11px] text-[#5A5F63]">Solo in corso</span>
+        </label>
+        {(orgFilter || regionFilter || activeOnly) && (
+          <button onClick={() => { setOrgFilter(''); setRegionFilter(''); setActiveOnly(false) }} className="text-[10px] uppercase tracking-[0.1em] text-[#8B1A1A] font-bold hover:text-[#1B3A5C]">
+            Reset filtri
+          </button>
+        )}
       </div>
 
       {/* INTELLIGENCE PANEL: Troop Drawdown Analysis */}

@@ -3,40 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    @apply bg-mil-sand text-mil-black antialiased;
+    background-color: #F5F3EE;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
-}
-
-@layer components {
-  .card {
-    @apply bg-white rounded-lg shadow-sm border border-mil-sand-dark p-5 transition-all duration-200;
-  }
-  .card-elevated {
-    @apply bg-white rounded-lg shadow-md border border-mil-sand-deep p-6 transition-all duration-200 hover:shadow-lg;
-  }
-  .nav-link {
-    @apply px-3 py-2 rounded text-sm font-semibold uppercase tracking-wider transition-colors duration-150;
-  }
-  .nav-link-active {
-    @apply bg-mil-olive text-white;
-  }
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide;
-  }
-  .section-title {
-    @apply text-lg font-bold uppercase tracking-wide text-mil-navy border-b-2 border-mil-olive pb-2 mb-4;
-  }
-}
-
-/* Topographic pattern background */
-.topo-bg {
-  background-color: #1B3A5C;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(74,93,35,0.08) 40px, rgba(74,93,35,0.08) 41px),
-    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(74,93,35,0.08) 40px, rgba(74,93,35,0.08) 41px),
-    radial-gradient(ellipse 600px 200px at 20% 50%, rgba(107,140,42,0.12), transparent),
-    radial-gradient(ellipse 400px 300px at 80% 30%, rgba(44,95,138,0.15), transparent);
 }
 
 /* Pulsing LED */
@@ -50,18 +24,9 @@
   0%, 100% { opacity: 1; box-shadow: 0 0 4px #4A5D23, 0 0 8px rgba(74,93,35,0.4); }
   50% { opacity: 0.5; box-shadow: 0 0 2px #4A5D23; }
 }
-
 .led-inactive {
   width: 8px; height: 8px; border-radius: 50%;
   background: #8B9298;
-}
-
-/* Personnel bar */
-.personnel-bar {
-  height: 6px; border-radius: 3px; background: #EAE6DC; overflow: hidden;
-}
-.personnel-bar-fill {
-  height: 100%; border-radius: 3px; transition: width 0.6s ease-out;
 }
 
 /* Classified stamp effect */
@@ -73,8 +38,27 @@
   opacity: 0.8;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #F5F3EE; }
+/* Leaflet dark popup (C2 map) */
+.dark-popup .leaflet-popup-content-wrapper {
+  background: #0F1419;
+  color: #F5F3EE;
+  border-radius: 6px;
+  border: 1px solid rgba(74,93,35,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.dark-popup .leaflet-popup-tip { background: #0F1419; }
+.dark-popup .leaflet-popup-close-button { color: #8B9298; }
+.dark-popup .leaflet-popup-close-button:hover { color: #fff; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D4CFC3; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #8B9298; }
+
+/* Mobile touch improvements */
+@media (max-width: 768px) {
+  .leaflet-control-zoom { display: none !important; }
+  .leaflet-popup-content-wrapper { max-width: 280px !important; }
+  .leaflet-popup-content { margin: 10px !important; }
+}

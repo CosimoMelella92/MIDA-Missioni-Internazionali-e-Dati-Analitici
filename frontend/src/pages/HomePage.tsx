@@ -7,6 +7,7 @@ import RegionBar from '../components/charts/RegionBar'
 import DecadeBar from '../components/charts/DecadeBar'
 import { useData } from '../context/DataProvider'
 import { ORG_COLORS, GEOCODING, ROMA, HISTORICAL_EVENTS } from '../lib/constants'
+import { SkeletonKpiStrip, SkeletonTable, SkeletonChart, SkeletonMap } from '../components/ui/Skeleton'
 import L from 'leaflet'
 
 export default function HomePage() {
@@ -68,10 +69,21 @@ export default function HomePage() {
 
   if (loading || !stats) {
     return (
-      <div className="flex items-center justify-center h-96 bg-[#F5F3EE]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4A5D23] border-t-transparent mx-auto" />
-          <p className="mt-3 text-[10px] text-[#8B9298] uppercase tracking-[0.15em]">Acquisizione dati in corso...</p>
+      <div>
+        <div className="bg-gradient-to-r from-[#1B3A5C] to-[#3D4F1E] px-4 py-6 md:py-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="h-3 w-64 bg-white/10 rounded animate-pulse mb-2" />
+            <div className="h-7 w-80 bg-white/15 rounded animate-pulse mb-2" />
+            <div className="h-3 w-56 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-4 md:py-6 space-y-5 md:space-y-6">
+          <SkeletonKpiStrip />
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            <div className="lg:col-span-3"><SkeletonTable rows={8} /></div>
+            <div className="lg:col-span-2"><SkeletonMap /></div>
+          </div>
+          <SkeletonChart />
         </div>
       </div>
     )
