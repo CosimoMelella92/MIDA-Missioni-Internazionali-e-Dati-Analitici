@@ -127,13 +127,13 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
           {/* Active missions table — card layout on mobile */}
           <div className="lg:col-span-3">
-            <div className="flex items-center justify-between border-b border-[#D4CFC3] pb-2 mb-3">
-              <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C]">
-                Missioni in Corso — {active.length}
+            <div className="flex items-center justify-between gap-2 border-b border-[#D4CFC3] pb-2 mb-3">
+              <h2 className="text-[12px] md:text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C] flex-shrink-0">
+                In Corso — {active.length}
               </h2>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1 overflow-x-auto flex-shrink min-w-0">
                 {activeByOrg.map(([org, n]) => (
-                  <span key={org} className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: ORG_COLORS[org] || '#8B9298' }}>
+                  <span key={org} className="text-[7px] md:text-[8px] font-bold uppercase px-1 md:px-1.5 py-0.5 rounded text-white whitespace-nowrap flex-shrink-0" style={{ backgroundColor: ORG_COLORS[org] || '#8B9298' }}>
                     {org} {n}
                   </span>
                 ))}
