@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useMissions } from '../hooks/useMissions'
+import { useData } from '../context/DataProvider'
 import { ORG_COLORS, HISTORICAL_EVENTS } from '../lib/constants'
 
 export default function TimelinePage() {
-  const { missions, loading } = useMissions()
+  const { missions, loading } = useData()
   const [orgFilter, setOrgFilter] = useState('')
   const [rangeStart, setRangeStart] = useState(1948)
   const [rangeEnd, setRangeEnd] = useState(2026)
@@ -40,18 +40,18 @@ export default function TimelinePage() {
   const ticks: number[] = []
   for (let y = Math.ceil(rangeStart / 10) * 10; y <= rangeEnd; y += 10) ticks.push(y)
 
-  if (loading) return <div className="flex items-center justify-center h-96 bg-mil-sand"><div className="animate-spin rounded-full h-10 w-10 border-2 border-mil-olive border-t-transparent" /></div>
+  if (loading) return <div className="flex items-center justify-center h-96 bg-[#F5F3EE]"><div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4A5D23] border-t-transparent" /></div>
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-mil-navy uppercase tracking-wide">Cronologia Operativa</h1>
-          <p className="text-xs text-mil-steel">{data.length} missioni nel periodo {rangeStart}-{rangeEnd}</p>
+          <h1 className="text-lg md:text-2xl font-bold text-[#1B3A5C] uppercase tracking-wide">Cronologia Operativa</h1>
+          <p className="text-[11px] text-[#8B9298]">{data.length} missioni nel periodo {rangeStart}-{rangeEnd}</p>
         </div>
         <div className="flex items-center gap-3">
-          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-3 py-1.5 rounded border border-mil-sand-deep bg-white text-sm">
+          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-[11px]">
             <option value="">Tutte le org.</option>
             {orgs.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -59,22 +59,22 @@ export default function TimelinePage() {
       </div>
 
       {/* Zoom slider */}
-      <div className="card flex items-center gap-4">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-mil-steel">Periodo</span>
-        <input type="range" min={1948} max={2020} value={rangeStart} onChange={e => setRangeStart(+e.target.value)} className="flex-1 accent-mil-olive" />
-        <span className="text-xs font-mono font-bold text-mil-navy w-10 text-center">{rangeStart}</span>
-        <span className="text-xs text-mil-steel">—</span>
-        <span className="text-xs font-mono font-bold text-mil-navy w-10 text-center">{rangeEnd}</span>
-        <input type="range" min={rangeStart + 1} max={2026} value={rangeEnd} onChange={e => setRangeEnd(+e.target.value)} className="flex-1 accent-mil-olive" />
+      <div className="bg-white border border-[#D4CFC3] rounded p-3 flex flex-wrap items-center gap-3 md:gap-4">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5F63]">Periodo</span>
+        <input type="range" min={1948} max={2020} value={rangeStart} onChange={e => setRangeStart(+e.target.value)} className="flex-1 min-w-[80px] accent-[#4A5D23]" />
+        <span className="text-xs font-mono font-bold text-[#1B3A5C] w-10 text-center">{rangeStart}</span>
+        <span className="text-xs text-[#5A5F63]">—</span>
+        <span className="text-xs font-mono font-bold text-[#1B3A5C] w-10 text-center">{rangeEnd}</span>
+        <input type="range" min={rangeStart + 1} max={2026} value={rangeEnd} onChange={e => setRangeEnd(+e.target.value)} className="flex-1 min-w-[80px] accent-[#4A5D23]" />
       </div>
 
       {/* Gantt Chart */}
-      <div className="card-elevated overflow-x-auto">
-        <div className="relative min-w-[800px]" style={{ minHeight: data.length * 18 + 60 }}>
+      <div className="bg-white border border-[#D4CFC3] rounded shadow-sm overflow-x-auto">
+        <div className="relative min-w-[600px] md:min-w-[800px]" style={{ minHeight: data.length * 18 + 60 }}>
           {/* Year axis */}
-          <div className="sticky top-0 z-10 h-6 border-b border-mil-sand-deep bg-white">
+          <div className="sticky top-0 z-10 h-6 border-b border-[#D4CFC3] bg-white">
             {ticks.map(y => (
-              <span key={y} className="absolute text-[9px] font-mono text-mil-steel-light" style={{ left: `${((y - rangeStart) / range) * 100}%`, transform: 'translateX(-50%)' }}>{y}</span>
+              <span key={y} className="absolute text-[9px] font-mono text-[#8B9298]" style={{ left: `${((y - rangeStart) / range) * 100}%`, transform: 'translateX(-50%)' }}>{y}</span>
             ))}
           </div>
 
@@ -83,8 +83,8 @@ export default function TimelinePage() {
             const left = ((ev.year - rangeStart) / range) * 100
             return (
               <div key={ev.year} className="absolute top-6 bottom-0 z-[5]" style={{ left: `${left}%` }}>
-                <div className="w-px h-full bg-mil-red/20" />
-                <div className="absolute top-0 -translate-x-1/2 bg-mil-red/90 text-white text-[7px] px-1 py-px rounded-b font-bold uppercase tracking-wider whitespace-nowrap">{ev.label}</div>
+                <div className="w-px h-full bg-[#8B1A1A]/20" />
+                <div className="absolute top-0 -translate-x-1/2 bg-[#8B1A1A]/90 text-white text-[7px] px-1 py-px rounded-b font-bold uppercase tracking-wider whitespace-nowrap">{ev.label}</div>
               </div>
             )
           })}
@@ -115,11 +115,11 @@ export default function TimelinePage() {
                     }}
                   />
                   {/* Tooltip */}
-                  <div className="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded p-2.5 text-[10px] whitespace-nowrap border border-mil-sand-deep"
+                  <div className="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded p-2.5 text-[10px] whitespace-nowrap border border-[#D4CFC3]"
                     style={{ left: `${left}%`, top: -48 }}>
-                    <p className="font-bold text-mil-navy text-xs">{m.nome}</p>
-                    <p className="text-mil-steel">{m.paese} · {m.tipo_missione} · {m.startYear}-{m.is_active ? <span className="text-mil-olive font-bold">in corso</span> : m.endYear}</p>
-                    {m.personale_totale ? <p className="font-mono font-bold text-mil-navy">{Math.round(m.personale_totale).toLocaleString('it-IT')} pers.</p> : null}
+                    <p className="font-bold text-[#1B3A5C] text-xs">{m.nome}</p>
+                    <p className="text-[#5A5F63]">{m.paese} · {m.tipo_missione} · {m.startYear}-{m.is_active ? <span className="text-[#4A5D23] font-bold">in corso</span> : m.endYear}</p>
+                    {m.personale_totale ? <p className="font-mono font-bold text-[#1B3A5C]">{Math.round(m.personale_totale).toLocaleString('it-IT')} pers.</p> : null}
                   </div>
                 </div>
               )
@@ -134,15 +134,15 @@ export default function TimelinePage() {
           {Object.entries(ORG_COLORS).filter(([k]) => k !== 'Altro').map(([org, color]) => (
             <div key={org} className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-mil-steel">{org}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5A5F63]">{org}</span>
             </div>
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-px bg-mil-red/40" />
-          <span className="text-[9px] text-mil-steel uppercase tracking-wider">Eventi storici</span>
-          <div className="w-6 h-3 bg-mil-olive/10 rounded-sm ml-2" />
-          <span className="text-[9px] text-mil-steel uppercase tracking-wider">Missioni attive (area)</span>
+          <div className="w-3 h-px bg-[#8B1A1A]/40" />
+          <span className="text-[9px] text-[#5A5F63] uppercase tracking-wider">Eventi storici</span>
+          <div className="w-6 h-3 bg-[#4A5D23]/10 rounded-sm ml-2" />
+          <span className="text-[9px] text-[#5A5F63] uppercase tracking-wider">Missioni attive (area)</span>
         </div>
       </div>
     </div>

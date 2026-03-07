@@ -1,24 +1,39 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
-import HomePage from './pages/HomePage'
-import DashboardPage from './pages/DashboardPage'
-import MissionsPage from './pages/MissionsPage'
-import TimelinePage from './pages/TimelinePage'
-import MapPage from './pages/MapPage'
+
+const HomePage = lazy(() => import('./pages/HomePage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const MissionsPage = lazy(() => import('./pages/MissionsPage'))
+const TimelinePage = lazy(() => import('./pages/TimelinePage'))
+const MapPage = lazy(() => import('./pages/MapPage'))
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center h-96 bg-[#F5F3EE]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4A5D23] border-t-transparent mx-auto" />
+        <p className="mt-3 text-[10px] text-[#8B9298] uppercase tracking-[0.15em]">Caricamento...</p>
+      </div>
+    </div>
+  )
+}
 
 export default function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/missions" element={<MissionsPage />} />
-          <Route path="/timeline" element={<TimelinePage />} />
-          <Route path="/map" element={<MapPage />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/missions" element={<MissionsPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
+            <Route path="/map" element={<MapPage />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
     </div>

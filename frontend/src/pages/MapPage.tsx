@@ -1,10 +1,10 @@
 import { useEffect, useRef, useMemo } from 'react'
-import { useMissions } from '../hooks/useMissions'
+import { useData } from '../context/DataProvider'
 import { GEOCODING, ROMA, ORG_COLORS } from '../lib/constants'
 import L from 'leaflet'
 
 export default function MapPage() {
-  const { active, loading } = useMissions()
+  const { active, loading } = useData()
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<L.Map | null>(null)
 
@@ -89,10 +89,10 @@ export default function MapPage() {
   }, [active, loading])
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-mil-black">
+    <div className="flex items-center justify-center h-screen bg-[#1A1A1A]">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-mil-olive border-t-transparent mx-auto" />
-        <p className="mt-3 text-xs text-mil-steel uppercase tracking-[0.2em]">Caricamento teatro operativo...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4A5D23] border-t-transparent mx-auto" />
+        <p className="mt-3 text-[10px] text-[#8B9298] uppercase tracking-[0.2em]">Caricamento teatro operativo...</p>
       </div>
     </div>
   )
@@ -102,27 +102,27 @@ export default function MapPage() {
       {/* Full-bleed map */}
       <div ref={mapRef} className="absolute inset-0 z-0" />
 
-      {/* Overlay panel — left side */}
-      <div className="absolute top-3 left-3 z-[1000] w-72 max-h-[calc(100vh-80px)] overflow-y-auto bg-mil-black/85 backdrop-blur-sm rounded-lg border border-mil-olive-dark/50 text-white">
-        <div className="p-3 border-b border-mil-olive-dark/50">
-          <p className="text-[9px] uppercase tracking-[0.2em] text-mil-sand-deep">Teatro Operativo Globale</p>
+      {/* Overlay panel — side on desktop, bottom sheet on mobile */}
+      <div className="absolute bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:top-3 md:left-3 z-[1000] md:w-72 max-h-[40vh] md:max-h-[calc(100vh-80px)] overflow-y-auto bg-[#1A1A1A]/90 backdrop-blur-sm md:rounded-lg border-t md:border border-[#3D4F1E]/50 text-white">
+        <div className="p-3 border-b border-[#3D4F1E]/50">
+          <p className="text-[9px] uppercase tracking-[0.2em] text-[#D4CFC3]">Teatro Operativo Globale</p>
           <p className="text-lg font-bold">{active.length} Missioni</p>
-          <p className="text-[10px] text-mil-sand-deep">{totalPers.toLocaleString('it-IT')} unità · {Object.keys(GEOCODING).length - 1} teatri</p>
+          <p className="text-[10px] text-[#D4CFC3]">{totalPers.toLocaleString('it-IT')} unità · {Object.keys(GEOCODING).length - 1} teatri</p>
         </div>
 
         {/* By region */}
         {byRegion.map(([region, missions]) => (
-          <div key={region} className="border-b border-mil-olive-dark/30">
-            <div className="px-3 py-1.5 bg-mil-olive-dark/30">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-mil-olive-light">{region}</span>
-              <span className="text-[9px] text-mil-sand-deep ml-2">({missions.length})</span>
+          <div key={region} className="border-b border-[#3D4F1E]/30">
+            <div className="px-3 py-1.5 bg-[#3D4F1E]/30">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#6B8C2A]">{region}</span>
+              <span className="text-[9px] text-[#D4CFC3] ml-2">({missions.length})</span>
             </div>
             {[...missions].sort((a, b) => (b.personale_totale || 0) - (a.personale_totale || 0)).map(m => (
-              <div key={m.nome} className="px-3 py-1.5 flex items-center gap-2 hover:bg-mil-olive-dark/20 transition-colors cursor-default">
-                <div className="led-active flex-shrink-0" style={{ width: 5, height: 5 }} />
+              <div key={m.nome} className="px-3 py-1.5 flex items-center gap-2 hover:bg-[#3D4F1E]/20 transition-colors cursor-default">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#4A5D23] flex-shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] font-semibold truncate">{m.nome}</p>
-                  <p className="text-[8px] text-mil-sand-deep">{m.paese} · <span className="font-mono">{m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}</span></p>
+                  <p className="text-[8px] text-[#D4CFC3]">{m.paese} · <span className="font-mono">{m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}</span></p>
                 </div>
                 <div className="w-1.5 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: ORG_COLORS[m.tipo_missione] || '#999' }} />
               </div>
@@ -132,7 +132,7 @@ export default function MapPage() {
 
         {/* Legend */}
         <div className="p-3">
-          <p className="text-[8px] uppercase tracking-widest text-mil-sand-deep mb-2">Organizzazioni</p>
+          <p className="text-[8px] uppercase tracking-widest text-[#D4CFC3] mb-2">Organizzazioni</p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(ORG_COLORS).filter(([k]) => k !== 'Altro').map(([org, color]) => (
               <div key={org} className="flex items-center gap-1">
