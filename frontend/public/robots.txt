@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mida-missioni.netlify.app/sitemap.xml

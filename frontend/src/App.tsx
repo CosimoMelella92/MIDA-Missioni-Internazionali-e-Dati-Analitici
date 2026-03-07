@@ -2,12 +2,14 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import CommandPalette from './components/ui/CommandPalette'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const MissionsPage = lazy(() => import('./pages/MissionsPage'))
 const TimelinePage = lazy(() => import('./pages/TimelinePage'))
 const MapPage = lazy(() => import('./pages/MapPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
 
 function PageLoader() {
   return (
@@ -24,6 +26,7 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
+      <CommandPalette />
       <main className="flex-1">
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -32,6 +35,7 @@ export default function App() {
             <Route path="/missions" element={<MissionsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/map" element={<MapPage />} />
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
         </Suspense>
       </main>

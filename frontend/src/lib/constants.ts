@@ -1,21 +1,3 @@
-// Palette militare italiana
-export const MILITARY = {
-  olive: '#4A5D23',
-  oliveDark: '#3D4F1E',
-  oliveLight: '#6B8C2A',
-  navy: '#1B3A5C',
-  navyLight: '#2C5F8A',
-  sand: '#F5F3EE',
-  sandDark: '#EAE6DC',
-  sandDeep: '#D4CFC3',
-  red: '#8B1A1A',
-  steel: '#5A5F63',
-  steelLight: '#8B9298',
-  khaki: '#7D6B3A',
-  black: '#1A1A1A',
-  white: '#FAFAF8',
-}
-
 export const ORG_COLORS: Record<string, string> = {
   ONU: '#1B3A5C',
   NATO: '#4A5D23',
@@ -86,14 +68,3 @@ export const HISTORICAL_EVENTS: { year: number; label: string }[] = [
   { year: 2024, label: 'Mar Rosso (Aspides)' },
 ]
 
-export const COUNTRY_FLAGS: Record<string, string> = {
-  'Libano': '🇱🇧', 'Kosovo': '🇽🇰', 'Iraq': '🇮🇶', 'Somalia': '🇸🇴',
-  'Bosnia ed Erzegovina': '🇧🇦', 'Egitto': '🇪🇬', 'Cipro': '🇨🇾',
-  'Niger': '🇳🇪', 'Libia': '🇱🇾', 'Palestina': '🇵🇸', 'Malta': '🇲🇹',
-  'Gibuti': '🇩🇯', 'Lettonia': '🇱🇻', 'Estonia': '🇪🇪', 'Bulgaria': '🇧🇬',
-  'Ungheria': '🇭🇺', 'Armenia': '🇦🇲', 'Mozambico': '🇲🇿', 'Serbia': '🇷🇸',
-  'Israele': '🇮🇱', 'India/Pakistan': '🇮🇳', 'Sahara Occidentale': '🇲🇦',
-  'Mediterraneo': '🌊', 'Mar Rosso': '🌊', 'Oceano Indiano': '🌊',
-  'Stretto di Hormuz': '🌊', 'Afghanistan': '🇦🇫', 'Siria': '🇸🇾',
-  'Mali': '🇲🇱', 'Ucraina': '🇺🇦', 'Romania': '🇷🇴', 'Polonia': '🇵🇱',
-}

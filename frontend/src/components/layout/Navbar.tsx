@@ -7,6 +7,7 @@ const links = [
   { to: '/missions', label: 'Registro' },
   { to: '/timeline', label: 'Timeline' },
   { to: '/map', label: 'Dispositivo' },
+  { to: '/about', label: 'Info' },
 ]
 
 export default function Navbar() {
@@ -37,9 +38,15 @@ export default function Navbar() {
             ))}
           </div>
 
-          <span className="text-[9px] uppercase tracking-[0.2em] text-[#8B9298] hidden lg:block">
-            Stato Maggiore Difesa
-          </span>
+          <div className="hidden lg:flex items-center gap-3">
+            <button onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))} className="flex items-center gap-1.5 px-2 py-1 rounded border border-[#2C5F8A]/40 text-[9px] text-[#8B9298] hover:text-white hover:border-[#8B9298]/60 transition-colors">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="7" cy="7" r="5" /><path d="M11 11l3.5 3.5" /></svg>
+              <span className="font-mono">Ctrl+K</span>
+            </button>
+            <span className="text-[9px] uppercase tracking-[0.2em] text-[#8B9298]">
+              Stato Maggiore Difesa
+            </span>
+          </div>
 
           {/* Hamburger */}
           <button onClick={() => setOpen(!open)} className="md:hidden text-white p-1" aria-label="Menu">
