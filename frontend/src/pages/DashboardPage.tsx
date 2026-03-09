@@ -6,7 +6,9 @@ import RegionBar from '../components/charts/RegionBar'
 import DecadeBar from '../components/charts/DecadeBar'
 import { ORG_COLORS, REGION_COLORS, HISTORICAL_EVENTS } from '../lib/constants'
 import { SkeletonKpiStrip, SkeletonChart } from '../components/ui/Skeleton'
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Area, ReferenceLine, ComposedChart } from 'recharts'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Area, ReferenceLine, ComposedChart, AreaChart } from 'recharts'
+
+const RC = REGION_COLORS
 
 function fmtNum(n: number) { return Math.round(n).toLocaleString('it-IT') }
 
@@ -15,6 +17,7 @@ export default function DashboardPage() {
   const [orgFilter, setOrgFilter] = useState('')
   const [regionFilter, setRegionFilter] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
+  const [theaterView, setTheaterView] = useState(false)
 
   const filtered = useMemo(() => {
     let m = missions
@@ -89,6 +92,26 @@ export default function DashboardPage() {
     const drawdown = peak.attive > 0 ? Math.round(((peak.attive - (current?.attive || 0)) / peak.attive) * 100) : 0
     return { peak, current, drawdown }
   }, [troopTimeline])
+
+  // Theater timeline: per-year active mission count by region
+  const theaterRegions = ['Europa', 'Medio Oriente', 'Africa', 'Asia', 'America', 'Non specificata']
+  const theaterTimeline = useMemo(() => {
+    const rows: Record<number, Record<string, number>> = {}
+    for (let y = 1948; y <= 2026; y++) {
+      rows[y] = { year: y }
+      theaterRegions.forEach(r => { rows[y][r] = 0 })
+    }
+    missions.forEach(m => {
+      if (!m.data_inizio) return
+      const start = new Date(m.data_inizio).getFullYear()
+      const end = m.data_fine && m.data_fine !== 'NaT' ? new Date(m.data_fine).getFullYear() : 2026
+      const reg = theaterRegions.includes(m.regione) ? m.regione : 'Non specificata'
+      for (let y = Math.max(start, 1948); y <= Math.min(end, 2026); y++) {
+        if (rows[y]) rows[y][reg]++
+      }
+    })
+    return Object.values(rows).sort((a, b) => (a.year as number) - (b.year as number))
+  }, [missions])
 
   // Region distribution for active missions
   const activeByRegion = useMemo(() => {
@@ -191,67 +214,167 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* INTELLIGENCE PANEL: Troop Drawdown Analysis */}
+      {/* INTELLIGENCE PANEL: Troop Drawdown + Theater Analysis */}
       <div className="bg-white border border-[#D4CFC3] rounded overflow-hidden">
-        <div className="bg-[#1B3A5C] px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-[12px] font-bold uppercase tracking-[0.15em] text-white">Analisi Forza Operativa — Missioni Attive per Anno</h2>
-            <p className="text-[9px] text-[#8B9298] mt-0.5">Trend storico con identificazione del picco operativo e successivo drawdown</p>
+        <div className="bg-[#1B3A5C] px-4 py-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+              <h2 className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.15em] text-white">Analisi Forza Operativa — Missioni Attive per Anno</h2>
+              <p className="text-[8px] md:text-[9px] text-[#8B9298] mt-0.5">
+                {theaterView ? 'Composizione per teatro operativo — stacked area' : 'Trend storico con identificazione del picco operativo e successivo drawdown'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {/* Toggle */}
+              <div className="flex bg-[#0F1419] rounded overflow-hidden border border-white/10">
+                <button onClick={() => setTheaterView(false)} className={`px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] font-bold transition-colors ${!theaterView ? 'bg-white/15 text-white' : 'text-[#8B9298] hover:text-white'}`}>Totale</button>
+                <button onClick={() => setTheaterView(true)} className={`px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] font-bold transition-colors ${theaterView ? 'bg-white/15 text-white' : 'text-[#8B9298] hover:text-white'}`}>Per Teatro</button>
+              </div>
+              {/* KPI pills */}
+              <div className="hidden md:flex gap-3">
+                <div className="text-center">
+                  <p className="text-[16px] font-mono font-bold text-white leading-none">{peakData.peak.attive}</p>
+                  <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298]">Picco ({peakData.peak.year})</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[16px] font-mono font-bold text-[#6B8C2A] leading-none">{peakData.current?.attive || 0}</p>
+                  <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298]">Attuali (2026)</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[16px] font-mono font-bold text-[#8B1A1A] leading-none">-{peakData.drawdown}%</p>
+                  <p className="text-[7px] uppercase tracking-[0.1em] text-[#8B9298]">Drawdown</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-4 mt-2 md:mt-0">
-            <div className="text-center">
-              <p className="text-[18px] font-mono font-bold text-white">{peakData.peak.attive}</p>
-              <p className="text-[8px] uppercase tracking-[0.1em] text-[#8B9298]">Picco ({peakData.peak.year})</p>
+          {/* Mobile KPI row */}
+          <div className="flex md:hidden gap-3 mt-2">
+            <div className="bg-[#0F1419] rounded px-2 py-1 text-center flex-1">
+              <p className="text-[14px] font-mono font-bold text-white leading-none">{peakData.peak.attive}</p>
+              <p className="text-[7px] uppercase tracking-[0.08em] text-[#8B9298]">Picco ({peakData.peak.year})</p>
             </div>
-            <div className="text-center">
-              <p className="text-[18px] font-mono font-bold text-[#6B8C2A]">{peakData.current?.attive || 0}</p>
-              <p className="text-[8px] uppercase tracking-[0.1em] text-[#8B9298]">Attuali (2026)</p>
+            <div className="bg-[#0F1419] rounded px-2 py-1 text-center flex-1">
+              <p className="text-[14px] font-mono font-bold text-[#6B8C2A] leading-none">{peakData.current?.attive || 0}</p>
+              <p className="text-[7px] uppercase tracking-[0.08em] text-[#8B9298]">Attuali</p>
             </div>
-            <div className="text-center">
-              <p className="text-[18px] font-mono font-bold text-[#8B1A1A]">-{peakData.drawdown}%</p>
-              <p className="text-[8px] uppercase tracking-[0.1em] text-[#8B9298]">Drawdown</p>
+            <div className="bg-[#0F1419] rounded px-2 py-1 text-center flex-1">
+              <p className="text-[14px] font-mono font-bold text-[#8B1A1A] leading-none">-{peakData.drawdown}%</p>
+              <p className="text-[7px] uppercase tracking-[0.08em] text-[#8B9298]">Drawdown</p>
             </div>
           </div>
         </div>
+
         <div className="p-4">
-          <ResponsiveContainer width="100%" height={220}>
-            <ComposedChart data={troopTimeline} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="troopGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1B3A5C" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#1B3A5C" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="year" tick={{ fontSize: 9 }} tickLine={false} axisLine={{ stroke: '#D4CFC3' }} interval={9} />
-              <YAxis tick={{ fontSize: 9 }} tickLine={false} axisLine={false} width={28} />
-              <Tooltip
-                contentStyle={{ fontSize: 11, borderRadius: 2, border: '1px solid #D4CFC3', backgroundColor: '#fff' }}
-                formatter={(v: number, name: string) => {
-                  if (name === 'attive') return [v, 'Missioni attive']
-                  if (name === 'nuove') return [v, 'Nuove missioni']
-                  return [Math.abs(v), 'Missioni concluse']
-                }}
-                labelFormatter={(l) => `Anno ${l}`}
-              />
-              {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2003, 2011, 2014, 2022].includes(e.year)).map(e => (
-                <ReferenceLine key={e.year} x={e.year} stroke="#8B1A1A" strokeDasharray="3 3" strokeOpacity={0.3} />
-              ))}
-              <ReferenceLine x={peakData.peak.year} stroke="#8B1A1A" strokeWidth={1.5} strokeOpacity={0.6} label={{ value: 'PICCO', position: 'top', fontSize: 8, fill: '#8B1A1A' }} />
-              <Area type="monotone" dataKey="attive" stroke="#1B3A5C" strokeWidth={2} fill="url(#troopGrad)" />
-              <Bar dataKey="nuove" fill="#4A5D23" opacity={0.5} />
-              <Bar dataKey="concluse" fill="#8B1A1A" opacity={0.3} />
-            </ComposedChart>
-          </ResponsiveContainer>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 border-t border-[#EAE6DC] pt-2">
-            <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#1B3A5C]/30 inline-block rounded" /> Missioni attive</span>
-            <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#4A5D23]/50 inline-block rounded" /> Nuove aperture</span>
-            <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#8B1A1A]/30 inline-block rounded" /> Chiusure</span>
-            {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2011, 2022].includes(e.year)).map(e => (
-              <span key={e.year} className="text-[8px] text-[#8B9298] uppercase tracking-[0.1em]">
-                <b className="text-[#8B1A1A]">{e.year}</b> {e.label}
-              </span>
-            ))}
-          </div>
+          {!theaterView ? (
+            /* === TOTALE VIEW === */
+            <>
+              <ResponsiveContainer width="100%" height={220}>
+                <ComposedChart data={troopTimeline} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="troopGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1B3A5C" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#1B3A5C" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="year" tick={{ fontSize: 9 }} tickLine={false} axisLine={{ stroke: '#D4CFC3' }} interval={9} />
+                  <YAxis tick={{ fontSize: 9 }} tickLine={false} axisLine={false} width={28} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 11, borderRadius: 4, border: '1px solid #D4CFC3', backgroundColor: '#fff' }}
+                    formatter={(v: number, name: string) => {
+                      if (name === 'attive') return [v, 'Missioni attive']
+                      if (name === 'nuove') return [v, 'Nuove missioni']
+                      return [Math.abs(v), 'Missioni concluse']
+                    }}
+                    labelFormatter={(l) => `Anno ${l}`}
+                  />
+                  {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2003, 2011, 2014, 2022].includes(e.year)).map(e => (
+                    <ReferenceLine key={e.year} x={e.year} stroke="#8B1A1A" strokeDasharray="3 3" strokeOpacity={0.3} />
+                  ))}
+                  <ReferenceLine x={peakData.peak.year} stroke="#8B1A1A" strokeWidth={1.5} strokeOpacity={0.6} label={{ value: 'PICCO', position: 'top', fontSize: 8, fill: '#8B1A1A' }} />
+                  <Area type="monotone" dataKey="attive" stroke="#1B3A5C" strokeWidth={2} fill="url(#troopGrad)" />
+                  <Bar dataKey="nuove" fill="#4A5D23" opacity={0.5} />
+                  <Bar dataKey="concluse" fill="#8B1A1A" opacity={0.3} />
+                </ComposedChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 border-t border-[#EAE6DC] pt-2">
+                <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#1B3A5C]/30 inline-block rounded" /> Missioni attive</span>
+                <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#4A5D23]/50 inline-block rounded" /> Nuove</span>
+                <span className="flex items-center gap-1.5 text-[8px] text-[#8B9298] uppercase tracking-[0.1em]"><span className="w-3 h-1.5 bg-[#8B1A1A]/30 inline-block rounded" /> Chiusure</span>
+                {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2011, 2022].includes(e.year)).map(e => (
+                  <span key={e.year} className="text-[8px] text-[#8B9298] uppercase tracking-[0.1em]">
+                    <b className="text-[#8B1A1A]">{e.year}</b> {e.label}
+                  </span>
+                ))}
+              </div>
+            </>
+          ) : (
+            /* === THEATER VIEW: Stacked Area === */
+            <>
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={theaterTimeline} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    {theaterRegions.filter(r => r !== 'Non specificata').map(r => (
+                      <linearGradient key={r} id={`tg-${r.replace(/\s/g, '')}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={RC[r] || '#8B9298'} stopOpacity={0.6} />
+                        <stop offset="95%" stopColor={RC[r] || '#8B9298'} stopOpacity={0.08} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <XAxis dataKey="year" tick={{ fontSize: 9 }} tickLine={false} axisLine={{ stroke: '#D4CFC3' }} interval={9} />
+                  <YAxis tick={{ fontSize: 9 }} tickLine={false} axisLine={false} width={28} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null
+                      const total = payload.reduce((s, p) => s + ((p.value as number) || 0), 0)
+                      return (
+                        <div style={{ background: '#0F1419', border: '1px solid rgba(74,93,35,0.3)', borderRadius: 6, padding: '8px 12px', fontSize: 11, color: '#F5F3EE', minWidth: 160 }}>
+                          <div style={{ fontWeight: 700, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: 6, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 4 }}>
+                            ANNO {label} — {total} missioni
+                          </div>
+                          {payload.filter(p => (p.value as number) > 0).sort((a, b) => ((b.value as number) || 0) - ((a.value as number) || 0)).map(p => (
+                            <div key={p.dataKey as string} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                              <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: p.color, flexShrink: 0 }} />
+                              <span style={{ flex: 1, fontSize: 10 }}>{p.dataKey as string}</span>
+                              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: 11 }}>{p.value as number}</span>
+                              <span style={{ fontSize: 9, color: '#8B9298' }}>{total ? Math.round(((p.value as number) / total) * 100) : 0}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    }}
+                  />
+                  {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2011, 2022].includes(e.year)).map(e => (
+                    <ReferenceLine key={e.year} x={e.year} stroke="#8B1A1A" strokeDasharray="3 3" strokeOpacity={0.25} />
+                  ))}
+                  {theaterRegions.filter(r => r !== 'Non specificata').map(r => (
+                    <Area key={r} type="monotone" dataKey={r} stackId="theater" stroke={RC[r] || '#8B9298'} strokeWidth={0.5} fill={`url(#tg-${r.replace(/\s/g, '')})`} />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+              {/* Theater legend — 2 cols on mobile, inline on desktop */}
+              <div className="grid grid-cols-2 md:flex md:flex-wrap gap-x-4 gap-y-1.5 mt-3 border-t border-[#EAE6DC] pt-2">
+                {theaterRegions.filter(r => r !== 'Non specificata').map(r => {
+                  const last = theaterTimeline[theaterTimeline.length - 1]
+                  const count = last ? (last[r] as number) || 0 : 0
+                  return (
+                    <div key={r} className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: RC[r] || '#8B9298' }} />
+                      <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-[#1B3A5C]">{r}</span>
+                      <span className="text-[9px] font-mono text-[#8B9298]">{count}</span>
+                    </div>
+                  )
+                })}
+              </div>
+              {/* Historical events */}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 border-t border-[#EAE6DC] pt-2">
+                {HISTORICAL_EVENTS.filter(e => [1991, 1999, 2001, 2011, 2022].includes(e.year)).map(e => (
+                  <span key={e.year} className="text-[8px] text-[#8B9298] uppercase tracking-[0.1em]">
+                    <b className="text-[#8B1A1A]">{e.year}</b> {e.label}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
