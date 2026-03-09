@@ -3,22 +3,24 @@ Flask Web Interface for PDF & DOCX Extractor
 Provides web interface to view extraction results for both PDF and Word
 """
 
-from flask import Flask, render_template, request, jsonify, send_file
 import json
-import os
-from pathlib import Path
 import logging
-from datetime import datetime
-import pandas as pd
+import os
 
 # Import our PDF/Word extractor modules
 import sys
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+from flask import Flask, jsonify, render_template, request, send_file
+
 sys.path.append(str(Path(__file__).parent.parent))
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from pdf_parser import PDFParser
-from docx_parser import DOCXParser
 from data_extractor import IntelligentDataExtractor
+from docx_parser import DOCXParser
+from pdf_parser import PDFParser
 from report_generator import AdvancedReportGenerator
 
 app = Flask(__name__)
@@ -61,7 +63,7 @@ def index():
 def handle_settings():
     """Handle AI extraction settings"""
     global ai_settings
-    
+
     if request.method == 'POST':
         data = request.get_json()
         ai_settings.update({
@@ -70,14 +72,14 @@ def handle_settings():
             'model': data.get('model', 'gpt-3.5-turbo')
         })
         return jsonify({'status': 'success'})
-    
+
     return jsonify(ai_settings)
 
 @app.route('/api/progress')
 def get_progress():
     """Get current extraction progress"""
     global extraction_progress
-    
+
     # Calculate elapsed time if running
     elapsed_time = None
     if extraction_progress['start_time']:
@@ -85,7 +87,7 @@ def get_progress():
             elapsed_time = (extraction_progress['end_time'] - extraction_progress['start_time']).total_seconds()
         else:
             elapsed_time = (datetime.now() - extraction_progress['start_time']).total_seconds()
-    
+
     return jsonify({
         **extraction_progress,
         'elapsed_time': elapsed_time,
@@ -96,7 +98,7 @@ def get_progress():
 def extract_documents():
     """Extract data from PDFs and DOCX in documents folder"""
     global extraction_results, aggregated_data, report_data, extraction_progress, ai_settings
-    
+
     try:
         # Get extraction settings with robust JSON handling
         data = {}
@@ -115,10 +117,10 @@ def extract_documents():
         except Exception as e:
             logger.warning(f"Could not parse request data: {str(e)}, using defaults")
             data = {}
-        
+
         use_ai = data.get('use_ai', ai_settings['use_ai'])
         api_key = data.get('api_key', ai_settings['api_key'])
-        
+
         # Initialize progress
         extraction_progress.update({
             'status': 'running',
@@ -131,27 +133,27 @@ def extract_documents():
             'end_time': None,
             'error_message': ''
         })
-        
+
         # Get documents directory
         docs_dir = Path('data/documents')
-        
+
         if not docs_dir.exists():
             extraction_progress.update({
                 'status': 'error',
                 'error_message': 'Directory documents non trovata'
             })
             return jsonify({'error': 'Directory documents non trovata'}), 400
-        
+
         # Initialize extractors
         extraction_progress['current_step'] = 'Caricamento modelli...'
-        
+
         # Initialize parsers
         pdf_parser = PDFParser()
         docx_parser = DOCXParser()
-        
+
         # Initialize report generator
         report_generator = AdvancedReportGenerator()
-        
+
         # Initialize data extractor with AI if requested
         try:
             if use_ai:
@@ -173,16 +175,16 @@ def extract_documents():
                     'error_message': f'Errore inizializzazione: {str(e)}. Fallback fallito: {str(e2)}'
                 })
                 return jsonify({'error': f'Errore inizializzazione: {str(e)}. Fallback fallito: {str(e2)}'}), 500
-        
+
         # Count total files
         pdf_files = list(docs_dir.glob('*.pdf'))
         docx_files = list(docs_dir.glob('*.docx'))
         extraction_progress['total_files'] = len(pdf_files) + len(docx_files)
-        
+
         # Process all PDFs
         logger.info("Starting PDF extraction...")
         extraction_progress['current_step'] = 'Elaborazione PDF...'
-        
+
         pdf_results = []
         for i, pdf_file in enumerate(pdf_files):
             extraction_progress.update({
@@ -190,18 +192,18 @@ def extract_documents():
                 'files_processed': i,
                 'percentage': int((i / extraction_progress['total_files']) * 100)
             })
-            
+
             try:
                 result = pdf_parser.extract_text_from_pdf(str(pdf_file))
                 pdf_results.append(result)
             except Exception as e:
                 logger.error(f"Error processing {pdf_file.name}: {str(e)}")
                 pdf_results.append({'file': pdf_file.name, 'error': str(e)})
-        
+
         # Process all DOCX
         logger.info("Starting DOCX extraction...")
         extraction_progress['current_step'] = 'Elaborazione DOCX...'
-        
+
         docx_results = []
         for i, docx_file in enumerate(docx_files):
             extraction_progress.update({
@@ -209,22 +211,22 @@ def extract_documents():
                 'files_processed': len(pdf_files) + i,
                 'percentage': int(((len(pdf_files) + i) / extraction_progress['total_files']) * 100)
             })
-            
+
             try:
                 result = docx_parser.extract_text_from_docx(str(docx_file))
                 docx_results.append(result)
             except Exception as e:
                 logger.error(f"Error processing {docx_file.name}: {str(e)}")
                 docx_results.append({'file': docx_file.name, 'error': str(e)})
-        
+
         logger.info(f"File processing completed: {len(pdf_results)} PDFs, {len(docx_results)} DOCXs")
-        
+
         # Merge results
         extraction_progress['current_step'] = 'Analisi dati estratti...'
         all_results = []
         successful_extractions = 0
         total_files = 0
-        
+
         for result in pdf_results + docx_results:
             total_files += 1
             if 'error' not in result:
@@ -241,19 +243,19 @@ def extract_documents():
                         if not text and 'pages' in result:
                             # Combine text from all pages
                             text = '\n'.join([page.get('text', '') for page in result['pages']])
-                    
+
                     if len(text) > 2000000:  # 2M characters
                         logger.warning(f"Text too large ({len(text)} chars), truncating for processing")
                         text = text[:2000000]  # Truncate to 2M chars
-                    
+
                     # Debug: Show first 500 characters of extracted text
                     logger.info(f"Text preview for {result.get('filename', result.get('file', 'unknown'))}:")
                     logger.info(f"Text length: {len(text)} characters")
                     logger.info(f"First 500 chars: {text[:500]}...")
-                    
+
                     try:
                         structured_data = data_extractor.extract_structured_data(text)
-                        
+
                         # Debug logging
                         logger.info(f"Extracted data for {result.get('filename', result.get('file', 'unknown'))}:")
                         logger.info(f"  - Missions: {len(structured_data.get('missions', []))}")
@@ -261,7 +263,7 @@ def extract_documents():
                         logger.info(f"  - Personnel: {len(structured_data.get('personnel', []))}")
                         logger.info(f"  - Costs: {len(structured_data.get('costs', []))}")
                         logger.info(f"  - Confidence: {structured_data.get('confidence', 0.0):.2f}")
-                        
+
                         all_results.append({
                             'file': result.get('filename', result.get('file', 'unknown')),
                             'type': result.get('type', 'pdf'),
@@ -273,7 +275,7 @@ def extract_documents():
                         logger.error(f"Error during data extraction for {result.get('filename', result.get('file', 'unknown'))}: {str(extraction_error)}")
                         # Try with a smaller text chunk as fallback
                         try:
-                            logger.info(f"Retrying with smaller text chunk...")
+                            logger.info("Retrying with smaller text chunk...")
                             smaller_text = text[:1000000]  # 1M characters
                             structured_data = data_extractor.extract_structured_data(smaller_text)
                             all_results.append({
@@ -304,9 +306,9 @@ def extract_documents():
                     })
             else:
                 all_results.append(result)
-        
+
         extraction_results = all_results
-        
+
         # Aggregate results
         extraction_progress['current_step'] = 'Aggregazione risultati...'
         try:
@@ -318,7 +320,7 @@ def extract_documents():
             total_missions = sum(len(result.get('structured_data', {}).get('missions', [])) for result in all_results)
             total_personnel = sum(sum(p.get('number', 0) for p in result.get('structured_data', {}).get('personnel', [])) for result in all_results)
             total_costs = sum(sum(c.get('amount', 0) for c in result.get('structured_data', {}).get('costs', [])) for result in all_results)
-            
+
             aggregated_data = {
                 'total_missions': total_missions,
                 'total_personnel': total_personnel,
@@ -326,7 +328,7 @@ def extract_documents():
                 'countries': [],
                 'mission_types': []
             }
-        
+
         # Generate comprehensive report
         extraction_progress['current_step'] = 'Generazione report...'
         logger.info("Generating comprehensive report...")
@@ -335,7 +337,7 @@ def extract_documents():
         except Exception as e:
             logger.error(f"Error generating report: {str(e)}")
             report_data = {}
-        
+
         # Update progress to completed
         extraction_progress.update({
             'status': 'completed',
@@ -345,9 +347,9 @@ def extract_documents():
             'percentage': 100,
             'end_time': datetime.now()
         })
-        
+
         logger.info(f"Extraction completed: {successful_extractions}/{total_files} files processed successfully")
-        
+
         return jsonify({
             'success': True,
             'files_processed': successful_extractions,
@@ -358,7 +360,7 @@ def extract_documents():
             'report_generated': bool(report_data),
             'report_path': report_data.get('main_report', '') if report_data else ''
         })
-        
+
     except Exception as e:
         logger.error(f"Extraction error: {str(e)}")
         extraction_progress.update({
@@ -378,7 +380,7 @@ def view_report():
     """View comprehensive extraction report"""
     if not report_data:
         return jsonify({'error': 'No report available. Run extraction first.'}), 404
-    
+
     return render_template('report.html', report_data=report_data)
 
 @app.route('/api/results')
@@ -396,12 +398,12 @@ def export_csv():
     """Export results as CSV"""
     if not extraction_results:
         return jsonify({'error': 'No results to export'}), 404
-    
+
     # Create DataFrame from results
     data_rows = []
     for result in extraction_results:
         structured = result['structured_data']
-        
+
         # Extract missions
         missions = structured.get('missions', [])
         for mission in missions:
@@ -417,7 +419,7 @@ def export_csv():
                 'mission_types': ', '.join([mt['type'] for mt in structured.get('mission_types', [])]),
                 'overall_confidence': structured.get('confidence', 0.0)
             })
-    
+
     if not data_rows:
         # If no missions found, create row with file info
         for result in extraction_results:
@@ -434,15 +436,15 @@ def export_csv():
                 'mission_types': ', '.join([mt['type'] for mt in structured.get('mission_types', [])]),
                 'overall_confidence': structured.get('confidence', 0.0)
             })
-    
+
     df = pd.DataFrame(data_rows)
-    
+
     # Save to temporary file
     output_path = Path('data/processed/document_extraction_results.csv')
     output_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False)
-    
-    return send_file(output_path, as_attachment=True, 
+
+    return send_file(output_path, as_attachment=True,
                     download_name=f'document_extraction_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv')
 
 @app.route('/export/report/<report_type>')
@@ -450,17 +452,17 @@ def export_report(report_type):
     """Export specific report files"""
     if not report_data or 'reports' not in report_data:
         return jsonify({'error': 'No report available'}), 404
-    
+
     reports = report_data['reports']
-    
+
     if report_type not in reports:
         return jsonify({'error': f'Report type {report_type} not found'}), 404
-    
+
     report_path = Path(reports[report_type])
-    
+
     if not report_path.exists():
         return jsonify({'error': 'Report file not found'}), 404
-    
+
     return send_file(report_path, as_attachment=True)
 
 @app.route('/stats')
@@ -473,7 +475,7 @@ def view_quality():
     """View quality assessment"""
     if not report_data or 'analysis' not in report_data:
         return jsonify({'error': 'No quality data available'}), 404
-    
+
     quality_metrics = report_data['analysis'].get('quality_metrics', {})
     return render_template('quality.html', quality_metrics=quality_metrics, report_data=report_data)
 
@@ -516,7 +518,7 @@ def upload_file():
                     text = parsed['extracted_data']['full_text']
                 else:
                     text = parsed.get('text', '') or parsed.get('content', '') or ''
-                
+
                 preview = text[:2000] + ('...' if len(text) > 2000 else '')
                 # Estrazione strutturata
                 extractor = IntelligentDataExtractor()
@@ -526,4 +528,4 @@ def upload_file():
     return render_template('upload.html', result=result, error=error, preview=preview, num_pdfs=num_pdfs, num_docxs=num_docxs, file_list=file_list)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=5000)

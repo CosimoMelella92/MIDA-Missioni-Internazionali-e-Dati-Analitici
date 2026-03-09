@@ -3,11 +3,11 @@ Modulo grafici Plotly per la dashboard MIDA.
 Tema coerente, hover ricchi, layout professionale.
 """
 
+import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
-import numpy as np
 
 # ---------------------------------------------------------------------------
 # PALETTE COLORI

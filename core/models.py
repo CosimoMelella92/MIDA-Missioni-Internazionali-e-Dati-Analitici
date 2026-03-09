@@ -3,11 +3,12 @@ Modelli dati Pydantic per MIDA - Missioni Internazionali e Dati Analitici.
 Definisce lo schema canonico per le missioni e le fonti dati.
 """
 
-from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Optional, Literal
+import re
 from datetime import date, datetime
 from enum import Enum
-import re
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Organizzazione(str, Enum):

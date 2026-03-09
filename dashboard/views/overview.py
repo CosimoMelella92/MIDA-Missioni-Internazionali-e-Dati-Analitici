@@ -1,24 +1,25 @@
 """Pagina Overview della dashboard MIDA."""
 
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
-from dashboard.charts import (
-    format_currency, _apply_theme, PERIOD_COLORS,
-    chart_missions_by_period,
-    chart_budget_by_period,
-    chart_personnel_by_period,
-    chart_missions_by_participation,
-    chart_personnel_distribution,
-    chart_period_bar,
-)
 from dashboard.analysis import (
-    create_period_analysis,
-    create_participation_analysis,
     create_historical_period_analysis,
+    create_participation_analysis,
+    create_period_analysis,
 )
-
+from dashboard.charts import (
+    PERIOD_COLORS,
+    _apply_theme,
+    chart_budget_by_period,
+    chart_missions_by_participation,
+    chart_missions_by_period,
+    chart_period_bar,
+    chart_personnel_by_period,
+    chart_personnel_distribution,
+    format_currency,
+)
 
 _KPI_CSS = """
 <style>
@@ -71,7 +72,7 @@ def render(df: pd.DataFrame) -> None:
 
     # === KPI ROW 2 ===
     costo_medio = df["costo_totale"].mean() if len(df) > 0 else 0
-    pers_medio = df["personale_totale"].mean() if len(df) > 0 else 0
+    df["personale_totale"].mean() if len(df) > 0 else 0
     n_paesi = df["paese"].nunique() if "paese" in df.columns else 0
     st.markdown(
         '<div class="kpi-row">'

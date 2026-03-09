@@ -3,23 +3,23 @@ Test suite per gli scrapers MIDA.
 Testa struttura, interfaccia, e logica di parsing senza fare richieste HTTP reali.
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import patch, MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from core.scrapers.base_scraper import BaseScraper, SCRAPER_COLUMNS
+import pandas as pd
+import pytest
+
 from core.scrapers import (
     ALL_SCRAPERS,
-    DifesaScraper,
     CameraScraper,
-    SenatoScraper,
-    EsteriScraper,
+    DifesaScraper,
     EEASScraper,
+    EsteriScraper,
     NATOScraper,
+    SenatoScraper,
     UNScraper,
 )
-
+from core.scrapers.base_scraper import SCRAPER_COLUMNS, BaseScraper
 
 # =========================================================================
 # Test BaseScraper

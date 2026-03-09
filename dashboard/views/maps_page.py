@@ -3,10 +3,10 @@ Pagina Mappe della dashboard MIDA.
 Mostra mappe interattive delle missioni (lazy loading).
 """
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
-from dashboard.charts import format_currency, ORG_COLORS
+from dashboard.charts import ORG_COLORS, format_currency
 
 
 def render(df: pd.DataFrame) -> None:
@@ -17,9 +17,12 @@ def render(df: pd.DataFrame) -> None:
     # Lazy import delle mappe
     try:
         from dashboard.maps import (
-            render_world_map, render_heatmap, render_timeline_map,
-            render_cluster_map, render_active_missions_map,
             add_coordinates_to_dataframe,
+            render_active_missions_map,
+            render_cluster_map,
+            render_heatmap,
+            render_timeline_map,
+            render_world_map,
         )
         maps_available = True
     except ImportError:

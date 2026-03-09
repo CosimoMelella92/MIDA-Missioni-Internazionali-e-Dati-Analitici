@@ -3,15 +3,15 @@ Test unitari per core/models.py
 Copre: validazione Mission, parsing date, coerenza date, calcolo personale.
 """
 
-import pytest
 import sys
-from pathlib import Path
 from datetime import date
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.models import Mission, SourceConfig, PipelineResult
-
+from core.models import Mission, PipelineResult, SourceConfig
 
 # =============================================================================
 # TEST MISSION MODEL

@@ -99,7 +99,7 @@ def generate_report(df: pd.DataFrame) -> bytes:
 
     # ── 4. Missioni Attive ──
     if "is_active" in df.columns:
-        active_df = df[df["is_active"] == True].copy()
+        active_df = df[df["is_active"]].copy()
         if not active_df.empty:
             pdf.add_page()
             pdf.set_font("Helvetica", "B", 12)

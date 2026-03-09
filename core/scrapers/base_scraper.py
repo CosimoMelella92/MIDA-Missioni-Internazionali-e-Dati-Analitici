@@ -3,17 +3,17 @@ Base scraper per MIDA — classe astratta con HTTP session, retry, logging, salv
 Tutti gli scrapers ereditano da qui.
 """
 
-import logging
-import time
-import random
 import json
+import logging
+import random
+import time
 from abc import ABC, abstractmethod
-from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-import requests
 import pandas as pd
+import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 

@@ -6,7 +6,9 @@ Base functionality for Word (.docx) text and table extraction
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional
+
 import docx
+
 
 class DOCXParser:
     """Base DOCX parser for text and table extraction"""
@@ -80,4 +82,4 @@ class DOCXParser:
                     'file': docx_file.name,
                     'error': str(e)
                 })
-        return results 
+        return results

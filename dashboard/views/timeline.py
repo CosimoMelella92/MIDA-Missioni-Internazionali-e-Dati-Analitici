@@ -3,19 +3,19 @@ Pagina Timeline della dashboard MIDA.
 Mostra timeline interattive per organizzazione, regione e durata.
 """
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
+from dashboard.analysis import get_timeline_data
 from dashboard.charts import (
-    format_currency,
+    chart_gantt,
+    chart_interactive_timeline,
+    chart_scatter_timeline,
     chart_timeline_by_organization,
     chart_timeline_by_region,
     chart_timeline_with_duration,
-    chart_interactive_timeline,
-    chart_scatter_timeline,
-    chart_gantt,
+    format_currency,
 )
-from dashboard.analysis import get_timeline_data
 
 
 def render(df: pd.DataFrame) -> None:

@@ -3,15 +3,15 @@ Mappa delle missioni attive dell'Italia — auto-aggiornante.
 Filtra automaticamente per is_active == True e mostra lo stato corrente.
 """
 
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
-import pandas as pd
 import math
 from datetime import datetime
 
-from dashboard.charts import ORG_COLORS
+import folium
+import pandas as pd
+import streamlit as st
+from streamlit_folium import st_folium
 
+from dashboard.charts import ORG_COLORS
 
 _FOLIUM_ICON_COLORS = {
     "ONU": "blue", "UE": "orange", "NATO": "green", "ITA": "red",
@@ -54,7 +54,7 @@ def render_active_missions_map(df: pd.DataFrame):
     year = datetime.now().year
 
     # Filtra solo missioni attive
-    active = df[df["is_active"] == True].copy() if "is_active" in df.columns else df.head(0)
+    active = df[df["is_active"]].copy() if "is_active" in df.columns else df.head(0)
 
     if active.empty or "lat" not in active.columns:
         st.warning("Nessuna missione attiva con coordinate disponibile.")

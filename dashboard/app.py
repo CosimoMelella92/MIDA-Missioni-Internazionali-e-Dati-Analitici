@@ -3,18 +3,23 @@ MIDA Dashboard - Entry Point Unico.
 Avvia con: streamlit run dashboard/app.py
 """
 
-import streamlit as st
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import streamlit as st
 
 # Aggiungi la root del progetto al path
 _project_root = Path(__file__).parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from dashboard.data_loader import load_data, get_data_stats
-from dashboard.filters import render_sidebar_filters, apply_filters, render_debug_sidebar
+from dashboard.data_loader import get_data_stats, load_data
+from dashboard.filters import (
+    apply_filters,
+    render_debug_sidebar,
+    render_sidebar_filters,
+)
 
 # Configurazione pagina
 st.set_page_config(

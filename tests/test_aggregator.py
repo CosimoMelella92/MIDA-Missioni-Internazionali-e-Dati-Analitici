@@ -3,14 +3,14 @@ Test unitari per core/aggregator.py
 Copre: caricamento fonti, normalizzazione, deduplicazione, arricchimento, pipeline.
 """
 
-import pytest
+import os
 import sys
 import tempfile
-import os
 from pathlib import Path
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -103,7 +103,7 @@ class TestExcelAggregatorLoadSources:
         # Rimuovi il file Excel
         os.remove(tmp_project / "data" / "raw" / "Excel" / "missions.xlsx")
         agg = ExcelAggregator(base_dir=str(tmp_project))
-        df = agg.load_sources()
+        agg.load_sources()
         assert agg.result.sources_loaded == 1
 
     def test_fonte_dati_column_added(self, tmp_project):
@@ -178,7 +178,7 @@ class TestExcelAggregatorEnrich:
         df = agg.enrich(df)
         # UNIFIL con data_fine 2027-12-31 dovrebbe essere attiva
         unifil = df[df["nome"].str.contains("UNIFIL", case=False, na=False)]
-        assert unifil.iloc[0]["is_active"] is True or unifil.iloc[0]["is_active"] == True
+        assert unifil.iloc[0]["is_active"] is True or unifil.iloc[0]["is_active"]
 
 
 class TestExcelAggregatorPipeline:

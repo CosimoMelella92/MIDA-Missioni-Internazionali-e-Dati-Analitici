@@ -3,8 +3,8 @@ Modulo filtri sidebar per la dashboard MIDA.
 Gestisce tutti i widget di filtraggio e la logica di applicazione filtri.
 """
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
 
 def render_sidebar_filters(df: pd.DataFrame) -> dict:

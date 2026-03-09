@@ -3,34 +3,35 @@ Pagina Missioni della dashboard MIDA.
 Mostra analisi per organizzazione, commitment e tabella dati completa.
 """
 
-import streamlit as st
-import pandas as pd
 import io
 from datetime import datetime
 
-from dashboard.charts import (
-    format_currency,
-    chart_missions_by_org,
-    chart_personnel_pie_by_org,
-    chart_mil_civ_by_org,
-    chart_cost_by_org,
-    chart_org_sunburst,
-    chart_missions_by_commitment,
-    chart_commitment_pie,
-    chart_personnel_by_commitment,
-    chart_cost_by_commitment,
-    chart_commitment_detailed_bar,
-    chart_missions_by_region,
-    chart_cost_by_region,
-    chart_personnel_by_region,
-    chart_region_heatmap,
-    chart_region_treemap,
-)
+import pandas as pd
+import streamlit as st
+
 from dashboard.analysis import (
-    create_organization_analysis,
     create_commitment_analysis,
     create_commitment_detailed,
+    create_organization_analysis,
     create_regional_analysis,
+)
+from dashboard.charts import (
+    chart_commitment_detailed_bar,
+    chart_commitment_pie,
+    chart_cost_by_commitment,
+    chart_cost_by_org,
+    chart_cost_by_region,
+    chart_mil_civ_by_org,
+    chart_missions_by_commitment,
+    chart_missions_by_org,
+    chart_missions_by_region,
+    chart_org_sunburst,
+    chart_personnel_by_commitment,
+    chart_personnel_by_region,
+    chart_personnel_pie_by_org,
+    chart_region_heatmap,
+    chart_region_treemap,
+    format_currency,
 )
 
 

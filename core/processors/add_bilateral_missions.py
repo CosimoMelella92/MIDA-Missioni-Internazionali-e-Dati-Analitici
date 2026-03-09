@@ -3,12 +3,14 @@
 Script per aggiungere le nuove missioni bilaterali al dataset esistente
 """
 
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
+
 
 def add_bilateral_missions():
     """Aggiunge le nuove missioni bilaterali al dataset"""
-    
+
     # Dati delle nuove missioni bilaterali
     new_missions = [
         {
@@ -87,7 +89,7 @@ def add_bilateral_missions():
             'commitment': 'Advisory/Training'
         }
     ]
-    
+
     # Carica il dataset esistente
     try:
         df_existing = pd.read_csv('data/processed/missioni_complete.csv')
@@ -95,14 +97,14 @@ def add_bilateral_missions():
     except FileNotFoundError:
         print("❌ File missioni_complete.csv non trovato")
         return
-    
+
     # Crea DataFrame con le nuove missioni
     df_new = pd.DataFrame(new_missions)
-    
+
     # Verifica se le missioni esistono già
     existing_missions = df_existing['nome'].tolist()
-    new_missions_names = df_new['nome'].tolist()
-    
+    df_new['nome'].tolist()
+
     # Filtra solo le missioni che non esistono già
     missions_to_add = []
     for mission in new_missions:
@@ -110,27 +112,27 @@ def add_bilateral_missions():
             missions_to_add.append(mission)
         else:
             print(f"⚠️  Missione '{mission['nome']}' già presente nel dataset")
-    
+
     if not missions_to_add:
         print("❌ Tutte le missioni sono già presenti nel dataset")
         return
-    
+
     # Crea DataFrame con le missioni da aggiungere
     df_to_add = pd.DataFrame(missions_to_add)
-    
+
     # Combina i dataset
     df_combined = pd.concat([df_existing, df_to_add], ignore_index=True)
-    
+
     # Salva il dataset aggiornato
     output_file = 'data/processed/missioni_complete.csv'
     df_combined.to_csv(output_file, index=False)
-    
+
     print(f"✅ Aggiunte {len(missions_to_add)} nuove missioni bilaterali:")
     for mission in missions_to_add:
         print(f"   - {mission['nome']} ({mission['paese']})")
-    
+
     print(f"📊 Dataset aggiornato salvato in: {output_file}")
     print(f"📈 Totale missioni nel dataset: {len(df_combined)}")
 
 if __name__ == "__main__":
-    add_bilateral_missions() 
+    add_bilateral_missions()

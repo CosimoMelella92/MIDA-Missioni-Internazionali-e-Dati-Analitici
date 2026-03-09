@@ -1,5 +1,6 @@
-import pandas as pd
 import logging
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ COUNTRY_COORDINATES = {
     'Montenegro': (42.7087, 19.3744),
     'North Macedonia': (41.6086, 21.7453),
     'Albania': (41.1533, 20.1683),
-    
+
     # Middle East
     'Lebanon': (33.8547, 35.8623),
     'Iraq': (33.2232, 43.6793),
@@ -22,7 +23,7 @@ COUNTRY_COORDINATES = {
     'Palestine': (31.9522, 35.2332),
     'Jordan': (30.5852, 36.2384),
     'Yemen': (15.5527, 48.5164),
-    
+
     # Africa
     'Mali': (17.5707, -3.9962),
     'Central African Republic': (6.6111, 20.9394),
@@ -66,7 +67,7 @@ COUNTRY_COORDINATES = {
     'South Africa': (-30.5595, 22.9375),
     'Lesotho': (-29.6099, 28.2336),
     'Eswatini': (-26.5225, 31.4659),
-    
+
     # Asia
     'Afghanistan': (33.9391, 67.7100),
     'Pakistan': (30.3753, 69.3451),
@@ -84,7 +85,7 @@ COUNTRY_COORDINATES = {
     'Singapore': (1.3521, 103.8198),
     'Brunei': (4.5353, 114.7277),
     'East Timor': (-8.8742, 125.7275),
-    
+
     # Europe
     'Georgia': (42.3154, 43.3569),
     'Armenia': (40.0691, 45.0382),
@@ -96,7 +97,7 @@ COUNTRY_COORDINATES = {
     'Greece': (39.0742, 21.8243),
     'Turkey': (38.9637, 35.2433),
     'Cyprus': (35.1264, 33.4299),
-    
+
     # Americas
     'Haiti': (18.9712, -72.2852),
     'Dominican Republic': (18.7357, -70.1627),
@@ -120,21 +121,21 @@ COUNTRY_COORDINATES = {
     'Guatemala': (15.7835, -90.2308),
     'Belize': (17.1899, -88.4976),
     'Mexico': (23.6345, -102.5528),
-    
+
     # Oceania
     'Papua New Guinea': (-6.3150, 143.9555),
     'Solomon Islands': (-9.6457, 160.1562),
     'Vanuatu': (-15.3767, 166.9592),
     'Fiji': (-17.7134, 178.0650),
     'New Caledonia': (-20.9043, 165.6180),
-    
+
     # Mediterranean
     'Malta': (35.9375, 14.3754),
     'Tunisia': (33.8869, 9.5375),
     'Algeria': (28.0339, 1.6596),
     'Morocco': (31.7917, -7.0926),
     'Egypt': (26.8206, 30.8025),
-    
+
     # Italian names / aliases
     'Libano': (33.8547, 35.8623),
     'Libia': (26.3351, 17.2283),
@@ -218,16 +219,16 @@ def get_country_coordinates(country_name):
     """
     # Normalizza il nome del paese
     country_name = str(country_name).strip()
-    
+
     # Controlla il dizionario
     if country_name in COUNTRY_COORDINATES:
         return COUNTRY_COORDINATES[country_name]
-    
+
     # Prova varianti comuni
     for key, coords in COUNTRY_COORDINATES.items():
         if country_name.lower() in key.lower() or key.lower() in country_name.lower():
             return coords
-    
+
     # Paese sconosciuto: log e fallback a Roma
     logger.warning(f"Coordinate non trovate per: '{country_name}' — fallback Roma")
     return (41.8719, 12.5674)
@@ -241,10 +242,10 @@ def add_coordinates_to_dataframe(df):
         df['lat'] = 41.8719
         df['lon'] = 12.5674
         return df
-    
+
     # Ottieni coordinate per ogni paese
     coordinates = df['paese'].apply(get_country_coordinates)
     df['lat'] = [coord[0] for coord in coordinates]
     df['lon'] = [coord[1] for coord in coordinates]
-    
-    return df 
+
+    return df

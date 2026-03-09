@@ -3,10 +3,11 @@ Test E2E per la dashboard MIDA.
 Verifica che tutti i componenti funzionino end-to-end senza avviare Streamlit.
 """
 
-import pytest
-import pandas as pd
 import sys
 from pathlib import Path
+
+import pandas as pd
+import pytest
 
 # Ensure project root is in path
 _root = Path(__file__).parent.parent

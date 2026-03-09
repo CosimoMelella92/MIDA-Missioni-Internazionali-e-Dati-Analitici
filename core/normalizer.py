@@ -12,7 +12,6 @@ regioni, commitment e colonne. Sostituisce la logica duplicata in:
 import re
 from typing import Optional
 
-
 # =============================================================================
 # NORMALIZZAZIONE NOMI MISSIONE
 # =============================================================================
@@ -215,7 +214,6 @@ _REGION_MAP = {
     'africa centrale': 'Africa', 'southern africa': 'Africa',
     'africa meridionale': 'Africa', 'horn of africa': 'Africa',
     "corno d'africa": 'Africa', 'africa australe': 'Africa',
-    'nord africa e mediterraneo': 'Africa',
 }
 
 

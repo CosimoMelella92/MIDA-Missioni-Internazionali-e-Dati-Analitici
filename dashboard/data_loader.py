@@ -5,14 +5,15 @@ Sostituisce load_data(), integrate_excel_data(), normalize_regions(),
 normalize_excel_columns() dal monolite missioni_dashboard.py.
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
 import logging
-from pathlib import Path
-from datetime import datetime
-import sys
 import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import streamlit as st
 
 # Aggiungi la root del progetto al path
 _project_root = Path(__file__).parent.parent
@@ -20,9 +21,9 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from core.normalizer import (
-    normalize_region,
-    normalize_organization,
     normalize_commitment,
+    normalize_organization,
+    normalize_region,
 )
 
 logger = logging.getLogger(__name__)
@@ -147,7 +148,7 @@ def _compute_derived_fields(df: pd.DataFrame) -> pd.DataFrame:
 
     # Converti is_active in booleano robusto
     df["is_active"] = df["is_active"].map(
-        {True: True, False: False, "True": True, "False": False, 1: True, 0: False}
+        {True: True, False: False, "True": True, "False": False}
     ).fillna(False).astype(bool)
 
     # Estendi data_fine per missioni attive recenti senza data_fine

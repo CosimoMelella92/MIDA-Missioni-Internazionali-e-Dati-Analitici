@@ -1,9 +1,10 @@
+import logging
 import os
-import pdfplumber
-import pandas as pd
 from datetime import datetime
 from pathlib import Path
-import logging
+
+import pandas as pd
+import pdfplumber
 from tqdm import tqdm
 
 # Setup logging
@@ -21,12 +22,12 @@ class MissioniScraper:
         self.raw_data_dir = Path('data/raw')
         self.processed_data_dir = Path('data/processed')
         self.setup_directories()
-        
+
     def setup_directories(self):
         """Create necessary directories if they don't exist"""
         self.raw_data_dir.mkdir(parents=True, exist_ok=True)
         self.processed_data_dir.mkdir(parents=True, exist_ok=True)
-        
+
     def extract_from_pdf(self, pdf_path):
         """Extract data from a single PDF file"""
         try:
@@ -46,7 +47,7 @@ class MissioniScraper:
         if not pdf_files:
             logging.warning("No PDF files found in raw data directory")
             return None
-            
+
         all_data = []
         for pdf_file in tqdm(pdf_files, desc="Processing PDFs"):
             data = self.extract_from_pdf(pdf_file)
@@ -56,7 +57,7 @@ class MissioniScraper:
                     'file_name': pdf_file.name,
                     'raw_text': data
                 })
-                
+
         return pd.DataFrame(all_data)
 
     def save_to_csv(self, df):
@@ -75,4 +76,4 @@ def main():
     scraper.save_to_csv(df)
 
 if __name__ == "__main__":
-    main() 
+    main()

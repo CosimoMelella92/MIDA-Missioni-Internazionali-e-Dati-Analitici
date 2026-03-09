@@ -3,23 +3,23 @@ Test unitari per core/normalizer.py
 Copre: normalizzazione nomi, organizzazioni, regioni, commitment, colonne.
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.normalizer import (
+    classify_period,
+    normalize_column_name,
+    normalize_columns,
+    normalize_commitment,
     normalize_mission_name,
     normalize_mission_name_strict,
     normalize_organization,
     normalize_region,
-    normalize_commitment,
-    normalize_column_name,
-    normalize_columns,
-    classify_period,
 )
-
 
 # =============================================================================
 # TEST NORMALIZZAZIONE NOMI MISSIONE

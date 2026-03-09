@@ -10,25 +10,25 @@ Sostituisce la logica frammentata in:
 Flusso: load_sources → normalize → deduplicate → enrich → validate → save
 """
 
-import pandas as pd
-import numpy as np
-import yaml
 import logging
-from pathlib import Path
 from datetime import date, datetime
+from pathlib import Path
 from typing import Optional
 
+import numpy as np
+import pandas as pd
+import yaml
+
+from core.models import Mission, PipelineResult, SourceConfig
 from core.normalizer import (
+    extract_mission_acronym,
+    normalize_column_name,
+    normalize_commitment,
     normalize_mission_name,
     normalize_mission_name_strict,
-    extract_mission_acronym,
     normalize_organization,
     normalize_region,
-    normalize_commitment,
-    normalize_column_name,
 )
-from core.models import Mission, SourceConfig, PipelineResult
-
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class ExcelAggregator:
                 sources.append(SourceConfig(**src))
             except Exception as e:
                 logger.warning(f"Errore nel parsing della fonte '{src.get('name', '?')}': {e}")
-        
+
         # Ordina per priorità (1 = massima)
         sources.sort(key=lambda s: s.priority)
         logger.info(f"Caricate {len(sources)} configurazioni fonti")
@@ -376,7 +376,7 @@ class ExcelAggregator:
         # - Inattiva se data_fine è nel passato (anche se fonte dice attiva)
         date_future = df["data_fine"].notna() & (df["data_fine"] >= current_date)
         date_expired = df["data_fine"].notna() & (df["data_fine"] < current_date)
-        date_unknown = df["data_fine"].isna()
+        df["data_fine"].isna()
 
         # Match con lista ufficiale missioni attive (Ministero Difesa 2026)
         official_active = self._match_official_active(df)
@@ -438,7 +438,6 @@ class ExcelAggregator:
             "paese": "Lettonia", "personale_totale": 250, "personale_militare": 250},
         "nato hq sarajevo": {"paese": "Bosnia ed Erzegovina", "personale_totale": 10, "personale_militare": 10},
         "miadit palestine": {"paese": "Palestina", "nome": "MIADIT Palestina"},
-        "miadit somalia": {"paese": "Somalia"},
         "baltic eagle": {"paese": "Estonia", "nome": "Baltic Eagle III",
                          "personale_totale": 200, "personale_militare": 200},
         "eunavfor med - irini": {"paese": "Mediterraneo", "nome": "EUNAVFOR MED Irini",
@@ -1088,7 +1087,7 @@ class ExcelAggregator:
 
         # Report finale
         logger.info("=" * 60)
-        logger.info(f"Pipeline completata:")
+        logger.info("Pipeline completata:")
         logger.info(f"  Fonti caricate: {self.result.sources_loaded}")
         logger.info(f"  Missioni totali: {self.result.total_missions}")
         logger.info(f"  Duplicati rimossi: {self.result.duplicates_removed}")

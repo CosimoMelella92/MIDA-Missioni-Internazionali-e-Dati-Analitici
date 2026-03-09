@@ -2,6 +2,7 @@
 
 import re
 from typing import Dict, List, Optional
+
 from bs4 import BeautifulSoup
 
 from .base_scraper import BaseScraper

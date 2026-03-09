@@ -4,10 +4,10 @@ Contiene le funzioni di aggregazione dati estratte dal monolite missioni_dashboa
 Tutte le funzioni sono pure e vettorizzate (nessun iterrows).
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from core.normalizer import normalize_commitment, classify_period
+from core.normalizer import classify_period, normalize_commitment
 
 
 def create_period_analysis(df: pd.DataFrame) -> pd.DataFrame:

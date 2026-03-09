@@ -14,4 +14,4 @@ def clean_csv(path):
     print(f'File pulito salvato: {path} ({len(df_clean)} missioni)')
 
 if __name__ == '__main__':
-    clean_csv(csv_path) 
+    clean_csv(csv_path)

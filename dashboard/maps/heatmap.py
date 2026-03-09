@@ -1,8 +1,8 @@
-import streamlit as st
 import folium
+import pandas as pd
+import streamlit as st
 from folium.plugins import HeatMap
 from streamlit_folium import st_folium
-import pandas as pd
 
 
 def render_heatmap(df: pd.DataFrame):
