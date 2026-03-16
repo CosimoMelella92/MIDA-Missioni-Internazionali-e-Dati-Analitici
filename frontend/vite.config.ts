@@ -15,7 +15,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-charts': ['recharts'],
-          'vendor-map': ['leaflet', 'react-leaflet'],
+          'vendor-deckgl': ['@deck.gl/core', '@deck.gl/layers', '@deck.gl/geo-layers', '@deck.gl/react', '@luma.gl/core', '@luma.gl/engine', '@luma.gl/webgl'],
           'vendor-motion': ['framer-motion'],
         },
       },
