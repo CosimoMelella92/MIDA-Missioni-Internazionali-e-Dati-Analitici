@@ -320,40 +320,40 @@ export default function MapPage() {
       </div>
 
       {/* C2 GEOINT top bar */}
-      <div className="absolute top-0 left-0 right-0 z-[1000] bg-[#0F1419]/90 backdrop-blur-sm border-b border-[#3D4F1E]/40 px-3 py-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3 min-w-0">
+      <div className="absolute top-0 left-0 right-0 z-[1000] bg-[#0F1419]/90 backdrop-blur-sm border-b border-[#3D4F1E]/40 px-2 md:px-3 py-1.5">
+        <div className="flex items-center justify-between gap-1 md:gap-2">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
             <div className={`w-2 h-2 rounded-full flex-shrink-0 ${mode === 'live' ? 'bg-[#4A5D23] animate-pulse' : 'bg-[#7D6B3A]'}`} />
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white truncate font-mono">
-                {mode === 'live' ? `GEOINT 3D — ${displayMissions.length} Missioni Attive` : `GEOINT ${selectedYear} — ${displayMissions.length} Missioni`}
+              <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] md:tracking-[0.15em] text-white truncate font-mono">
+                {mode === 'live' ? `GEOINT 3D — ${displayMissions.length} Attive` : `GEOINT ${selectedYear} — ${displayMissions.length}`}
               </p>
-              <p className="text-[8px] text-[#8B9298] font-mono">
-                {fmtNum(totalPers)} UNITA · MIL {fmtNum(totalMil)} · CIV {fmtNum(totalCiv)} · {countries.size} PAESI
+              <p className="text-[7px] md:text-[8px] text-[#8B9298] font-mono truncate">
+                {fmtNum(totalPers)} · M{fmtNum(totalMil)} · C{fmtNum(totalCiv)} · {countries.size}P
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0">
             <div className="flex bg-[#1A2332] rounded overflow-hidden border border-[#3D4F1E]/50">
-              <button onClick={() => { setMode('live'); setPlaying(false) }} className={`px-2 py-1 text-[7px] uppercase tracking-[0.1em] font-bold font-mono transition-colors ${mode === 'live' ? 'bg-[#4A5D23] text-white' : 'text-[#8B9298] hover:text-white'}`}>Live</button>
-              <button onClick={() => { setMode('temporal'); setSelectedYear(2026) }} className={`px-2 py-1 text-[7px] uppercase tracking-[0.1em] font-bold font-mono transition-colors ${mode === 'temporal' ? 'bg-[#7D6B3A] text-white' : 'text-[#8B9298] hover:text-white'}`}>Temporale</button>
+              <button onClick={() => { setMode('live'); setPlaying(false) }} className={`px-2 py-1.5 md:py-1 text-[8px] md:text-[7px] uppercase tracking-[0.1em] font-bold font-mono transition-colors ${mode === 'live' ? 'bg-[#4A5D23] text-white' : 'text-[#8B9298] hover:text-white'}`}>Live</button>
+              <button onClick={() => { setMode('temporal'); setSelectedYear(2026) }} className={`px-2 py-1.5 md:py-1 text-[8px] md:text-[7px] uppercase tracking-[0.1em] font-bold font-mono transition-colors ${mode === 'temporal' ? 'bg-[#7D6B3A] text-white' : 'text-[#8B9298] hover:text-white'}`}>Temp</button>
             </div>
-            <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="bg-[#1A2332] border border-[#3D4F1E]/50 text-[8px] text-white rounded px-1.5 py-1 outline-none font-mono">
+            <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="hidden md:block bg-[#1A2332] border border-[#3D4F1E]/50 text-[8px] text-white rounded px-1.5 py-1 outline-none font-mono">
               <option value="">TUTTE ORG.</option>
               {orgs.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
           </div>
         </div>
-        <div className="flex items-center justify-between mt-1 gap-2">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowLines(!showLines)} className={`text-[7px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border transition-colors ${showLines ? 'border-[#6B8C2A]/60 text-[#6B8C2A] bg-[#6B8C2A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>Archi C2</button>
-            <button onClick={() => setShowSigact(!showSigact)} className={`text-[7px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border transition-colors ${showSigact ? 'border-[#7D6B3A]/60 text-[#7D6B3A] bg-[#7D6B3A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>SIGACT</button>
-            <button onClick={() => setPanelOpen(!panelOpen)} className={`text-[7px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border transition-colors ${panelOpen ? 'border-[#2C5F8A]/60 text-[#2C5F8A] bg-[#2C5F8A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>Intel</button>
+        <div className="flex items-center justify-between mt-1 gap-1 md:gap-2">
+          <div className="flex items-center gap-1 md:gap-2 overflow-x-auto scrollbar-none">
+            <button onClick={() => setShowLines(!showLines)} className={`text-[8px] md:text-[7px] font-mono uppercase tracking-wider px-2 py-1 md:px-1.5 md:py-0.5 rounded border transition-colors whitespace-nowrap ${showLines ? 'border-[#6B8C2A]/60 text-[#6B8C2A] bg-[#6B8C2A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>Archi</button>
+            <button onClick={() => setShowSigact(!showSigact)} className={`hidden md:block text-[7px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border transition-colors whitespace-nowrap ${showSigact ? 'border-[#7D6B3A]/60 text-[#7D6B3A] bg-[#7D6B3A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>SIGACT</button>
+            <button onClick={() => setPanelOpen(!panelOpen)} className={`text-[8px] md:text-[7px] font-mono uppercase tracking-wider px-2 py-1 md:px-1.5 md:py-0.5 rounded border transition-colors whitespace-nowrap ${panelOpen ? 'border-[#2C5F8A]/60 text-[#2C5F8A] bg-[#2C5F8A]/10' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>Intel</button>
           </div>
           <div className="flex items-center gap-1">
             {(Object.keys(TILE_URLS) as Array<'dark'|'light'|'satellite'>).map(k => (
-              <button key={k} onClick={() => setTileKey(k)} className={`text-[7px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border transition-colors ${tileKey === k ? 'border-[#8B9298]/60 text-white bg-[#8B9298]/15' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>
-                {k === 'dark' ? 'DRK' : k === 'light' ? 'LGT' : 'SAT'}
+              <button key={k} onClick={() => setTileKey(k)} className={`text-[8px] md:text-[7px] font-mono uppercase tracking-wider px-1.5 py-1 md:py-0.5 rounded border transition-colors ${tileKey === k ? 'border-[#8B9298]/60 text-white bg-[#8B9298]/15' : 'border-[#3D4F1E]/30 text-[#5A5F63]'}`}>
+                {k === 'dark' ? 'D' : k === 'light' ? 'L' : 'S'}
               </button>
             ))}
           </div>
@@ -385,9 +385,9 @@ export default function MapPage() {
       {/* TEMPORAL TIMELINE BAR */}
       {mode === 'temporal' && (
         <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-[#0F1419]/95 backdrop-blur-sm border-t border-[#3D4F1E]/40">
-          <div className="flex items-center justify-between px-4 pt-2">
+          <div className="flex items-center justify-between px-3 md:px-4 pt-2 gap-2">
             <div className="flex items-center gap-3">
-              <span className="text-[28px] md:text-[36px] font-mono font-bold text-white leading-none">{selectedYear}</span>
+              <span className="text-[22px] md:text-[36px] font-mono font-bold text-white leading-none">{selectedYear}</span>
               <div>
                 <p className="text-[11px] font-bold text-[#6B8C2A] font-mono">{displayMissions.length} missioni</p>
                 <p className="text-[9px] text-[#8B9298] font-mono">{fmtNum(totalPers)} unita · {countries.size} paesi</p>
@@ -450,7 +450,7 @@ export default function MapPage() {
         <div className={`absolute z-[1000] md:w-80 overflow-y-auto bg-[#0F1419]/92 backdrop-blur-sm md:rounded-lg border-t md:border border-[#3D4F1E]/40 text-white ${
           mode === 'temporal'
             ? 'hidden md:block md:top-[72px] md:left-3 md:bottom-auto md:right-auto md:max-h-[calc(100vh-220px)]'
-            : 'bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:top-[72px] md:left-3 max-h-[45vh] md:max-h-[calc(100vh-130px)]'
+            : 'bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:top-[72px] md:left-3 max-h-[40vh] md:max-h-[calc(100vh-130px)] safe-area-bottom'
         }`}>
           {mode === 'live' && (
             <div className="md:hidden flex justify-center py-2">

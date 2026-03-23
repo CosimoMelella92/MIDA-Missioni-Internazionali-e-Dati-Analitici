@@ -3,13 +3,33 @@
 @tailwind utilities;
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
   body {
     background-color: #F5F3EE;
     color: #1A1A1A;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+  }
+  /* Minimum touch target size (44px per Apple HIG) */
+  button, a, select, input[type="checkbox"] {
+    min-height: 32px;
+    min-width: 32px;
+  }
+  select, input[type="text"], input[type="search"] {
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+  @media (min-width: 768px) {
+    select, input[type="text"], input[type="search"] {
+      font-size: inherit;
+    }
+    button, a, select, input[type="checkbox"] {
+      min-height: unset;
+      min-width: unset;
+    }
   }
 }
 
@@ -55,6 +75,21 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D4CFC3; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #8B9298; }
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Mobile menu animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slideDown { animation: slideDown 0.2s ease-out; }
+
+/* Safe area for notched phones */
+.safe-area-top { padding-top: env(safe-area-inset-top, 0); }
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
 
 /* Mobile touch improvements */
 @media (max-width: 768px) {

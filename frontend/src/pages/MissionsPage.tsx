@@ -81,23 +81,23 @@ export default function MissionsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative flex-1 min-w-[180px]">
+          <div className="relative flex-1 min-w-[140px]">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8B9298]" />
             <input type="text" placeholder="Cerca missione o paese..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 rounded border border-[#D4CFC3] bg-white focus:ring-2 focus:ring-[#4A5D23] focus:border-transparent outline-none text-xs" />
+              className="w-full pl-8 pr-3 py-2 md:py-1.5 rounded border border-[#D4CFC3] bg-white focus:ring-2 focus:ring-[#4A5D23] focus:border-transparent outline-none text-xs" />
           </div>
-          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-1.5 rounded border border-[#D4CFC3] bg-white text-xs">
+          <select value={orgFilter} onChange={e => setOrgFilter(e.target.value)} className="px-2 py-2 md:py-1.5 rounded border border-[#D4CFC3] bg-white text-xs">
             <option value="">Tutte le org.</option>
             {orgs.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
           <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="rounded accent-[#4A5D23]" />
+            <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} className="rounded accent-[#4A5D23] w-4 h-4" />
             <span className="text-xs text-[#5A5F63]">Solo in corso</span>
           </label>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto bg-white border border-[#D4CFC3] rounded shadow-sm">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto bg-white border border-[#D4CFC3] rounded shadow-sm">
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-[#1B3A5C] text-white">
@@ -136,17 +136,64 @@ export default function MissionsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card List */}
+        <div className="md:hidden space-y-2">
+          {/* Mobile sort buttons */}
+          <div className="flex gap-1 overflow-x-auto scrollbar-none pb-1">
+            {([['nome', 'Nome'], ['paese', 'Teatro'], ['personale_totale', 'Pers.'], ['data_inizio', 'Data']] as [SortKey, string][]).map(([key, label]) => (
+              <button key={key} onClick={() => toggleSort(key)}
+                className={`text-[9px] font-bold uppercase tracking-wider px-2 py-1.5 rounded border whitespace-nowrap transition-colors ${
+                  sortKey === key ? 'border-[#4A5D23] bg-[#4A5D23]/10 text-[#4A5D23]' : 'border-[#D4CFC3] text-[#8B9298]'
+                }`}>
+                {label} {sortKey === key && (sortDir === 'asc' ? '↑' : '↓')}
+              </button>
+            ))}
+          </div>
+          {filtered.map(m => {
+            const startY = m.data_inizio?.slice(0, 4) || '—'
+            const endY = m.is_active ? 'oggi' : (m.data_fine?.slice(0, 4) || '—')
+            return (
+              <div key={m.nome} onClick={() => setSelected(m)}
+                className={`bg-white border rounded p-3 transition-colors active:bg-[#EAE6DC]/50 ${
+                  selected?.nome === m.nome ? 'border-[#4A5D23] bg-[#4A5D23]/5' : 'border-[#D4CFC3]'
+                }`}>
+                <div className="flex items-start gap-2.5">
+                  <div className={`mt-1 flex-shrink-0 ${m.is_active ? 'led-active' : 'led-inactive'}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold text-[#1B3A5C] leading-tight">{m.nome}</p>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <span className="text-[10px] text-[#5A5F63]">{m.paese}</span>
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold text-white" style={{ backgroundColor: ORG_COLORS[m.tipo_missione] || '#8B9298' }}>
+                        {m.tipo_missione}
+                      </span>
+                      <span className="text-[9px] font-mono text-[#8B9298]">{startY}–{endY}</span>
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-[13px] font-mono font-bold text-[#1B3A5C]">
+                      {m.personale_totale ? Math.round(m.personale_totale).toLocaleString('it-IT') : '—'}
+                    </p>
+                    <p className="text-[8px] text-[#8B9298] uppercase">pers.</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </motion.div>
 
       {/* Drawer — full overlay on mobile, side panel on desktop */}
       {selected && (
+        <>
+        <div className="md:hidden fixed inset-0 top-12 bg-black/30 z-40" onClick={() => setSelected(null)} />
         <div className="fixed top-12 right-0 w-full md:w-80 h-[calc(100vh-48px)] bg-white border-l border-[#D4CFC3] shadow-lg z-50 overflow-y-auto">
           <div className="bg-[#1B3A5C] p-4 text-white flex items-start justify-between">
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-[9px] uppercase tracking-[0.15em] text-[#8B9298]">Scheda Missione</p>
-              <h2 className="text-[13px] font-bold mt-1">{selected.nome}</h2>
+              <h2 className="text-[13px] font-bold mt-1 break-words">{selected.nome}</h2>
             </div>
-            <button onClick={() => setSelected(null)} className="text-[#8B9298] hover:text-white"><X className="w-4 h-4" /></button>
+            <button onClick={() => setSelected(null)} className="text-[#8B9298] hover:text-white w-10 h-10 flex items-center justify-center -mr-2 -mt-1 flex-shrink-0"><X className="w-5 h-5" /></button>
           </div>
           <div className="p-4 space-y-3">
             {[['Stato', selected.is_active ? 'In corso' : 'Conclusa'],
@@ -169,6 +216,7 @@ export default function MissionsPage() {
             ))}
           </div>
         </div>
+        </>
       )}
     </div>
   )

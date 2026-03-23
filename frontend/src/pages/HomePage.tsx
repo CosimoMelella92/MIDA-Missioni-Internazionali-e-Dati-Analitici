@@ -112,15 +112,13 @@ export default function HomePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-4 md:py-6 space-y-5 md:space-y-6">
-        {/* KPI STRIP — 2 cols on mobile, 5 cols on desktop */}
-        <div className="bg-white border border-[#D4CFC3] rounded grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#D4CFC3] -mt-6 md:-mt-8 relative z-10">
-          <KpiCard label="Missioni Totali" value={stats.total} />
+        {/* KPI STRIP — responsive grid */}
+        <div className="bg-white border border-[#D4CFC3] rounded grid grid-cols-3 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#D4CFC3] -mt-6 md:-mt-8 relative z-10 shadow-sm">
+          <KpiCard label="Totali" value={stats.total} />
           <KpiCard label="In Corso" value={stats.active} />
           <KpiCard label="Personale" value={stats.personnel} />
-          <KpiCard label="Teatri Operativi" value={stats.countries} />
-          <div className="col-span-2 md:col-span-1">
-            <KpiCard label="Organizzazioni" value={stats.organizations} />
-          </div>
+          <KpiCard label="Teatri" value={stats.countries} />
+          <KpiCard label="Org." value={stats.organizations} />
         </div>
 
         {/* TWO COLUMNS: Table + Mini-map */}
@@ -131,7 +129,7 @@ export default function HomePage() {
               <h2 className="text-[12px] md:text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C] flex-shrink-0">
                 In Corso — {active.length}
               </h2>
-              <div className="flex gap-1 overflow-x-auto flex-shrink min-w-0">
+              <div className="flex gap-1 overflow-x-auto flex-shrink min-w-0 scrollbar-none">
                 {activeByOrg.map(([org, n]) => (
                   <span key={org} className="text-[7px] md:text-[8px] font-bold uppercase px-1 md:px-1.5 py-0.5 rounded text-white whitespace-nowrap flex-shrink-0" style={{ backgroundColor: ORG_COLORS[org] || '#8B9298' }}>
                     {org} {n}
@@ -188,7 +186,7 @@ export default function HomePage() {
             <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-[0.12em] text-[#1B3A5C] border-b border-[#D4CFC3] pb-2 mb-3">
               Teatri Operativi
             </h2>
-            <div ref={miniMapRef} className="w-full h-[280px] md:h-[400px] border border-[#D4CFC3] rounded" />
+            <div ref={miniMapRef} className="w-full h-[220px] md:h-[400px] border border-[#D4CFC3] rounded" />
           </div>
         </div>
 
@@ -209,7 +207,7 @@ export default function HomePage() {
               </div>
             )}
           </div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={personnelData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
