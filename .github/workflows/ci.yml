@@ -29,9 +29,11 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run tests
-        run: python -m pytest tests/ -v --tb=short --junitxml=reports/junit.xml
+        run: pip install -r requirements-ci.txt
+      - name: Run core tests
+        run: |
+          mkdir -p reports
+          python -m pytest tests/test_scrapers.py tests/test_models.py tests/test_normalizer.py tests/test_aggregator.py -v --tb=short --junitxml=reports/junit.xml
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

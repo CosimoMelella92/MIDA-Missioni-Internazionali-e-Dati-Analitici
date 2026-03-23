@@ -1106,6 +1106,7 @@ class ExcelAggregator:
 # =============================================================================
 
 if __name__ == "__main__":
+    Path("logs").mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
